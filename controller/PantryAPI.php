@@ -45,14 +45,6 @@ class PantryAPI extends PantryApp {
     // Entry points
     // ========================================
     public static function test() {
-        new self(false);
-
-        $tfa = new PantryTwoFactorKey();
-        $tfa->initialize(PantryUser::lookupUsername('admin'));
-        $tfa->save();
-
-        $response = new PantryAPISuccess();
-        $response->respond();
     }
 
     public static function me() {
