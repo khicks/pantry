@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<form class="form-signin">
+    <div class="form-signin-heading">
+        <h2 class="form-signin-heading-text">{{ title }}</h2>
+        <div id="form-signin-icon" class="signin-icon fa fa-2x fa-lock"></div>
+    </div>
+
+    <div id="login-success-alert" class="alert alert-success" role="alert">{{ lang.LOGIN_PAGE_SUCCESS }}</div>
+    <div id="login-error-alert" class="alert alert-danger" role="alert">
+        <span id="login-error-title">{{ lang.LOGIN_PAGE_FAILED }}</span>
+        <p id="login-error-desc-userpass-empty" class="login-error-desc">{{ lang.LOGIN_PAGE_ERROR_USERPASS_EMPTY }}</p>
+        <p id="login-error-desc-verification-empty" class="login-error-desc">{{ lang.LOGIN_PAGE_ERROR_VERIFICATION_EMPTY }}</p>
+        <p id="login-error-desc-userpass-incorrect" class="login-error-desc">{{ lang.LOGIN_PAGE_ERROR_USERPASS_INCORRECT }}</p>
+        <p id="login-error-desc-verification-incorrect" class="login-error-desc">{{ lang.LOGIN_PAGE_ERROR_VERIFICATION_INCORRECT }}</p>
+        <p id="login-error-desc-disabled" class="login-error-desc">{{ lang.USER_DISABLED }}</p>
+        <p id="login-error-desc-other" class="login-error-desc">{{ lang.INTERNAL_ERROR }}</p>
+    </div>
+
+    <div id="form-signin-controls">
+        <div id="username-password-fields">
+            <label for="username" class="sr-only">{{ lang.LOGIN_PAGE_USERNAME }}</label>
+            <input type="text" id="username" class="login-field form-control" placeholder="{{ lang.LOGIN_PAGE_USERNAME }}" autofocus>
+            <label for="password" class="sr-only">{{ lang.LOGIN_PAGE_PASSWORD }}</label>
+            <input type="password" id="password" class="login-field form-control" placeholder="{{ lang.LOGIN_PAGE_PASSWORD }}">
+        </div>
+
+        <div id="two-factor-fields">
+            <h3 id="two-factor-heading" class="form-signin-heading-text">{{ lang.LOGIN_PAGE_2FA_HEADER }}</h3>
+            <p>{{ lang.LOGIN_PAGE_2FA_TEXT }}</p>
+            <div id="two-factor-icon" class="fas fa-mobile-alt"></div>
+            <label for="verification" class="sr-only">{{ lang.LOGIN_PAGE_2FA_LABEL }}</label>
+            <input type="number" id="verification" class="login-field form-control mb-2" placeholder="{{ lang.LOGIN_PAGE_2FA_LABEL }}" autocomplete="off">
+            <div class="custom-control custom-checkbox mb-2">
+                <input type="checkbox" id="remember" class="login-field custom-control-input">
+                <label class="custom-control-label" for="remember">{{ lang.LOGIN_PAGE_2FA_REMEMBER }}</label>
+            </div>
+        </div>
+
+        <button type="button" id="login-button" class="btn btn-lg btn-primary btn-block">{{ lang.LOGIN_BUTTON }}</button>
+    </div>
+</form>
+
+{% endblock %}

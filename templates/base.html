@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head -%}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Meta -->
+    {% for key,value in meta -%}
+    <meta name="{{ key }}" content="{{ value }}">
+    {% endfor -%}
+
+    <!-- CSS -->
+    {% for cssfile in include.css.external -%}
+    <link rel="stylesheet" href="{{ cssfile }}">
+    {% endfor -%}
+    {% for cssfile in include.css.root -%}
+    <link rel="stylesheet" href="{{ cssfile }}">
+    {% endfor %}
+
+    <!-- JavaScript -->
+    {% for jsfile in include.js.external -%}
+    <script type="text/javascript" src="{{ jsfile }}" defer></script>
+    {% endfor -%}
+    {% for jsfile in include.js.root -%}
+    <script type="text/javascript" src="{{ jsfile }}" defer></script>
+    {% endfor %}
+
+    <title>{{ title }} - {{ app_name }}</title>
+    {% endblock %}
+</head>
+<body>
+<header>
+    {% if display.navbar %}
+    {% include "navbar.html" %}
+    {% endif %}
+</header>
+<main role="main" id="wrapper">
+    <div class="container">
+        {% if display.title %}
+        <h1 id="page-title">{{ title }}</h1>
+        {% endif %}
+        <div id="content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</main>
+{% if display.footer %}
+<footer class="footer">
+    <div class="container">
+        <span class="text-muted">&copy; {{ lang.COPYRIGHT }} {{ footer.year }} {{ footer.name }}</span>
+        {% if display.screen_size %}
+        <span class="text-muted d-inline d-sm-none">( xs )</span>
+        <span class="text-muted d-none d-sm-inline d-md-none">( sm )</span>
+        <span class="text-muted d-none d-md-inline d-lg-none">( md )</span>
+        <span class="text-muted d-none d-lg-inline d-xl-none">( lg )</span>
+        <span class="text-muted d-none d-xl-inline">( xl )</span>
+        {% endif %}
+    </div>
+</footer>
+{% endif %}
+</body>
+</html>

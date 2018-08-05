@@ -8,9 +8,14 @@ $base_path = dirname($_SERVER['SCRIPT_NAME']) == "/" ? "" : dirname($_SERVER['SC
 $router->setBasePath($base_path);
 
 try {
-    $router->map('GET', '/', function() {
-        echo "hello!";
-    });
+    $router->map('GET', '/', 'PantryPage::home');
+    $router->map('GET', '/test', 'PantryPage::home');
+    $router->map('GET', '/login', 'PantryPage::login');
+
+    $router->map('GET', '/api/v1/test', 'PantryAPI::test');
+    $router->map('GET', '/api/v1/me', 'PantryAPI::me');
+    $router->map('POST', '/api/v1/login', 'PantryAPI::login');
+    $router->map('POST', '/api/v1/logout', 'PantryAPI::logout');
 }
 catch (Exception $e) {
     die();

@@ -1,0 +1,74 @@
+<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="{{ brand.href }}">{{ brand.label }}</a>
+
+        {% if display.navigation %}
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-items" aria-controls="$navbar-items" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        {% endif %}
+
+        <div id="navbar-items" class="collapse navbar-collapse">
+            <ul class="navbar-nav mr-auto">
+                {% if display.navigation %}
+                {% for key,item in navigation.left %}
+                {% if item.type == "link" %}
+                <li class="nav-item {% if item.active %}active{% endif %}">
+                    <a class="nav-link" href="{{ item.href }}"><i class="fas fa-{{ item.icon }}"></i> {{ item.label }}</a>
+                </li>
+                {% elseif item.type == "dropdown" %}}
+                <li class="nav-item dropdown {% if item.active %}active{% endif %}">
+                    <a id="navbar-dropdown-l-{{ key }}" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ item.label }}
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbar-dropdown-l-{{ key }}">
+                        {% for key,item in item.items %}
+                        {% if item.type == "link" %}
+                        <a class="dropdown-item" href="{{ item.href }}">{{ item.label }}</a>
+                        {% elseif item.type == "separator" %}
+                        <div class="dropdown-divider"></div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </li>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+            </ul>
+
+            {% if display.navigation %}
+            {% if display.user_menu %}
+
+            <ul class="navbar-nav ml-auto">
+                {% for key,item in navigation.right %}
+                {% if item.type == "link" %}
+                <li class="nav-item {% if item.active %}active{% endif %}">
+                    <a class="nav-link" href="{{ item.href }}"><i class="fas fa-{{ item.icon }}"></i> {{ item.label }}</a>
+                </li>
+                {% elseif item.type == "dropdown" %}}
+                <li class="nav-item dropdown {% if item.active %}active{% endif %}">
+                    <a id="navbar-dropdown-r-{{ key }}" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ item.label }}
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbar-dropdown-r-{{ key }}">
+                        {% for key,item in item.items %}
+                        {% if item.type == "link" %}
+                        <a class="dropdown-item" href="{{ item.href }}"><i class="fas fa-fw fa-{{ item.icon }}"></i>{{ item.label }}</a>
+                        {% elseif item.type == "separator" %}
+                        <div class="dropdown-divider"></div>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+            {% if display.logged_in %}
+            <button type="button" id="logout-button" class="btn btn-danger ml-2"><i id="signout-icon" class="fas fa-sign-out-alt"></i> {{ lang.LOGOUT_BUTTON }}</button>
+            {% endif %}
+
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</nav>

@@ -1,5 +1,6 @@
 {
   "require": {
+    "php": ">=7.0",
     "altorouter/altorouter": "^1.2",
     "twig/twig": "^2.5"
   }
