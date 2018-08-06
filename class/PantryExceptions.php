@@ -37,3 +37,7 @@ class PantryTwoFactorSessionNotCreatedException extends PantryException {}
 class PantryTwoFactorSessionNotDestroyedException extends PantryException {}
 
 class PantryTwoFactorSessionsNotLimitedException extends PantryException {}
+
+class PantryGetRandomDataParamNotIntException extends PantryException {}
+
+class PantryGetRandomDataParamNotSecureException extends PantryException {}

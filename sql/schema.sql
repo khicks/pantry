@@ -39,10 +39,10 @@ DROP TABLE IF EXISTS `two_factor_keys`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `two_factor_keys` (
-  `id` char(36) NOT NULL,
+  `id` char(36) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `created` datetime NOT NULL,
-  `user_id` char(36) NOT NULL,
-  `two_factor_key` char(64) NOT NULL,
+  `user_id` char(36) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `two_factor_key` char(64) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_id` (`user_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -56,10 +56,10 @@ DROP TABLE IF EXISTS `two_factor_logins`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `two_factor_logins` (
-  `id` char(36) NOT NULL,
+  `id` char(36) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `created` datetime NOT NULL,
-  `user_id` char(36) NOT NULL,
-  `verification_code` char(6) NOT NULL,
+  `user_id` char(36) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `verification_code` char(6) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `check_idx` (`user_id`,`verification_code`),
   KEY `created` (`created`)
@@ -74,10 +74,10 @@ DROP TABLE IF EXISTS `two_factor_sessions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `two_factor_sessions` (
-  `id` char(36) NOT NULL,
+  `id` char(36) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `created` datetime NOT NULL,
-  `user_id` char(36) NOT NULL,
-  `secret` char(128) NOT NULL,
+  `user_id` char(36) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `secret` char(128) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `check_idx` (`id`,`user_id`,`secret`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -91,12 +91,12 @@ DROP TABLE IF EXISTS `user_sessions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_sessions` (
-  `id` char(36) NOT NULL,
+  `id` char(36) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `created` datetime NOT NULL,
   `updated` datetime NOT NULL,
-  `session_id` varchar(128) NOT NULL,
-  `user_id` char(36) NOT NULL,
-  `ip_address` varchar(45) NOT NULL,
+  `session_id` char(36) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `user_id` char(36) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `ip_address` varchar(45) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `created` (`created`),
   KEY `updated` (`updated`),
@@ -114,10 +114,10 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
-  `id` char(36) NOT NULL,
+  `id` char(36) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `created` datetime NOT NULL,
-  `username` varchar(32) NOT NULL,
-  `password` varchar(255) NOT NULL,
+  `username` varchar(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `is_admin` bit(1) NOT NULL,
   `is_disabled` bit(1) NOT NULL,
   PRIMARY KEY (`id`),
@@ -137,4 +137,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-08-04 20:30:37
+-- Dump completed on 2018-08-05 23:11:57

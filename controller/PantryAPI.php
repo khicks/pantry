@@ -44,9 +44,6 @@ class PantryAPI extends PantryApp {
     // ========================================
     // Entry points
     // ========================================
-    public static function test() {
-    }
-
     public static function me() {
         $pantry = new self(false);
         $pantry->response = new PantryAPISuccess("ME_SUCCESS", $pantry->language['ME_SUCCESS'], [

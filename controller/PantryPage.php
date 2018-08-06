@@ -4,12 +4,8 @@ class PantryPage extends PantryApp {
     /** @var Twig_Environment $twig */
     protected $twig;
 
-    public function __construct($track_navigation = true) {
+    public function __construct() {
         parent::__construct();
-
-        if ($track_navigation) {
-            $this->current_session->trackPage();
-        }
         $this->loadTwig();
     }
 
@@ -193,6 +189,7 @@ class PantryPage extends PantryApp {
     // ========================================
     public static function home() {
         $pantry = new self();
+        $pantry->current_session->trackPage();
 
         $params = [
             'title' => $pantry->language['HOME_PAGE_TITLE'],
@@ -209,7 +206,7 @@ class PantryPage extends PantryApp {
     }
 
     public static function login() {
-        $pantry = new self(false);
+        $pantry = new self();
         $pantry->requireLogout();
 
         $params = [

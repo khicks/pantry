@@ -1,9 +1,11 @@
 <?php
 
-class PantryAPIError extends PantryAPIResponse {
+class PantryAPIError extends PantryAPIResponse
+{
     private $http_code;
 
-    public function __construct($http_code, $code = "GENERAL_ERROR", $description = "", $data = []) {
+    public function __construct($http_code, $code = "GENERAL_ERROR", $description = "", $data = [])
+    {
         parent::__construct();
         $this->http_code = $http_code;
         $this->status = "error";
@@ -12,7 +14,8 @@ class PantryAPIError extends PantryAPIResponse {
         $this->data = $data;
     }
 
-    public function respond() {
+    public function respond()
+    {
         http_response_code($this->http_code);
         parent::respond();
     }
