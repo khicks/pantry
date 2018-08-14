@@ -9,7 +9,7 @@ class PantryPage extends PantryApp {
         $this->loadTwig();
     }
 
-    public function loadTwig() {
+    private function loadTwig() {
         $templates[] = Pantry::$php_root."/templates";
         $loader = new Twig_Loader_Filesystem($templates);
         $this->twig = new Twig_Environment($loader);
@@ -168,6 +168,7 @@ class PantryPage extends PantryApp {
     }
 
     protected function redirect($page) {
+        Pantry::$logger->debug("Redirecting user to $page");
         header("Location: ".Pantry::$web_root.$page);
         die();
     }

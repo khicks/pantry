@@ -50,8 +50,17 @@ class PantryAPI extends PantryApp {
             'logged_in' => $pantry->current_session->isLoggedIn(),
             'csrf_token' => $pantry->current_session->getCSRF(),
             'user_id' => $pantry->current_user->getID(),
-            'username' => $pantry->current_user->getUsername()
+            'username' => $pantry->current_user->getUsername(),
+            'is_admin' => $pantry->current_user->getIsAdmin(),
+            'first_name' => $pantry->current_user->getFirstName(),
+            'last_name' => $pantry->current_user->getLastName()
         ]);
+        $pantry->response->respond();
+    }
+
+    public static function language() {
+        $pantry = new self(false);
+        $pantry->response = new PantryAPISuccess("LANGUAGE_SUCCESS", $pantry->language['LANGUAGE_SUCCESS'], $pantry->language);
         $pantry->response->respond();
     }
 
@@ -111,9 +120,12 @@ class PantryAPI extends PantryApp {
                 Pantry::$logger->debug("Attempting to remember session");
                 $two_factor_session = new PantryTwoFactorSession();
                 $two_factor_session->create($user_id);
-                setcookie("pantry_two_factor_session", $two_factor_session->getID(), time()+2592000, Pantry::$web_root, null, true, true);
+                setcookie("pantry_two_factor_session", $two_factor_session->getID(), time()+2592000, Pantry::$cookie_path, null, true, true);
                 $two_factor_session_secret = $two_factor_session->getSecret();
             }
+
+            $pantry->current_user->setLastLogin();
+            $pantry->current_user->save();
 
             $pantry->response = new PantryAPISuccess("LOGIN_SUCCESS", $pantry->language['LOGIN_SUCCESS'], [
                 'logged_in' => $pantry->current_session->isLoggedIn(),

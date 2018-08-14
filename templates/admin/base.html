@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head -%}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- Meta -->
+    {% for key,value in meta -%}
+    <meta name="{{ key }}" content="{{ value }}">
+    {% endfor -%}
+
+    <!-- CSS -->
+    {% for cssfile in include.css.external -%}
+    <link rel="stylesheet" href="{{ cssfile }}">
+    {% endfor -%}
+    {% for cssfile in include.css.root -%}
+    <link rel="stylesheet" href="{{ cssfile }}">
+    {% endfor %}
+
+    <!-- JavaScript -->
+    {% for jsfile in include.js.external -%}
+    <script type="text/javascript" src="{{ jsfile }}"></script>
+    {% endfor -%}
+    {% for jsfile in include.js.root -%}
+    <script type="text/javascript" src="{{ jsfile }}"></script>
+    {% endfor %}
+
+    <title>{{ title }} - {{ appname }} Administration</title>
+    {% endblock %}
+</head>
+<body>
+<div id="wrapper">
+    <nav class="navbar sticky-top navbar-expand-md navbar-dark flex-md-nowrap bg-dark p-0">
+        <a id="admin-title" class="navbar-brand col-xs-12 col-md-4 col-lg-3 col-xl-2 mr-0" href="{{ brand.href }}">{{ brand.label }}</a>
+        <span class="navbar-brand w-100 px-3">{{ title }}</span>
+        <ul id="back-link" class="navbar-nav px-3">
+            <li class="nav-item text-nowrap">
+                <a class="nav-link" href="{{ navigation.back.href }}">{{ navigation.back.label }}</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div id="content-container" class="container-fluid">
+        <div id="content-row" class="row">
+            <nav class="col-xs-12 col-md-4 col-lg-3 col-xl-2 bg-light sidebar d-none d-md-block">
+                {% include "sidebar.html" %}
+            </nav>
+            <main role="main" class="col-xs-12 col-md-8 col-lg-9 col-xl-10 ml-sm-auto pt-3">
+                <div class="container">
+                    {% if display.alert %}
+                    <div id="server-alert" class="alert alert-{{ alert.type }} alert-dismissible fade show mb-2" role="alert"><b>
+                        <i class="fas fa-{{ alert.icon }}"></i> {{ alert.message }}</b>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    {% endif %}
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            {% for breadcrumb in navigation.breadcrumbs %}
+                            {% if loop.last %}
+                            <li class="breadcrumb-item active" aria-current="page">{{ breadcrumb.label }}</li>
+                            {% else %}
+                            <li class="breadcrumb-item"><a href="{{ breadcrumb.href }}">{{ breadcrumb.label }}</a></li>
+                            {% endif %}
+                            {% endfor %}
+                        </ol>
+                    </nav>
+                    {% block content %}{% endblock %}
+                </div>
+            </main>
+        </div>
+
+    </div>
+
+    <div id="footer-row" class="row">
+        <footer class="footer col-xs-12 col-md-8 col-lg-9 col-xl-10 ml-sm-auto">
+            <div class="container">
+                <span class="text-muted">&copy; {{ lang.COPYRIGHT }} {{ footer.year }} {{ footer.name }}</span>
+                {% if display.screen_size %}
+                <span class="text-muted d-inline d-sm-none">( xs )</span>
+                <span class="text-muted d-none d-sm-inline d-md-none">( sm )</span>
+                <span class="text-muted d-none d-md-inline d-lg-none">( md )</span>
+                <span class="text-muted d-none d-lg-inline d-xl-none">( lg )</span>
+                <span class="text-muted d-none d-xl-inline">( xl )</span>
+                {% endif %}
+            </div>
+        </footer>
+    </div>
+</div>
+
+
+
+</body>

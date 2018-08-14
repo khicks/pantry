@@ -1,6 +1,8 @@
 {
   "require": {
     "php": ">=7.0",
+    "ext-openssl": "*",
+    "ext-pdo": "*",
     "altorouter/altorouter": "^1.2",
     "twig/twig": "^2.5"
   }

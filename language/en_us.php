@@ -1,8 +1,12 @@
 <?php
 
 return [
+    'LANGUAGE' => "en_us",
+
     // base
     'COPYRIGHT' => "Copyright",
+    'CANCEL' => "Cancel",
+    'SAVE' => "Save",
 
     // navbar
     'HOME_MENU_BUTTON' => "Home",
@@ -31,8 +35,15 @@ return [
 
     // API success
     'ME_SUCCESS' => "Here are your user details.",
+    'LANGUAGE_SUCCESS' => "Here is your language config.",
     'LOGIN_SUCCESS' => "You are now logged in.",
     'LOGOUT_SUCCESS' => "You have been logged out.",
+    'LIST_USERS_SUCCESS' => "Here is the list of users.",
+    'GET_USER_SUCCESS' => "Here are the requested user details.",
+    'CHECK_USERNAME_SUCCESS' => "Username check succeeded.",
+    'CREATE_USER_SUCCESS' => "User was successfully created.",
+    'SAVE_USER_SUCCESS' => "User was successfully saved.",
+    'DELETE_USER_SUCCESS' => "User was successfully deleted.",
 
     // API error
     'INTERNAL_ERROR' => "Something went wrong on the server. Please contact your administrator or try again later.",
@@ -43,5 +54,67 @@ return [
     'BAD_USERNAME_PASSWORD' => "Username or password was incorrect.",
     'USER_DISABLED' => "This account is disabled.",
     'TWO_FACTOR_REQUIRED' => "A two-factor authentication token is required.",
-    'TWO_FACTOR_INCORRECT' => "The two-factor authentication token is incorrect."
+    'TWO_FACTOR_INCORRECT' => "The two-factor authentication token is incorrect.",
+    'NOT_ADMIN' => "You must be an administrator to perform this action.",
+    'CREATE_USER_FAILED' => "The user could not be created.",
+    'NO_USER_ID' => "You must specify a user ID.",
+    'NO_USER_ID_USERNAME' => "You must specify a user ID or username.",
+    'USER_NOT_FOUND' => "That user does not exist.",
+    'DELETE_OWN_USER' => "Cannot delete your own user account.",
+
+    // Admin pages
+    'ADMIN_BRAND' => "Admin",
+    'ADMIN_BACK' => "Back to",
+    'ADMIN_BREADCRUMBS_ADMIN' => "Admin",
+    'ADMIN_DASHBOARD_BUTTON' => "Dashboard",
+    'ADMIN_DASHBOARD_TITLE' => "Dashboard",
+    'ADMIN_USERS_BUTTON' => "Users",
+    'ADMIN_USERS_TITLE' => "User Accounts",
+    'ADMIN_USERS_USERNAME' => "Username",
+    'ADMIN_USERS_NAME' => "Name",
+    'ADMIN_USERS_FIRSTNAME' => "First name",
+    'ADMIN_USERS_LASTNAME' => "Last name",
+    'ADMIN_USERS_LASTLOGIN' => "Last login",
+    'ADMIN_USERS_ADMIN' => "Admin",
+    'ADMIN_USERS_ACTIVE' => "Active",
+    'ADMIN_USERS_EDIT_BUTTON' => "Edit",
+    'ADMIN_USERS_DELETE_BUTTON' => "Delete",
+    'ADMIN_USERS_CREATE_BUTTON' => "New user",
+    'ADMIN_USERS_SEARCH_FIELD' => "Search by name or username",
+    'ADMIN_USERS_SORT_BY_FIELD_LABEL' => "Sort by...",
+    'ADMIN_USERS_SORT_BY_FIELD_USERNAME' => "Username",
+    'ADMIN_USERS_SORT_BY_FIELD_CREATED' => "Created",
+    'ADMIN_USERS_SORT_BY_FIELD_LASTLOGIN' => "Last login",
+    'ADMIN_USERS_SORT_BY_FIELD_ADMINS' => "Admins",
+    'ADMIN_USERS_SORT_BY_FIELD_DISABLED' => "Disabled",
+    'ADMIN_USERS_ACCOUNT' => "Account",
+    'ADMIN_USERS_PASSWORD' => "Password",
+    'ADMIN_USERS_NEW_PASSWORD' => "New password",
+    'ADMIN_USERS_CONFIRM_PASSWORD' => "Confirm password",
+    'ADMIN_USERS_ATTRIBUTES' => "Attributes",
+    'ADMIN_USERS_DISABLED' => "Disabled",
+    'ADMIN_CREATE_USER_BREADCRUMBS' => "Create",
+    'ADMIN_CREATE_USER_TITLE' => "Create User",
+    'ADMIN_CREATE_USER_TITLE2' => "New User",
+    'ADMIN_CREATE_USER_BUTTON' => "Create user",
+    'ADMIN_USERS_USERNAME_AVAILABLE' => "Username is available.",
+    'ADMIN_USERS_ERROR_USERNAME_NONE' => "Please enter a username.",
+    'ADMIN_USERS_ERROR_USERNAME_INVALID' => "Username is invalid.",
+    'ADMIN_USERS_ERROR_USERNAME_SHORT' => "Username is too short.",
+    'ADMIN_USERS_ERROR_USERNAME_LONG' => "Username is too long.",
+    'ADMIN_USERS_ERROR_USERNAME_TAKEN' => "Username is taken.",
+    'ADMIN_USERS_ERROR_FIRSTNAME_LONG' => "First name is too long.",
+    'ADMIN_USERS_ERROR_FIRSTNAME_INVALID' => "First name is invalid.",
+    'ADMIN_USERS_ERROR_LASTNAME_LONG' => "Last name is too long.",
+    'ADMIN_USERS_ERROR_LASTNAME_INVALID' => "Last name is invalid.",
+    'ADMIN_USERS_ERROR_PASSWORD1_NONE' => "Please enter a password.",
+    'ADMIN_USERS_ERROR_PASSWORD2_NONE' => "Please type the password again.",
+    'ADMIN_USERS_ERROR_PASSWORD2_MISMATCH' => "Passwords must match.",
+    'ADMIN_USERS_DELETE_TITLE' => "Delete user",
+    'ADMIN_USERS_DELETE_PROMPT' => "Are you sure you want to delete this user?",
+    'ADMIN_EDIT_USER_TITLE' => "Edit User",
+    'ADMIN_EDIT_USER_PASSWORD_TIP' => "Leave these fields blank to keep current password.",
+    'ADMIN_EDIT_USER_DISABLE_2FA' => "Disable Two-Factor Authentication",
+    'ADMIN_EDIT_USER_DISABLE_2FA_PROMPT' => "Are you sure you want to disable two-factor authentication for this user? Only the user can re-enable it for themselves.",
+    'ADMIN_EDIT_USER_DISABLE_2FA_SHORT' => "Disable"
 ];

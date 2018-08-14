@@ -77,6 +77,11 @@ class PantryTwoFactorKey {
         $sql_delete_key->bindValue(':key_id', $this->id, PDO::PARAM_STR);
         $sql_delete_key->execute();
 
+        $this->id = null;
+        $this->created = null;
+        $this->user_id = null;
+        $this->key = null;
+
         return true;
     }
 
@@ -177,5 +182,11 @@ class PantryTwoFactorKey {
             'I','J','K','L','M','N','O','P',
             'Q','R','S','T','U','V','W','X',
             'Y','Z','2','3','4','5','6','7'];
+    }
+
+    public static function purgeUser($user_id) {
+        $sql_purge_user = Pantry::$db->prepare("DELETE FROM two_factor_keys WHERE user_id=:user_id");
+        $sql_purge_user->bindValue(':user_id', $user_id, PDO::PARAM_STR);
+        $sql_purge_user->execute();
     }
 }

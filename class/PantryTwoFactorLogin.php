@@ -56,4 +56,10 @@ class PantryTwoFactorLogin {
             die();
         }
     }
+
+    public static function purgeUser($user_id) {
+        $sql_purge_user = Pantry::$db->prepare("DELETE FROM two_factor_logins WHERE user_id=:user_id");
+        $sql_purge_user->bindValue(':user_id', $user_id, PDO::PARAM_STR);
+        $sql_purge_user->execute();
+    }
 }

@@ -104,4 +104,10 @@ class PantryUserSession {
             die();
         }
     }
+
+    public static function purgeUser($user_id) {
+        $sql_purge_user = Pantry::$db->prepare("DELETE FROM user_sessions WHERE user_id=:user_id");
+        $sql_purge_user->bindValue(':user_id', $user_id, PDO::PARAM_STR);
+        $sql_purge_user->execute();
+    }
 }

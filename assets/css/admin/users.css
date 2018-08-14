@@ -1,0 +1,30 @@
+#users-table-loading {
+    font-size: 6em;
+    text-align: center;
+}
+
+#users-table {
+    display: none;
+}
+
+.table td.fit,
+.table th.fit {
+    white-space: nowrap;
+    width: 1%;
+}
+
+td.user-action-buttons {
+    text-align: right;
+}
+
+th.icon-col, td.icon-col {
+    text-align: center;
+}
+
+.admin-icon {
+    color: green;
+}
+
+.disabled-icon {
+    color: red;
+}

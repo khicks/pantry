@@ -42,7 +42,6 @@ $(function() {
         loginSuccessAlert.slideDown();
         formSigninControls.fadeOut(function() {
             setTimeout(function() {
-                //debugger;
                 if (pageTracker.length > 0 && pageTracker.charAt(0) === "/") {
                     window.location.replace(pageTracker);
                 }

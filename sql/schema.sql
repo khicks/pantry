@@ -1,6 +1,4 @@
 -- MySQL dump 10.13  Distrib 5.7.23, for Linux (x86_64)
---
--- Host: database.khicks.net    Database: pantry_dev
 -- ------------------------------------------------------
 -- Server version	5.7.21-21
 
@@ -62,7 +60,8 @@ CREATE TABLE `two_factor_logins` (
   `verification_code` char(6) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `check_idx` (`user_id`,`verification_code`),
-  KEY `created` (`created`)
+  KEY `created` (`created`),
+  KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -120,11 +119,17 @@ CREATE TABLE `users` (
   `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `is_admin` bit(1) NOT NULL,
   `is_disabled` bit(1) NOT NULL,
+  `last_login` datetime DEFAULT NULL,
+  `first_name` varchar(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `last_name` varchar(32) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   KEY `created` (`created`),
   KEY `is_admin` (`is_admin`),
-  KEY `is_disabled` (`is_disabled`)
+  KEY `is_disabled` (`is_disabled`),
+  KEY `last_login` (`last_login`),
+  KEY `first_name` (`first_name`),
+  KEY `last_name` (`last_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -137,4 +142,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-08-05 23:11:57
+-- Dump completed on 2018-08-13 23:30:12

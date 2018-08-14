@@ -3,12 +3,15 @@
 require_once(dirname(dirname(__FILE__))."/class/PantryApp.php");
 require_once(dirname(dirname(__FILE__))."/controller/PantryAPI.php");
 require_once(dirname(dirname(__FILE__))."/controller/PantryPage.php");
+require_once(dirname(dirname(__FILE__))."/controller/PantryAdminAPI.php");
+require_once(dirname(dirname(__FILE__))."/controller/PantryAdminPage.php");
 
 class Pantry {
     public static $initialized = false;
 
     public static $php_root;
     public static $web_root;
+    public static $cookie_path;
     public static $config;
 
     /** @var PantryLogger */
@@ -38,6 +41,11 @@ class Pantry {
     private static function loadDirectories() {
         self::$php_root = dirname(dirname(__FILE__));
         self::$web_root = dirname($_SERVER['SCRIPT_NAME']);
+        self::$cookie_path = self::$web_root;
+
+        if (self::$web_root === "/") {
+            self::$web_root = "";
+        }
     }
 
     private static function loadFiles() {
@@ -112,7 +120,6 @@ class Pantry {
             Pantry::$logger->emergency($e->getMessage());
             die();
         }
-
 
         return ($hex) ? bin2hex($rand) : $rand;
     }

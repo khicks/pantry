@@ -5,10 +5,9 @@ class PantrySession {
         ini_set('session.use_strict_mode', '1');
         ini_set('session.gc_probability', '1');
         ini_set('session.gc_divisor', '10');
-        ini_set('session.gc_maxlifetime', Pantry::$config['session_time']);
 
         session_name("pantry_session");
-        session_set_cookie_params(0, Pantry::$web_root, null, true, true);
+        session_set_cookie_params(0, Pantry::$cookie_path, null, true, true);
         session_set_save_handler(
             [$this, "open"],
             [$this, "close"],
