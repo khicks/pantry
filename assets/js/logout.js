@@ -1,4 +1,5 @@
 $(function() {
+    const webRoot = $("meta[name=web_root]").attr("content");
     const logoutButton = $("#logout-button");
 
     function logout() {
@@ -6,7 +7,7 @@ $(function() {
 
         $.ajax({
             method: "GET",
-            url: "api/v1/me",
+            url: webRoot + "/api/v1/me",
             /**
              * @param response.data.logged_in
              */
@@ -14,7 +15,7 @@ $(function() {
                 if (response.data.logged_in) {
                     $.ajax({
                         method: "POST",
-                        url: "api/v1/logout",
+                        url: webRoot + "/api/v1/logout",
                         data: {
                             csrf_token: response.data.csrf_token,
                         },

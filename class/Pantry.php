@@ -14,13 +14,19 @@ class Pantry {
     public static $cookie_path;
     public static $config;
 
-    /** @var PantryLogger */
+    /** @var PantryLogger $logger */
     public static $logger;
 
-    /** @var PDO */
+    /** @var Parsedown $parsedown */
+    public static $parsedown;
+
+    /** @var HTMLPurifier $html_purifier */
+    public static $html_purifier;
+
+    /** @var PDO $db */
     public static $db;
 
-    /** @var PantrySession */
+    /** @var PantrySession $session */
     public static $session;
 
     private function __construct() {}
@@ -33,6 +39,8 @@ class Pantry {
         self::loadFiles();
         self::loadConfig();
         self::loadLogger();
+        self::loadParsedown();
+        self::loadHTMLPurifier();
         self::loadDB();
         self::loadSession();
         self::$initialized = true;
@@ -71,6 +79,16 @@ class Pantry {
 
     private static function loadLogger() {
         self::$logger = new PantryLogger();
+    }
+
+    private static function loadParsedown() {
+        self::$parsedown = new Parsedown();
+        self::$parsedown->setSafeMode(true);
+    }
+
+    private static function loadHTMLPurifier() {
+        $config = HTMLPurifier_Config::createDefault();
+        self::$html_purifier = new HTMLPurifier($config);
     }
 
     private static function loadDB() {

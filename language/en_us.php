@@ -7,6 +7,7 @@ return [
     'COPYRIGHT' => "Copyright",
     'CANCEL' => "Cancel",
     'SAVE' => "Save",
+    'NONE' => "none",
 
     // navbar
     'HOME_MENU_BUTTON' => "Home",
@@ -33,6 +34,16 @@ return [
     'HOME_PAGE_TITLE' => "Home",
     'HOME_PAGE_TEXT' => "Home page",
 
+    // view recipe page
+    'VIEW_RECIPE_TITLE' => "View Recipe",
+    'SERVINGS' => "Servings",
+    'PREP_TIME' => "Prep time",
+    'COOK_TIME' => "Cook time",
+    'MINUTES' => "minutes",
+    'INGREDIENTS' => "Ingredients",
+    'DIRECTIONS' => "Directions",
+    'AUTHOR' => "Author",
+
     // API success
     'ME_SUCCESS' => "Here are your user details.",
     'LANGUAGE_SUCCESS' => "Here is your language config.",
@@ -44,6 +55,7 @@ return [
     'CREATE_USER_SUCCESS' => "User was successfully created.",
     'SAVE_USER_SUCCESS' => "User was successfully saved.",
     'DELETE_USER_SUCCESS' => "User was successfully deleted.",
+    'RECIPE_SUCCESS' => "Here is your recipe.",
 
     // API error
     'INTERNAL_ERROR' => "Something went wrong on the server. Please contact your administrator or try again later.",
@@ -61,6 +73,9 @@ return [
     'NO_USER_ID_USERNAME' => "You must specify a user ID or username.",
     'USER_NOT_FOUND' => "That user does not exist.",
     'DELETE_OWN_USER' => "Cannot delete your own user account.",
+    'RECIPE_NOT_FOUND' => "Recipe could not be found or you do not have permission to access it.",
+    'IMAGE_NOT_FOUND' => "Recipe does not have an image.",
+    'IMAGE_EXTENSION_INVALID' => "Recipe does not have an image with that extension.",
 
     // Admin pages
     'ADMIN_BRAND' => "Admin",

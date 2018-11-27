@@ -4,11 +4,13 @@ html {
 }
 
 body {
-    margin-bottom: 20px;
+    margin-bottom: 80px;
+    background-color: #e5f6ff;
 }
 
 main {
     margin-top: 20px;
+
 }
 
 footer {
@@ -18,4 +20,9 @@ footer {
     height: 60px;
     line-height: 60px;
     background-color: #f5f5f5;
+}
+
+#main-loading-wheel {
+    font-size: 6em;
+    text-align: center;
 }

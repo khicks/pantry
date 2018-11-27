@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div id="main-loading-wheel">
+    <i class="fas fa-sync fa-spin"></i>
+</div>
+
+<div id="recipe-wrapper" class="card">
+    <div class="card-header">
+        <h1 id="recipe-title" class="card-title"></h1>
+        <h6 id="recipe-blurb" class="card-subtitle"></h6>
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div id="recipe-description-col">
+                <p id="recipe-description" class="card-text"></p>
+            </div>
+            <div id="recipe-image-col">
+                <div id="recipe-image-wrapper">
+                    <img id="recipe-image">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <h3>{{ lang.INGREDIENTS }}</h3>
+                <div id="recipe-ingredients" class="card-text"></div>
+                <div id="recipe-ingredients-none" class="card-text"><i>{{ lang.NONE }}</i></div>
+            </div>
+            <div class="col-sm-6">
+                <table id="recipe-details" class="table">
+                    <thead>
+                    <tr>
+                        <th>{{ lang.SERVINGS }}</th>
+                        <th>{{ lang.PREP_TIME }}</th>
+                        <th>{{ lang.COOK_TIME }}</th>
+                    </tr>
+
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><span id="recipe-servings">1</span></td>
+                        <td><span id="recipe-prep-time">10</span> {{ lang.MINUTES }}</td>
+                        <td><span id="recipe-cook-time">20</span> {{ lang.MINUTES }}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <h3>{{ lang.DIRECTIONS }}</h3>
+                <div id="recipe-directions"></div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer text-muted">
+        <b>{{ lang.AUTHOR }}:</b> <span id="recipe-author-none">{{ lang.NONE }}</span><span id="recipe-author-name"></span>
+    </div>
+</div>
+
+{% endblock %}

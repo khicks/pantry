@@ -1,0 +1,37 @@
+#recipe-wrapper {
+    display: none;
+}
+
+#recipe-author-none {
+    display: none;
+    font-style: italic;
+}
+
+#recipe-description {
+    text-align: justify;
+}
+
+#recipe-image-col {
+    display: none;
+}
+
+#recipe-image-wrapper {
+    text-align: center;
+}
+
+#recipe-image {
+    max-width: 100%;
+    max-height: 500px;
+}
+
+#recipe-details {
+    text-align: center;
+}
+
+#recipe-ingredients-col {
+    border-right: 1px solid #d9d9d9;
+}
+
+#recipe-ingredients-none {
+    display: none;
+}

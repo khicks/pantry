@@ -80,8 +80,15 @@ class PantryPage extends PantryApp {
                     'home' => [
                         'type' => "link",
                         'href' => Pantry::$web_root . "/",
-                        'icon' => "home",
+                        'icon' => "fas fa-home",
                         'label' => $this->language['HOME_MENU_BUTTON'],
+                        'active' => false
+                    ],
+                    'recipes' => [
+                        'type' => "link",
+                        'href' => Pantry::$web_root . "/recipes",
+                        'icon' => "fab fa-readme",
+                        'label' => "Recipes",
                         'active' => false
                     ]
                 ],
@@ -98,7 +105,7 @@ class PantryPage extends PantryApp {
                 'account' => [
                     'type' => "link",
                     'href' => Pantry::$web_root . "/account",
-                    'icon' => "user",
+                    'icon' => "fas fa-user",
                     'label' => $this->current_user->getUsername(),
                     'active' => false
                 ]
@@ -112,7 +119,7 @@ class PantryPage extends PantryApp {
                             'admin' => [
                                 'type' => "link",
                                 'href' => Pantry::$web_root . "/admin",
-                                'icon' => "cogs",
+                                'icon' => "fas fa-cogs",
                                 'label' => $this->language['ADMIN_MENU_BUTTON'],
                                 'active' => false
                             ]
@@ -127,7 +134,7 @@ class PantryPage extends PantryApp {
                 'account' => [
                     'type' => "link",
                     'href' => Pantry::$web_root . "/login",
-                    'icon' => "sign-in-alt",
+                    'icon' => "fas fa-sign-in-alt",
                     'label' => $this->language['LOGIN_BUTTON'],
                     'active' => false
                 ]
@@ -212,11 +219,6 @@ class PantryPage extends PantryApp {
 
         $params = [
             'title' => $pantry->language['LOGIN_TITLE'],
-            'display' => [
-                'navigation' => false,
-                'title' => false,
-                'footer' => false
-            ],
             'include' => [
                 'css' => [
                     'root' => [
@@ -228,9 +230,72 @@ class PantryPage extends PantryApp {
                         "login.js"
                     ]
                 ]
+            ],
+            'display' => [
+                'navigation' => false,
+                'title' => false
             ]
         ];
 
         $pantry->displayTemplate("login.html", $params);
+    }
+
+    public static function browseRecipes() {
+        $pantry = new self();
+        $pantry->current_session->trackPage();
+
+        $params = [
+            'title' => "Browse Recipes",
+            'navigation' => [
+                'left' => [
+                    'recipes' => [
+                        'active' => true
+                    ]
+                ]
+            ]
+        ];
+
+        $pantry->displayTemplate("recipes-browse.html", $params);
+    }
+
+    public static function viewRecipe($slug) {
+        $pantry = new self();
+        $pantry->current_session->trackPage();
+
+        $params = [
+            'title' => $pantry->language['VIEW_RECIPE_TITLE'],
+            'meta' => [
+                'recipe_slug' => $slug
+            ],
+            'include' => [
+                'css' => [
+                    'root' => [
+                        "recipes-view.css"
+                    ]
+                ],
+                'js' => [
+                    'root' => [
+                        "recipes-view.js"
+                    ]
+                ]
+            ],
+            'display' => [
+                'title' => false
+            ],
+            'navigation' => [
+                'left' => [
+                    'recipes' => [
+                        'active' => true
+                    ]
+                ]
+            ]
+        ];
+
+        $pantry->displayTemplate("recipes-view.html", $params);
+    }
+
+    public static function test() {
+        $pantry = new self();
+        echo Pantry::generateUUID();
     }
 }

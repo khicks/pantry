@@ -14,7 +14,7 @@
                 {% for key,item in navigation.left %}
                 {% if item.type == "link" %}
                 <li class="nav-item {% if item.active %}active{% endif %}">
-                    <a class="nav-link" href="{{ item.href }}"><i class="fas fa-fw fa-{{ item.icon }}"></i> {{ item.label }}</a>
+                    <a class="nav-link" href="{{ item.href }}"><i class="{{ item.icon }} fa-fw"></i> {{ item.label }}</a>
                 </li>
                 {% elseif item.type == "dropdown" %}}
                 <li class="nav-item dropdown {% if item.active %}active{% endif %}">
@@ -24,7 +24,7 @@
                     <div class="dropdown-menu" aria-labelledby="navbar-dropdown-l-{{ key }}">
                         {% for key,item in item.items %}
                         {% if item.type == "link" %}
-                        <a class="dropdown-item" href="{{ item.href }}"><i class="fas fa-fw fa-{{ item.icon }}"></i> {{ item.label }}</a>
+                        <a class="dropdown-item" href="{{ item.href }}"><i class="{{ item.icon }} fa-fw"></i> {{ item.label }}</a>
                         {% elseif item.type == "separator" %}
                         <div class="dropdown-divider"></div>
                         {% endif %}
@@ -43,7 +43,7 @@
                 {% for key,item in navigation.right %}
                 {% if item.type == "link" %}
                 <li class="nav-item {% if item.active %}active{% endif %}">
-                    <a class="nav-link" href="{{ item.href }}"><i class="fas fa-fw fa-{{ item.icon }}"></i> {{ item.label }}</a>
+                    <a class="nav-link" href="{{ item.href }}"><i class="{{ item.icon }} fa-fw"></i> {{ item.label }}</a>
                 </li>
                 {% elseif item.type == "dropdown" %}}
                 <li class="nav-item dropdown {% if item.active %}active{% endif %}">
@@ -53,7 +53,7 @@
                     <div class="dropdown-menu" aria-labelledby="navbar-dropdown-r-{{ key }}">
                         {% for key,item in item.items %}
                         {% if item.type == "link" %}
-                        <a class="dropdown-item" href="{{ item.href }}"><i class="fas fa-fw fa-{{ item.icon }}"></i> {{ item.label }}</a>
+                        <a class="dropdown-item" href="{{ item.href }}"><i class="{{ item.icon }} fa-fw"></i> {{ item.label }}</a>
                         {% elseif item.type == "separator" %}
                         <div class="dropdown-divider"></div>
                         {% endif %}

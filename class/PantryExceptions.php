@@ -45,3 +45,11 @@ class PantryGetRandomDataParamNotSecureException extends PantryException {}
 class PantryUserNotSavedException extends PantryException {}
 
 class PantryUserNotDeletedException extends PantryException {}
+
+class PantryRecipeNotFoundException extends PantryException {}
+
+class PantryCourseNotFoundException extends PantryException {}
+
+class PantryCuisineNotFoundException extends PantryException {}
+
+class PantryImageNotFoundException extends PantryException {}

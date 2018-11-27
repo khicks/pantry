@@ -1,9 +1,12 @@
 {
   "require": {
     "php": ">=7.0",
+    "ext-json": "*",
     "ext-openssl": "*",
     "ext-pdo": "*",
     "altorouter/altorouter": "^1.2",
-    "twig/twig": "^2.5"
+    "twig/twig": "^2.5",
+    "erusev/parsedown": "^1.7",
+    "ezyang/htmlpurifier": "^4.10"
   }
 }

@@ -154,4 +154,87 @@ class PantryAPI extends PantryApp {
         $pantry->response = new PantryAPISuccess("LOGOUT_SUCCESS", $pantry->language['LOGOUT_SUCCESS']);
         $pantry->response->respond();
     }
+
+    public static function getRecipe($slug) {
+        $pantry = new self(false);
+        try {
+            $recipe = PantryRecipe::constructBySlug($slug);
+        }
+        catch (PantryRecipeNotFoundException $e) {
+            $pantry->response = new PantryAPIError(404, "RECIPE_NOT_FOUND", $pantry->language['RECIPE_NOT_FOUND']);
+            $pantry->response->respond();
+            die();
+        }
+
+        $pantry->response = new PantryAPISuccess("RECIPE_SUCCESS", $pantry->language['RECIPE_SUCCESS'], [
+            'id' => $recipe->getID(),
+            'created' => $recipe->getCreated(),
+            'updated' => $recipe->getUpdated(),
+            'title' => $recipe->getTitle(),
+            'slug' => $recipe->getSlug(),
+            'blurb' => $recipe->getBlurb(),
+            'description_raw' => $recipe->getDescription(),
+            'description_html' => $recipe->getDescriptionHTML(),
+            'servings' => $recipe->getServings(),
+            'prep_time' => $recipe->getPrepTime(),
+            'cook_time' => $recipe->getCookTime(),
+            'ingredients' => $recipe->getIngredients(),
+            'directions_raw' => $recipe->getDirections(),
+            'directions_html' => $recipe->getDirectionsHTML(),
+            'source' => $recipe->getSource(),
+            'is_public' => $recipe->getIsPublic(),
+            'author' => (is_null($recipe->getAuthor())) ? null : [
+                'username' => $recipe->getAuthor()->getusername(),
+                'first_name' => $recipe->getAuthor()->getFirstName(),
+                'last_name' => $recipe->getAuthor()->getLastName(),
+                'display_name' => $recipe->getAuthor()->getDisplayName()
+            ],
+            'course' => (is_null($recipe->getCourse())) ? null : [
+                'title' => $recipe->getCourse()->getTitle(),
+                'slug' => $recipe->getCourse()->getSlug()
+            ],
+            'cuisine' => (is_null($recipe->getCuisine())) ? null : [
+                'title' => $recipe->getCuisine()->getTitle(),
+                'slug' => $recipe->getCuisine()->getSlug()
+            ],
+            'image' => (is_null($recipe->getImage())) ? null : [
+                'path' => $recipe->getImage()->getWebPath($recipe->getSlug())
+            ]
+        ]);
+        $pantry->response->respond();
+    }
+
+    public static function getImage($img) {
+        $pantry = new self(false);
+        $img_elements = explode(".", $img);
+        try {
+            $recipe = PantryRecipe::constructBySlug($img_elements[0]);
+        }
+        catch (PantryRecipeNotFoundException $e) {
+            $pantry->response = new PantryAPIError(404, "RECIPE_NOT_FOUND", $pantry->language['RECIPE_NOT_FOUND']);
+            $pantry->response->respond();
+            die();
+        }
+
+        $image = $recipe->getImage();
+
+        if (!is_a($image, "PantryImage")) {
+            $pantry->response = new PantryAPIError(404, "IMAGE_NOT_FOUND", $pantry->language['IMAGE_NOT_FOUND']);
+            $pantry->response->respond();
+            die();
+        }
+
+        if ($image->getExtension() !== $img_elements[1]) {
+            $pantry->response = new PantryAPIError(404, "IMAGE_EXTENSION_INVALID", $pantry->language['IMAGE_EXTENSION_INVALID']);
+            $pantry->response->respond();
+            die();
+        }
+
+        if (isset($_GET['download']) && !in_array(strtolower($_GET['download']), ["0", "false"], true)) {
+            $image->download($img);
+        }
+        else {
+            $image->display();
+        }
+    }
 }

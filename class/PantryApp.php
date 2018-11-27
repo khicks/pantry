@@ -28,7 +28,11 @@ class PantryApp {
             "/class/PantryCurrentUserSession.php",
             "/class/PantryTwoFactorKey.php",
             "/class/PantryTwoFactorLogin.php",
-            "/class/PantryTwoFactorSession.php"
+            "/class/PantryTwoFactorSession.php",
+            "/class/PantryRecipe.php",
+            "/class/PantryCourse.php",
+            "/class/PantryCuisine.php",
+            "/class/PantryImage.php"
         ];
 
         foreach ($load_files as $load_file) {

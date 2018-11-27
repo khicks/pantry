@@ -133,17 +133,10 @@ class PantryUser {
 
     public function setFirstName($first_name) {
         $this->first_name = trim($first_name);
-        if (empty($first_name)) {
-            $this->first_name = null;
-        }
-        $this->first_name = $first_name;
     }
 
     public function setLastName($last_name) {
-        if (empty($last_name)) {
-            $this->last_name = null;
-        }
-        $this->last_name = $last_name;
+        $this->last_name = trim($last_name);
     }
 
     public function save() {
