@@ -35,3 +35,10 @@
 #recipe-ingredients-none {
     display: none;
 }
+
+#recipe-source {
+    display: none;
+}
+#recipe-source a {
+    color: #6c757d;
+}

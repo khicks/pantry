@@ -159,12 +159,18 @@ class PantryAPI extends PantryApp {
         $pantry = new self(false);
         try {
             $recipe = PantryRecipe::constructBySlug($slug);
+            $permission = PantryRecipePermission::constructBySubjectAndObject($recipe, $pantry->current_user);
+            if ($permission->getLevel() < 1) {
+                throw new PantryRecipeNotFoundException("No permission.");
+            }
         }
         catch (PantryRecipeNotFoundException $e) {
             $pantry->response = new PantryAPIError(404, "RECIPE_NOT_FOUND", $pantry->language['RECIPE_NOT_FOUND']);
             $pantry->response->respond();
             die();
         }
+
+        $recipe_permission = PantryRecipePermission::constructBySubjectAndObject($recipe, $pantry->current_user);
 
         $pantry->response = new PantryAPISuccess("RECIPE_SUCCESS", $pantry->language['RECIPE_SUCCESS'], [
             'id' => $recipe->getID(),
@@ -178,11 +184,13 @@ class PantryAPI extends PantryApp {
             'servings' => $recipe->getServings(),
             'prep_time' => $recipe->getPrepTime(),
             'cook_time' => $recipe->getCookTime(),
-            'ingredients' => $recipe->getIngredients(),
+            'ingredients_raw' => $recipe->getIngredients(),
+            'ingredients_html' => $recipe->getIngredientsHTML(),
             'directions_raw' => $recipe->getDirections(),
             'directions_html' => $recipe->getDirectionsHTML(),
             'source' => $recipe->getSource(),
             'is_public' => $recipe->getIsPublic(),
+            'permission_level' => $recipe_permission->getLevel(),
             'author' => (is_null($recipe->getAuthor())) ? null : [
                 'username' => $recipe->getAuthor()->getusername(),
                 'first_name' => $recipe->getAuthor()->getFirstName(),
@@ -199,6 +207,14 @@ class PantryAPI extends PantryApp {
             ],
             'image' => (is_null($recipe->getImage())) ? null : [
                 'path' => $recipe->getImage()->getWebPath($recipe->getSlug())
+            ],
+            'lang' => [
+                'day' => $pantry->language['DAY'],
+                'days' => $pantry->language['DAYS'],
+                'hour' => $pantry->language['HOUR'],
+                'hours' => $pantry->language['HOURS'],
+                'minute' => $pantry->language['MINUTE'],
+                'minutes' => $pantry->language['MINUTES'],
             ]
         ]);
         $pantry->response->respond();
@@ -236,5 +252,46 @@ class PantryAPI extends PantryApp {
         else {
             $image->display();
         }
+    }
+
+    public static function listCourses() {
+        $pantry = new self();
+
+        $search = (!empty($_GET['search'])) ? $_GET['search'] : null;
+        $sort_by = (!empty($_GET['sort_by'])) ? $_GET['sort_by'] : "title";
+        $courses = PantryCourse::listCourses($search, $sort_by);
+
+        $pantry->response = new PantryAPISuccess("LIST_COURSES_SUCCESS", $pantry->language['LIST_COURSES_SUCCESS'], [
+            'courses' => $courses
+        ]);
+        $pantry->response->respond();
+    }
+
+    public static function editRecipe() {
+        $pantry = new self();
+
+        try {
+            $recipe = new PantryRecipe($_POST['id']);
+            $permission = PantryRecipePermission::constructBySubjectAndObject($recipe, $pantry->current_user);
+            if ($permission->getLevel() < 1) {
+                throw new PantryRecipeNotFoundException("No read permission.");
+            }
+            if ($permission->getLevel() < 2) {
+                throw new PantryRecipePermissionDeniedException("No write permission.");
+            }
+        }
+        catch (PantryRecipeNotFoundException $e) {
+            $pantry->response = new PantryAPIError(404, "RECIPE_NOT_FOUND", $pantry->language['RECIPE_NOT_FOUND']);
+            $pantry->response->respond();
+            die();
+        }
+        catch (PantryRecipePermissionDeniedException $e) {
+            $pantry->response = new PantryAPIError(403, "ACCESS_DENIED", $pantry->language['ACCESS_DENIED']);
+            $pantry->response->respond();
+            die();
+        }
+
+        $pantry->response = new PantryAPISuccess();
+        $pantry->response->respond();
     }
 }

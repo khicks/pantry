@@ -1,0 +1,24 @@
+#edit-recipe-form {
+    display: none;
+}
+
+.field-feedback-icon,
+span.field-feedback-message {
+    display: none;
+}
+
+.field-feedback-red {
+    color: #dc3545;
+}
+
+.field-feedback-green {
+    color: #28a745;
+}
+
+#edit-recipe-form label {
+    font-weight: bold;
+}
+
+#no-permission-alert {
+    display: none;
+}

@@ -8,8 +8,18 @@
 
 <div id="recipe-wrapper" class="card">
     <div class="card-header">
-        <h1 id="recipe-title" class="card-title"></h1>
-        <h6 id="recipe-blurb" class="card-subtitle"></h6>
+        <div class="row">
+            <div class="col-12 col-lg-9 mb-2 mb-lg-0">
+                <h1 id="recipe-title" class="card-title"></h1>
+                <h6 id="recipe-blurb" class="card-subtitle"></h6>
+            </div>
+            <div class="col-12 col-lg-3 d-print-none">
+                <div class="float-lg-right">
+                    <a id="recipe-edit-button" class="btn btn-primary" role="button"><i class="fas fa-pencil-alt"></i> {{ lang.EDIT }}</a>
+                    <button id="recipe-delete-button" type="button" class="btn btn-danger"><i class="fas fa-fw fa-trash-alt"></i> {{ lang.DELETE }}</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="card-body">
@@ -31,9 +41,9 @@
                             </thead>
                             <tbody>
                             <tr>
-                                <td><span id="recipe-servings">1</span></td>
-                                <td><span id="recipe-prep-time">10</span> {{ lang.MINUTES }}</td>
-                                <td><span id="recipe-cook-time">20</span> {{ lang.MINUTES }}</td>
+                                <td><span id="recipe-servings"></span></td>
+                                <td><span id="recipe-prep-time"></span></td>
+                                <td><span id="recipe-cook-time"></span></td>
                             </tr>
                             </tbody>
                         </table>
@@ -48,19 +58,20 @@
         </div>
         <hr>
         <div id="recipe-row-2" class="row">
-            <div id="recipe-ingredients-col" class="col-sm-4">
+            <div id="recipe-ingredients-col" class="col-12 col-md-4">
                 <h3>{{ lang.INGREDIENTS }}</h3>
                 <div id="recipe-ingredients" class="card-text"></div>
                 <div id="recipe-ingredients-none" class="card-text"><i>{{ lang.NONE }}</i></div>
             </div>
-            <div class="col-sm-8">
+            <div class="col-12 col-md-8">
                 <h3>{{ lang.DIRECTIONS }}</h3>
                 <div id="recipe-directions"></div>
             </div>
         </div>
     </div>
     <div class="card-footer text-muted">
-        <b>{{ lang.AUTHOR }}:</b> <span id="recipe-author-none">{{ lang.NONE }}</span><span id="recipe-author-name"></span>
+        <b>{{ lang.AUTHOR }}:</b> <span id="recipe-author-none">{{ lang.NONE }}</span><span id="recipe-author-name"></span><br/>
+        <span id="recipe-source"><b>{{ lang.SOURCE }}:</b> <a id="recipe-source-link" target="_blank"></a></span>
     </div>
 </div>
 

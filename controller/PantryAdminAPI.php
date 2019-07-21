@@ -17,7 +17,7 @@ class PantryAdminAPI extends PantryAPI {
         $users = PantryUser::listUsers($search, $sort_by);
 
         foreach ($users as &$user) {
-            if ($user['username'] === $pantry->current_user->getUsername()) {
+            if ($user['id'] === $pantry->current_user->getID()) {
                 $user['is_self'] = true;
                 break;
             }
@@ -142,7 +142,7 @@ class PantryAdminAPI extends PantryAPI {
                     'message' => $pantry->language['ADMIN_USERS_ERROR_FIRSTNAME_LONG']
                 ];
             }
-            elseif (!preg_match("/^[A-Za-z0-9-'\"\\s]*$/", $first_name)) {
+            elseif (!preg_match("/^[A-Za-zÀ-ÖØ-öø-ÿ0-9-'\"\\s]*$/", $first_name)) {
                 $errors['first_name'] = [
                     'code' => "invalid",
                     'message' => $pantry->language['ADMIN_USERS_ERROR_FIRSTNAME_INVALID']
@@ -159,7 +159,7 @@ class PantryAdminAPI extends PantryAPI {
                     'message' => $pantry->language['ADMIN_USERS_ERROR_LASTNAME_LONG']
                 ];
             }
-            elseif (!preg_match("/^[A-Za-z0-9-'\"\\s]*$/", $last_name)) {
+            elseif (!preg_match("/^[A-Za-zÀ-ÖØ-öø-ÿ0-9-'\"\\s]*$/", $last_name)) {
                 $errors['last_name'] = [
                     'code' => "invalid",
                     'message' => $pantry->language['ADMIN_USERS_ERROR_LASTNAME_INVALID']
@@ -262,7 +262,7 @@ class PantryAdminAPI extends PantryAPI {
                     'message' => $pantry->language['ADMIN_USERS_ERROR_FIRSTNAME_LONG']
                 ];
             }
-            elseif (!preg_match("/^[A-Za-z0-9-'\"\\s]*$/", $first_name)) {
+            elseif (!preg_match("/^[A-Za-zÀ-ÖØ-öø-ÿ0-9-'\"\\s]*$/", $first_name)) {
                 $errors['first_name'] = [
                     'code' => "invalid",
                     'message' => $pantry->language['ADMIN_USERS_ERROR_FIRSTNAME_INVALID']
@@ -276,10 +276,10 @@ class PantryAdminAPI extends PantryAPI {
             if (strlen($last_name) > 32) {
                 $errors['last_name'] = [
                     'code' => "long",
-                    'message' => $pantry->language['ADMIN_USERS_ERROR_FIRSTNAME_LONG']
+                    'message' => $pantry->language['ADMIN_USERS_ERROR_LASTNAME_LONG']
                 ];
             }
-            elseif (!preg_match("/^[A-Za-z0-9-'\"\\s]*$/", $last_name)) {
+            elseif (!preg_match("/^[A-Za-zÀ-ÖØ-öø-ÿ0-9-'\"\\s]*$/", $last_name)) {
                 $errors['last_name'] = [
                     'code' => "invalid",
                     'message' => $pantry->language['ADMIN_USERS_ERROR_LASTNAME_INVALID']

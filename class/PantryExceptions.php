@@ -53,3 +53,7 @@ class PantryCourseNotFoundException extends PantryException {}
 class PantryCuisineNotFoundException extends PantryException {}
 
 class PantryImageNotFoundException extends PantryException {}
+
+class PantryRecipePermissionNotFoundException extends PantryException {}
+
+class PantryRecipePermissionDeniedException extends PantryException {}

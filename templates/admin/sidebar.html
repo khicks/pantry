@@ -2,7 +2,7 @@
     <ul class="nav flex-column">
         {% for key,item in navigation.sidebar %}
         <li class="nav-item">
-            <a class="nav-link {% if item.active %}active{% endif %}" href="{{ item.href }}"><i class="fas fa-{{ item.icon }}"></i> {{ item.label }}</a>
+            <a class="nav-link {% if item.active %}active{% endif %}" href="{{ item.href }}"><i class="fas fa-fw fa-{{ item.icon }}"></i> {{ item.label }}</a>
         </li>
         {% endfor %}
     </ul>

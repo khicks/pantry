@@ -1,0 +1,14 @@
+@media (min-width: 992px) {
+    #cc-wrapper > div:first-child {
+        border-right: 1px solid #d9d9d9;
+    }
+}
+
+.table-loading {
+    font-size: 6em;
+    text-align: center;
+}
+
+td.action-buttons {
+    text-align: right;
+}

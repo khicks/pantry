@@ -50,8 +50,7 @@ class PantryRecipe {
                 $this->servings = intval($recipe_row['servings'], 10);
                 $this->prep_time = intval($recipe_row['prep_time'], 10);
                 $this->cook_time = intval($recipe_row['cook_time'], 10);
-                $this->ingredients = json_decode($recipe_row['ingredients']);
-                Pantry::$logger->critical("Ingredients is ".gettype($this->ingredients));
+                $this->ingredients = $recipe_row['ingredients'];
                 $this->directions = $recipe_row['directions'];
                 $this->source = $recipe_row['source'];
                 $this->is_public = boolval($recipe_row['public']);
@@ -181,6 +180,10 @@ class PantryRecipe {
         return $this->ingredients;
     }
 
+    public function getIngredientsHTML() {
+        return Pantry::$parsedown->text($this->ingredients);
+    }
+
     public function getDirections() {
         return $this->directions;
     }
@@ -211,5 +214,20 @@ class PantryRecipe {
 
     public function getImage() {
         return $this->image;
+    }
+
+    public static function getValidationExpression($var_name) {
+        switch ($var_name) {
+            case 'id':
+                return "/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/";
+            case 'title':
+                return '/^[\p{L}!@#$%&*()\'":?,._ -]{1,64}$/';
+            case 'slug':
+                return '/^[a-z][a-z0-9-]{0,30}[a-z0-9]$/';
+            case 'blurb':
+                return '/^[\p{L}!@#$%&*()\'":?,._ -]{1,100}$/';
+            default:
+                return '/^$/';
+        }
     }
 }

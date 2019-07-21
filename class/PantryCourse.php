@@ -68,4 +68,55 @@ class PantryCourse {
     public function getSlug() {
         return $this->slug;
     }
+
+    public function setTitle($title) {
+        $this->title = $title;
+    }
+
+    public function setSlug($slug) {
+        $this->slug = $slug;
+    }
+
+    public function save() {
+        try {
+            if ($this->id) {
+
+            }
+        }
+        catch (PantryCourseNotSavedException $e) {
+            Pantry::$logger->emergency($e->getMessage());
+            die();
+        }
+    }
+
+    public function purgeFromRecipes() {
+        if ($this->id) {
+            $sql_purge_recipes = Pantry::$db->prepare("UPDATE recipes SET course_id=NULL WHERE course_id=:id");
+            $sql_purge_recipes->bindValue(':id', $this->id, PDO::PARAM_STR);
+            $sql_purge_recipes->execute();
+        }
+    }
+
+    public static function listCourses($search = "", $sort_by = "title") {
+        $sort_map = [
+            'title' => "title, slug",
+            'slug' => "slug"
+        ];
+        $sort_query = (array_key_exists($sort_by, $sort_map)) ? $sort_map[$sort_by] : "title";
+
+        $sql_list_courses = Pantry::$db->prepare("SELECT id, title, slug FROM courses WHERE title LIKE :search OR slug LIKE :search ORDER BY {$sort_query}");
+        $sql_list_courses->bindValue(':search', "{$search}%", PDO::PARAM_STR);
+        $sql_list_courses->execute();
+
+        $courses = [];
+        while ($course_row = $sql_list_courses->fetch(PDO::FETCH_ASSOC)) {
+            $courses[] = [
+                'id' => $course_row['id'],
+                'title' => $course_row['title'],
+                'slug' => $course_row['slug']
+            ];
+        }
+
+        return $courses;
+    }
 }

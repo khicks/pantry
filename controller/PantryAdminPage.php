@@ -47,7 +47,7 @@ class PantryAdminPage extends PantryPage {
                 'css' => [
                     'external' => [],
                     'root' => [
-                        "bootstrap.min.css",
+                        "admin/bootstrap4.min.css",
                         "admin/admin.css"
                     ]
                 ],
@@ -56,7 +56,7 @@ class PantryAdminPage extends PantryPage {
                     'root' => [
                         "jquery-3.3.1.min.js",
                         "popper.min.js",
-                        "bootstrap.min.js",
+                        "admin/bootstrap4.min.js",
                         "fontawesome-all.min.js",
                         "admin/admin.js"
                     ]
@@ -82,6 +82,13 @@ class PantryAdminPage extends PantryPage {
                         'href' => Pantry::$web_root."/admin",
                         'icon' => "columns",
                         'label' => $this->language['ADMIN_DASHBOARD_BUTTON'],
+                        'active' => false
+                    ],
+                    'courses_cuisines' => [
+                        'type' => "link",
+                        'href' => Pantry::$web_root."/admin/courses-cuisines",
+                        'icon' => "utensils",
+                        'label' => $this->language['ADMIN_COURSES_AND_CUISINES'],
                         'active' => false
                     ],
                     'users' => [
@@ -164,6 +171,40 @@ class PantryAdminPage extends PantryPage {
         ];
 
         $pantry->displayTemplate("dashboard.html", $params);
+    }
+
+    public static function coursesCuisines() {
+        $pantry = new self();
+
+        $params = [
+            'title' => $pantry->language['ADMIN_COURSES_AND_CUISINES'],
+            'include' => [
+                'css' => [
+                    'root' => [
+                        "admin/courses-cuisines.css"
+                    ]
+                ],
+                'js' => [
+                    'root' => [
+                        "admin/courses-cuisines.js"
+                    ]
+                ]
+            ],
+            'navigation' => [
+                'sidebar' => [
+                    'courses_cuisines' => [
+                        'active' => true
+                    ]
+                ],
+                'breadcrumbs' => [
+                    'courses_cuisines' => [
+                        'label' => $pantry->language['ADMIN_COURSES_AND_CUISINES']
+                    ]
+                ]
+            ]
+        ];
+
+        $pantry->displayTemplate("courses-cuisines.html", $params);
     }
 
     public static function users() {

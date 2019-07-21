@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div id="cc-wrapper" class="row">
+    <div class="col-12 col-lg-6">
+        <div class="courses-table-wrapper">
+            <h2>{{ lang.COURSES }}</h2>
+            <form id="courses-table-header" class="form-row mb-3">
+                <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                    <input type="text" id="courses-search" class="form-control" placeholder="{{ lang.ADMIN_CC_SEARCH_FIELD }}">
+                </div>
+                <div class="col-12 col-sm-8 col-lg-3 mb-2 mb-sm-0">
+                    <select id="courses-sort-by" class="custom-select" title="{{ lang.ADMIN_SORT_BY_FIELD_LABEL }}">
+                        <option selected disabled>{{ lang.ADMIN_SORT_BY_FIELD_LABEL }}</option>
+                        <option value="title">{{ lang.TITLE }}</option>
+                        <option value="slug">{{ lang.SLUG }}</option>
+                    </select>
+                </div>
+                <div class="col-12 col-sm-4 col-lg-3">
+                    <a class="btn btn-success btn-block" href="{{ meta.web_root }}/admin/courses/create"><i class="fas fa-plus"></i> {{ lang.NEW }}</a>
+                </div>
+            </form>
+            <div id="courses-table-loading" class="table-loading">
+                <i class="fas fa-sync fa-spin"></i>
+            </div>
+            <div id="courses-table" class="table-responsive-lg">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col">{{ lang.TITLE }}</th>
+                        <th scope="col">{{ lang.SLUG }}</th>
+                        <th class="fit"></th>
+                    </tr>
+                    </thead>
+                    <tbody id="courses-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-6">
+        <div class="cuisines-table-wrapper">
+            <h2>{{ lang.CUISINES }}</h2>
+            <form id="cuisines-table-header" class="form-row mb-3">
+                <div class="col-12 col-lg-6 mb-2 mb-lg-0">
+                    <input type="text" id="cuisines-search" class="form-control" placeholder="{{ lang.ADMIN_CC_SEARCH_FIELD }}">
+                </div>
+                <div class="col-12 col-sm-8 col-lg-3 mb-2 mb-sm-0">
+                    <select id="cuisines-sort-by" class="custom-select" title="{{ lang.ADMIN_SORT_BY_FIELD_LABEL }}">
+                        <option selected disabled>{{ lang.ADMIN_SORT_BY_FIELD_LABEL }}</option>
+                        <option value="title">{{ lang.TITLE }}</option>
+                        <option value="slug">{{ lang.SLUG }}</option>
+                    </select>
+                </div>
+                <div class="col-12 col-sm-4 col-lg-3">
+                    <a class="btn btn-success btn-block" href="{{ meta.web_root }}/admin/courses/create"><i class="fas fa-plus"></i> {{ lang.NEW }}</a>
+                </div>
+            </form>
+            <div id="cuisines-table-loading" class="table-loading">
+                <i class="fas fa-sync fa-spin"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

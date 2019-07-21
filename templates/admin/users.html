@@ -4,12 +4,12 @@
 
 <div id="users-table-wrapper">
     <form id="user-table-header" class="form-row mb-3">
-        <div class="col-xs-12 col-lg-8 mb-2 mb-lg-0">
+        <div class="col-12 col-lg-8 mb-2 mb-lg-0">
             <input type="text" id="search" class="form-control" placeholder="{{ lang.ADMIN_USERS_SEARCH_FIELD }}">
         </div>
-        <div class="col-xs-12 col-sm-8 col-lg-2 mb-2 mb-sm-0">
-            <select id="sort-by" class="custom-select" title="{{ lang.ADMIN_USERS_SORT_BY_FIELD_LABEL }}">
-                <option selected disabled>{{ lang.ADMIN_USERS_SORT_BY_FIELD_LABEL }}</option>
+        <div class="col-12 col-sm-8 col-lg-2 mb-2 mb-sm-0">
+            <select id="sort-by" class="custom-select" title="{{ lang.ADMIN_SORT_BY_FIELD_LABEL }}">
+                <option selected disabled>{{ lang.ADMIN_SORT_BY_FIELD_LABEL }}</option>
                 <option value="username">{{ lang.ADMIN_USERS_SORT_BY_FIELD_USERNAME }}</option>
                 <option value="created">{{ lang.ADMIN_USERS_SORT_BY_FIELD_CREATED }}</option>
                 <option value="login">{{ lang.ADMIN_USERS_SORT_BY_FIELD_LASTLOGIN }}</option>
@@ -17,7 +17,7 @@
                 <option value="disabled">{{ lang.ADMIN_USERS_SORT_BY_FIELD_DISABLED }}</option>
             </select>
         </div>
-        <div class="col-xs-12 col-sm-4 col-lg-2">
+        <div class="col-12 col-sm-4 col-lg-2">
             <a class="btn btn-success btn-block" href="{{ meta.web_root }}/admin/users/create"><i class="fas fa-plus"></i> {{ lang.ADMIN_USERS_CREATE_BUTTON }}</a>
         </div>
     </form>

@@ -32,7 +32,8 @@ class PantryApp {
             "/class/PantryRecipe.php",
             "/class/PantryCourse.php",
             "/class/PantryCuisine.php",
-            "/class/PantryImage.php"
+            "/class/PantryImage.php",
+            "/class/PantryRecipePermission.php"
         ];
 
         foreach ($load_files as $load_file) {

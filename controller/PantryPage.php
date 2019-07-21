@@ -11,15 +11,15 @@ class PantryPage extends PantryApp {
 
     private function loadTwig() {
         $templates[] = Pantry::$php_root."/templates";
-        $loader = new Twig_Loader_Filesystem($templates);
-        $this->twig = new Twig_Environment($loader);
+        $loader = new Twig\Loader\FilesystemLoader($templates);
+        $this->twig = new Twig\Environment($loader);
     }
 
     public function renderTemplate($filename, $params = []) {
         try {
             return $this->twig->render($filename, $this->getTemplateParams($params));
         }
-        catch (Twig_Error $e) {
+        catch (Twig\Error\Error $e) {
             Pantry::$logger->critical("Could not render templates: $filename");
             die();
         }
@@ -29,7 +29,7 @@ class PantryPage extends PantryApp {
         try {
             $this->twig->display($filename, $this->getTemplateParams($params));
         }
-        catch (Twig_Error $e) {
+        catch (Twig\Error\Error $e) {
             Pantry::$logger->debug($e->getMessage());
             Pantry::$logger->critical("Could not display templates: $filename");
             die();
@@ -48,7 +48,7 @@ class PantryPage extends PantryApp {
                 'css' => [
                     'external' => [],
                     'root' => [
-                        "bootstrap.min.css",
+                        "bootstrap4.min.css",
                         "pantry.css"
                     ]
                 ],
@@ -57,7 +57,7 @@ class PantryPage extends PantryApp {
                     'root' => [
                         "jquery-3.3.1.min.js",
                         "popper.min.js",
-                        "bootstrap.min.js",
+                        "bootstrap4.min.js",
                         "fontawesome-all.min.js"
                     ]
                 ]
@@ -265,7 +265,7 @@ class PantryPage extends PantryApp {
         $params = [
             'title' => $pantry->language['VIEW_RECIPE_TITLE'],
             'meta' => [
-                'recipe_slug' => $slug
+                'recipe_slug' => $slug,
             ],
             'include' => [
                 'css' => [
@@ -294,8 +294,45 @@ class PantryPage extends PantryApp {
         $pantry->displayTemplate("recipes-view.html", $params);
     }
 
-    public static function test() {
+    public static function editRecipe($slug) {
         $pantry = new self();
-        echo Pantry::generateUUID();
+        $pantry->current_session->trackPage();
+
+        $params = [
+            'title' => $pantry->language['EDIT_RECIPE_TITLE'],
+            'meta' => [
+                'recipe_slug' => $slug,
+            ],
+            'include' => [
+                'css' => [
+                    'root' => [
+                        "recipes-edit.css"
+                    ]
+                ],
+                'js' => [
+                    'root' => [
+                        "recipes-edit.js"
+                    ]
+                ]
+            ],
+            'display' => [
+                'title' => false
+            ],
+            'navigation' => [
+                'left' => [
+                    'recipes' => [
+                        'active' => true
+                    ]
+                ]
+            ]
+        ];
+
+        $pantry->displayTemplate("recipes-edit.html", $params);
+    }
+
+    public static function test() {
+//        $pantry = new self();
+//        echo Pantry::generateUUID();
+        echo (preg_match('/^\p{L}*$/', $_GET['a'])) ? "true" : "false";
     }
 }
