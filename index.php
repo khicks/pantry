@@ -27,6 +27,8 @@ try {
     // Admin pages
     $router->map('GET', '/admin', 'PantryAdminPage::dashboard');
     $router->map('GET', '/admin/courses-cuisines', 'PantryAdminPage::coursesCuisines');
+    $router->map('GET', '/admin/courses/[slug:slug]/edit', 'PantryAdminPage::editCourse');
+    $router->map('GET', '/admin/cuisines/[slug:slug]/edit', 'PantryAdminPage::editCuisine');
     $router->map('GET', '/admin/users', 'PantryAdminPage::users');
     $router->map('GET', '/admin/users/create', 'PantryAdminPage::createUser');
     $router->map('GET', '/admin/users/edit/[un:username]', 'PantryAdminPage::editUser');
@@ -38,6 +40,8 @@ try {
     $router->map('POST', '/api/v1/logout', 'PantryAPI::logout');
     $router->map('GET', '/api/v1/recipes/[slug:slug]', 'PantryAPI::getRecipe');
     $router->map('GET', '/api/v1/courses', 'PantryAPI::listCourses');
+    $router->map('GET', '/api/v1/cuisines', 'PantryAPI::listCuisines');
+    $router->map('GET', '/api/v1/courses-cuisines', 'PantryAPI::listCoursesAndCuisines');
     $router->map('POST', '/api/v1/recipes/edit', 'PantryAPI::editRecipe');
 
     // Admin API

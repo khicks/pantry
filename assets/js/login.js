@@ -48,7 +48,7 @@ $(function() {
                 else {
                     window.location.replace(webRoot);
                 }
-            })
+            });
         });
     }
 

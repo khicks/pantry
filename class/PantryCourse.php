@@ -97,7 +97,7 @@ class PantryCourse {
         }
     }
 
-    public static function listCourses($search = "", $sort_by = "title") {
+    public static function list($search = "", $sort_by = "title") {
         $sort_map = [
             'title' => "title, slug",
             'slug' => "slug"

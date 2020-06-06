@@ -1,18 +1,22 @@
 $(function() {
     const webRoot = $("meta[name=web_root]").attr("content");
-    const csrfToken = $('meta[name=csrf_token]').attr("content");
+    const csrfToken = $("meta[name=csrf_token]").attr("content");
     const recipeSlug = $("meta[name=recipe_slug]").attr("content");
 
     const elements = {
         form: $("#edit-recipe-form"),
         loading: $("#main-loading-wheel"),
-        select_fields: $(".select-field"),
         buttons: {
             cancel: $("#cancel-button"),
             save: {
                 button: $("#recipe-save-button"),
                 icon: function() { return $("#recipe-save-button-icon") },
             }
+        },
+        fieldGroups: {
+            select: $("select.form-control"),
+            text: $("input.form-control"),
+            textarea: $("textarea.form-control"),
         },
         fields: {
             id: {
@@ -57,6 +61,22 @@ $(function() {
                 messages: {
                     all: $(".description-feedback-message"),
                     api: $("#description-feedback-message-api")
+                }
+            },
+            course: {
+                field: $("#course"),
+                icon: function() { return $("#course-feedback-icon"); },
+                messages: {
+                    all: $(".course-feedback-message"),
+                    api: $("#course-feedback-message-api")
+                }
+            },
+            cuisine: {
+                field: $("#cuisine"),
+                icon: function() { return $("#cuisine-feedback-icon"); },
+                messages: {
+                    all: $(".cuisine-feedback-message"),
+                    api: $("#cuisine-feedback-message-api")
                 }
             },
             servings: {
@@ -114,16 +134,19 @@ $(function() {
             elements.buttons.save.button.hide();
         }
 
-        elements.fields.id.field.val(response.data.id);
-        elements.fields.title.field.val(response.data.title);
-        elements.fields.slug.field.val(response.data.slug);
-        elements.fields.blurb.field.val(response.data.blurb);
+        $.each(['id', 'title', 'slug', 'blurb', 'servings'], function() {
+            elements.fields[this].field.val(response.data[this]);
+        });
         elements.fields.description.field.val(response.data.description_raw);
-        elements.fields.servings.field.val(response.data.servings);
         elements.fields.prepTime.field.val(response.data.prep_time);
         elements.fields.cookTime.field.val(response.data.cook_time);
         elements.fields.ingredients.field.val(response.data.ingredients_raw);
         elements.fields.directions.field.val(response.data.directions_raw);
+
+        if (response.data.course)
+            elements.fields.course.field.val(response.data.course.id);
+        if (response.data.cuisine)
+            elements.fields.cuisine.field.val(response.data.cuisine.id);
 
         elements.fields.slug.helpIcon().tooltip({
             container: "body",
@@ -141,7 +164,36 @@ $(function() {
         alert("recipe failed to load");
     };
 
+    /**
+     * @param response.data.courses
+     * @param response.data.cuisines
+     */
+    const onCCLoad = function(response) {
+        $.each(response.data.courses, function() {
+            console.log(this);
+            elements.fields.course.field.append($("<option />").val(this.id).text(this.title));
+        });
+        $.each(response.data.cuisines, function() {
+            console.log(this);
+            elements.fields.cuisine.field.append($("<option />").val(this.id).text(this.title));
+        });
+
+        $.ajax({
+            method: "GET",
+            url: webRoot + "/api/v1/recipes/" + recipeSlug,
+            success: onRecipeLoad,
+            error: onRecipeFail
+        });
+    };
+
+    const onCCFail = function() {
+        alert("courses-cuisines failed to load");
+    };
+
     const saveRecipe = function() {
+        $.each(elements.fieldGroups, function() {
+            this.prop('disabled', true);
+        });
         const icon = elements.buttons.save.icon;
         $(this).prop('disabled', true);
         icon().removeClass('fa-save').addClass('fa-sync fa-spin');
@@ -160,12 +212,22 @@ $(function() {
                 prep_time: elements.fields.prepTime.field.val(),
                 cook_time: elements.fields.cookTime.field.val(),
                 ingredients: elements.fields.ingredients.field.val(),
-                directions: elements.fields.directions.field.val()
+                directions: elements.fields.directions.field.val(),
+                course_id: elements.fields.course.field.val(),
+                cuisine_id: elements.fields.cuisine.field.val()
+            },
+            success: function() {
+                icon().removeClass('fa-sync fa-spin').addClass('fa-check');
+                $(".card-body").slideUp(function() {
+                    setTimeout(function() {
+                        window.location.replace(webRoot + "/recipes/" + elements.fields.slug.field.val());
+                    }, 500);
+                });
             }
         });
     };
 
-    elements.select_fields.on('focus', function() {
+    $(".select-field").on('focus', function() {
         $(this).select();
     });
 
@@ -173,8 +235,8 @@ $(function() {
 
     $.ajax({
         method: "GET",
-        url: webRoot + "/api/v1/recipes/" + recipeSlug,
-        success: onRecipeLoad,
-        error: onRecipeFail
+        url: webRoot + "/api/v1/courses-cuisines",
+        success: onCCLoad,
+        error: onCCFail,
     });
 });

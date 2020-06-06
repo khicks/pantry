@@ -93,6 +93,8 @@ return [
     'DELETE_USER_SUCCESS' => "User was successfully deleted.",
     'RECIPE_SUCCESS' => "Here is your recipe.",
     'LIST_COURSES_SUCCESS' => "Here are the courses.",
+    'LIST_CUISINES_SUCCESS' => "Here are the cuisines.",
+    'LIST_COURSES_CUISINES_SUCCESS' => "Here are the courses and cuisines.",
 
     // API error
     'INTERNAL_ERROR' => "Something went wrong on the server. Please contact your administrator or try again later.",
@@ -115,6 +117,7 @@ return [
     'IMAGE_NOT_FOUND' => "Recipe does not have an image.",
     'IMAGE_EXTENSION_INVALID' => "Recipe does not have an image with that extension.",
     'NOT_A_NUMBER' => "This field must be a number.",
+    'SLUG_UNAVAILABLE' => "The selected slug is unavailable.",
 
     // Admin pages
     'ADMIN_BRAND' => "Admin",
@@ -125,6 +128,10 @@ return [
     'ADMIN_SORT_BY_FIELD_LABEL' => "Sort by...",
     'ADMIN_COURSES_AND_CUISINES' => "Courses and Cuisines",
     'ADMIN_CC_SEARCH_FIELD' => "Search by name or slug",
+    'ADMIN_CC_DELETE_COURSE_TITLE' => "Delete course",
+    'ADMIN_CC_DELETE_COURSE_PROMPT' => "Are you sure you want to delete this course?",
+    'ADMIN_CC_DELETE_CUISINE_TITLE' => "Delete cuisine",
+    'ADMIN_CC_DELETE_CUISINE_PROMPT' => "Are you sure you want to delete this cuisine?",
     'ADMIN_USERS_BUTTON' => "Users",
     'ADMIN_USERS_TITLE' => "User Accounts",
     'ADMIN_USERS_USERNAME' => "Username",

@@ -48,7 +48,7 @@ class Pantry {
 
     private static function loadDirectories() {
         self::$php_root = dirname(dirname(__FILE__));
-        self::$web_root = dirname($_SERVER['SCRIPT_NAME']);
+	self::$web_root = dirname($_SERVER['SCRIPT_NAME']);
         self::$cookie_path = self::$web_root;
 
         if (self::$web_root === "/") {

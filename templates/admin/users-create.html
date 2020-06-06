@@ -72,10 +72,10 @@
 
     <div class="form-row justify-content-md-end">
         <div class="col-12 col-sm-6 col-md-auto mb-2">
-            <button type="button" id="create-user-button" class="btn btn-success btn-block"><i id="create-user-button-icon" class="fas fa-sync fa-spin"></i> <span id="create-user-button-text">{{ lang.ADMIN_CREATE_USER_BUTTON }}</span></button>
+            <a href="{{ meta.web_root }}/admin/users" id="cancel-button" class="btn btn-secondary btn-block">{{ lang.CANCEL }}</a>
         </div>
         <div class="col-12 col-sm-6 col-md-auto mb-2">
-            <a href="{{ meta.web_root }}/admin/users" id="cancel-button" class="btn btn-light btn-block">{{ lang.CANCEL }}</a>
+            <button type="button" id="create-user-button" class="btn btn-success btn-block"><i id="create-user-button-icon" class="fas fa-sync fa-spin"></i> <span id="create-user-button-text">{{ lang.ADMIN_CREATE_USER_BUTTON }}</span></button>
         </div>
     </div>
 </form>

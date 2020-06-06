@@ -216,6 +216,80 @@ class PantryRecipe {
         return $this->image;
     }
 
+    public function setTitle($title) {
+        $this->title = $title;
+    }
+
+    public function setSlug($slug) {
+        $this->slug = $slug;
+    }
+
+    public function setBlurb($blurb) {
+        $this->blurb = $blurb;
+    }
+
+    public function setDescription($description) {
+        $this->description = $description;
+    }
+
+    public function setServings($servings) {
+        $this->servings = (int)$servings;
+    }
+
+    public function setPrepTime($prep_time) {
+        $this->prep_time = (int)$prep_time;
+    }
+
+    public function setCookTime($cook_time) {
+        $this->cook_time = (int)$cook_time;
+    }
+
+    public function setIngredients($ingredients) {
+        $this->ingredients = $ingredients;
+    }
+
+    public function setDirections($directions) {
+        $this->directions = $directions;
+    }
+
+    public function setCourse(PantryCourse $course) {
+        $this->course = $course;
+    }
+
+    public function setCuisine(PantryCuisine $cuisine) {
+        $this->cuisine = $cuisine;
+    }
+
+    public function save() {
+        try {
+            if ($this->id) {
+                $sql_save_recipe = Pantry::$db->prepare("UPDATE recipes SET updated=NOW(), title=:title, slug=:slug, blurb=:blurb, description=:description, servings=:servings, prep_time=:prep_time, cook_time=:cook_time, ingredients=:ingredients, directions=:directions, course_id=:course_id, cuisine_id=:cuisine_id WHERE id=:id");
+                $sql_save_recipe->bindValue(':id', $this->id, PDO::PARAM_STR);
+                $sql_save_recipe->bindValue(':title', $this->title, PDO::PARAM_STR);
+                $sql_save_recipe->bindValue(':slug', $this->slug, PDO::PARAM_STR);
+                $sql_save_recipe->bindValue(':blurb', $this->blurb, PDO::PARAM_STR);
+                $sql_save_recipe->bindValue(':description', $this->description, PDO::PARAM_STR);
+                $sql_save_recipe->bindValue(':servings', $this->servings, PDO::PARAM_INT);
+                $sql_save_recipe->bindValue(':prep_time', $this->prep_time, PDO::PARAM_INT);
+                $sql_save_recipe->bindValue(':cook_time', $this->cook_time, PDO::PARAM_INT);
+                $sql_save_recipe->bindValue(':ingredients', $this->ingredients, PDO::PARAM_STR);
+                $sql_save_recipe->bindValue(':directions', $this->directions, PDO::PARAM_STR);
+                $sql_save_recipe->bindValue(':course_id', $this->course->getID(), PDO::PARAM_STR);
+                $sql_save_recipe->bindValue(':cuisine_id', $this->cuisine->getID(), PDO::PARAM_STR);
+                if (!$sql_save_recipe->execute()) {
+                    throw new PantryRecipeNotSavedException("Recipe {$this->slug} could not be saved.");
+                }
+            }
+            else {
+                throw new PantryRecipeNotSavedException("not implemented yet");
+            }
+        }
+        catch (PantryRecipeNotSavedException $e) {
+            Pantry::$logger->emergency($e->getMessage());
+            die();
+        }
+    }
+
     public static function getValidationExpression($var_name) {
         switch ($var_name) {
             case 'id':
@@ -229,5 +303,21 @@ class PantryRecipe {
             default:
                 return '/^$/';
         }
+    }
+
+    public static function checkSlugAvailable($slug, $id = null) {
+        $sql_check_slug = Pantry::$db->prepare("SELECT id FROM recipes WHERE slug=:slug");
+        $sql_check_slug->bindValue(':slug', $slug, PDO::PARAM_STR);
+        $sql_check_slug->execute();
+        if ($sql_check_slug->rowCount() === 0) {
+            return true;
+        }
+
+        if ($id) {
+            $row = $sql_check_slug->fetch(PDO::FETCH_ASSOC);
+            return ($row['id'] === $id);
+        }
+
+        return false;
     }
 }

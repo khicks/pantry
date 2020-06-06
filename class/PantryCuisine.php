@@ -68,4 +68,55 @@ class PantryCuisine {
     public function getSlug() {
         return $this->slug;
     }
+
+    public function setTitle($title) {
+        $this->title = $title;
+    }
+
+    public function setSlug($slug) {
+        $this->slug = $slug;
+    }
+
+    public function save() {
+        try {
+            if ($this->id) {
+
+            }
+        }
+        catch (PantryCuisineNotSavedException $e) {
+            Pantry::$logger->emergency($e->getMessage());
+            die();
+        }
+    }
+
+    public function purgeFromRecipes() {
+        if ($this->id) {
+            $sql_purge_recipes = Pantry::$db->prepare("UPDATE recipes SET cuisine_id=NULL WHERE cuisine_id=:id");
+            $sql_purge_recipes->bindValue(':id', $this->id, PDO::PARAM_STR);
+            $sql_purge_recipes->execute();
+        }
+    }
+
+    public static function list($search = "", $sort_by = "title") {
+        $sort_map = [
+            'title' => "title, slug",
+            'slug' => "slug"
+        ];
+        $sort_query = (array_key_exists($sort_by, $sort_map)) ? $sort_map[$sort_by] : "title";
+
+        $sql_list_cuisines = Pantry::$db->prepare("SELECT id, title, slug FROM cuisines WHERE title LIKE :search OR slug LIKE :search ORDER BY {$sort_query}");
+        $sql_list_cuisines->bindValue(':search', "{$search}%", PDO::PARAM_STR);
+        $sql_list_cuisines->execute();
+
+        $cuisines = [];
+        while ($cuisine_row = $sql_list_cuisines->fetch(PDO::FETCH_ASSOC)) {
+            $cuisines[] = [
+                'id' => $cuisine_row['id'],
+                'title' => $cuisine_row['title'],
+                'slug' => $cuisine_row['slug']
+            ];
+        }
+
+        return $cuisines;
+    }
 }

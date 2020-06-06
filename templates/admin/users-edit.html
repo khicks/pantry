@@ -80,10 +80,10 @@
             <button type="button" id="disable-twofactor-button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#disable-twofactor-modal"><i class="fas fa-minus-circle"></i> {{ lang.ADMIN_EDIT_USER_DISABLE_2FA }}</button>
         </div>
         <div class="col-12 col-sm-6 col-md-auto mb-2">
-            <button type="button" id="save-user-button" class="btn btn-primary btn-block"><i id="save-user-button-icon" class="fas fa-sync fa-spin"></i><span id="save-user-button-text"> {{ lang.SAVE }}</span></button>
+            <a href="{{ meta.web_root }}/admin/users" id="cancel-button" class="btn btn-secondary btn-block">{{ lang.CANCEL }}</a>
         </div>
         <div class="col-12 col-sm-6 col-md-auto mb-2">
-            <a href="{{ meta.web_root }}/admin/users" id="cancel-button" class="btn btn-light btn-block">{{ lang.CANCEL }}</a>
+            <button type="button" id="save-user-button" class="btn btn-primary btn-block"><i id="save-user-button-icon" class="fas fa-sync fa-spin"></i><span id="save-user-button-text"> {{ lang.SAVE }}</span></button>
         </div>
     </div>
 </form>
@@ -101,8 +101,8 @@
                 {{ lang.ADMIN_EDIT_USER_DISABLE_2FA_PROMPT }}
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ lang.CANCEL }}</button>
                 <button type="button" id="disable-twofactor-confirm-button" class="btn btn-danger"><i id="disable-twofactor-icon" class="fas fa-minus-circle"></i> {{ lang.ADMIN_EDIT_USER_DISABLE_2FA_SHORT }}</button>
-                <button type="button" class="btn" data-dismiss="modal">{{ lang.CANCEL }}</button>
             </div>
         </div>
     </div>

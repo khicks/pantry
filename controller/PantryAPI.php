@@ -198,10 +198,12 @@ class PantryAPI extends PantryApp {
                 'display_name' => $recipe->getAuthor()->getDisplayName()
             ],
             'course' => (is_null($recipe->getCourse())) ? null : [
+                'id' => $recipe->getCourse()->getID(),
                 'title' => $recipe->getCourse()->getTitle(),
                 'slug' => $recipe->getCourse()->getSlug()
             ],
             'cuisine' => (is_null($recipe->getCuisine())) ? null : [
+                'id' => $recipe->getCuisine()->getID(),
                 'title' => $recipe->getCuisine()->getTitle(),
                 'slug' => $recipe->getCuisine()->getSlug()
             ],
@@ -259,10 +261,39 @@ class PantryAPI extends PantryApp {
 
         $search = (!empty($_GET['search'])) ? $_GET['search'] : null;
         $sort_by = (!empty($_GET['sort_by'])) ? $_GET['sort_by'] : "title";
-        $courses = PantryCourse::listCourses($search, $sort_by);
+        $courses = PantryCourse::list($search, $sort_by);
 
         $pantry->response = new PantryAPISuccess("LIST_COURSES_SUCCESS", $pantry->language['LIST_COURSES_SUCCESS'], [
             'courses' => $courses
+        ]);
+        $pantry->response->respond();
+    }
+
+    public static function listCuisines() {
+        $pantry = new self();
+
+        $search = (!empty($_GET['search'])) ? $_GET['search'] : null;
+        $sort_by = (!empty($_GET['sort_by'])) ? $_GET['sort_by'] : "title";
+        $cuisines = PantryCuisine::list($search, $sort_by);
+
+        $pantry->response = new PantryAPISuccess("LIST_CUISINES_SUCCESS", $pantry->language['LIST_CUISINES_SUCCESS'], [
+            'cuisines' => $cuisines
+        ]);
+        $pantry->response->respond();
+    }
+
+    public static function listCoursesAndCuisines() {
+        $pantry = new self();
+
+        $search = (!empty($_GET['search'])) ? $_GET['search'] : null;
+        $sort_by = (!empty($_GET['sort_by'])) ? $_GET['sort_by'] : "title";
+
+        $courses = PantryCourse::list($search, $sort_by);
+        $cuisines = PantryCuisine::list($search, $sort_by);
+
+        $pantry->response = new PantryAPISuccess("LIST_COURSES_CUISINES_SUCCESS", $pantry->language['LIST_COURSES_CUISINES_SUCCESS'], [
+            'courses' => $courses,
+            'cuisines' => $cuisines
         ]);
         $pantry->response->respond();
     }
@@ -290,6 +321,25 @@ class PantryAPI extends PantryApp {
             $pantry->response->respond();
             die();
         }
+
+        if (!PantryRecipe::checkSlugAvailable($_POST['slug'], $_POST['id'])) {
+            $pantry->response = new PantryAPIError(422, "RECIPE_SLUG_UNAVAILABLE", $pantry->language['SLUG_UNAVAILABLE']);
+            $pantry->response->respond();
+        }
+
+        //TODO: Form security
+        $recipe->setTitle($_POST['title']);
+        $recipe->setSlug($_POST['slug']);
+        $recipe->setBlurb($_POST['blurb']);
+        $recipe->setDescription($_POST['description']);
+        $recipe->setServings($_POST['servings']);
+        $recipe->setPrepTime($_POST['prep_time']);
+        $recipe->setCookTime($_POST['cook_time']);
+        $recipe->setIngredients($_POST['ingredients']);
+        $recipe->setDirections($_POST['directions']);
+        $recipe->setCourse(new PantryCourse($_POST['course_id']));
+        $recipe->setCuisine(new PantryCuisine($_POST['cuisine_id']));
+        $recipe->save();
 
         $pantry->response = new PantryAPISuccess();
         $pantry->response->respond();
