@@ -58,6 +58,7 @@ class PantryAdminPage extends PantryPage {
                     'vendor' => [
                         "jquery/jquery-3.5.1.min.js",
                         "popper/popper-1.16.0.min.js",
+                        "handlebars/handlebars-4.7.6.min.js",
                         "bootstrap/bootstrap-4.5.0.min.js",
                         "fontawesome/fontawesome-all-5.13.0.min.js"
                     ],
