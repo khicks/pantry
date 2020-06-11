@@ -154,7 +154,7 @@ $(function() {
             title: elements.fields.slug.helpText
         });
 
-        elements.buttons.cancel.attr("href", webRoot + "/recipes/" + recipeSlug);
+        elements.buttons.cancel.attr("href", webRoot + "/recipe/" + recipeSlug);
 
         elements.form.show();
         elements.loading.hide();
@@ -180,7 +180,7 @@ $(function() {
 
         $.ajax({
             method: "GET",
-            url: webRoot + "/api/v1/recipes/" + recipeSlug,
+            url: webRoot + "/api/v1/recipe/" + recipeSlug,
             success: onRecipeLoad,
             error: onRecipeFail
         });
@@ -220,7 +220,7 @@ $(function() {
                 icon().removeClass('fa-sync fa-spin').addClass('fa-check');
                 $(".card-body").slideUp(function() {
                     setTimeout(function() {
-                        window.location.replace(webRoot + "/recipes/" + elements.fields.slug.field.val());
+                        window.location.replace(webRoot + "/recipe/" + elements.fields.slug.field.val());
                     }, 500);
                 });
             }

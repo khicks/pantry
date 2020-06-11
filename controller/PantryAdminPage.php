@@ -46,18 +46,22 @@ class PantryAdminPage extends PantryPage {
             'include' => [
                 'css' => [
                     'external' => [],
+                    'vendor' => [
+                        "bootstrap/bootstrap4.min.css"
+                    ],
                     'root' => [
-                        "admin/bootstrap4.min.css",
                         "admin/admin.css"
                     ]
                 ],
                 'js' => [
                     'external' => [],
+                    'vendor' => [
+                        "jquery/jquery-3.5.1.min.js",
+                        "popper/popper-1.16.0.min.js",
+                        "bootstrap/bootstrap-4.5.0.min.js",
+                        "fontawesome/fontawesome-all-5.13.0.min.js"
+                    ],
                     'root' => [
-                        "jquery-3.3.1.min.js",
-                        "popper.min.js",
-                        "admin/bootstrap4.min.js",
-                        "fontawesome-all.min.js",
                         "admin/admin.js"
                     ]
                 ]
@@ -121,8 +125,15 @@ class PantryAdminPage extends PantryPage {
 
         $page_params = $this->mergeParams($init_params, $params);
 
+        for ($i=0; $i<count($page_params['include']['css']['vendor']); $i++) {
+            $page_params['include']['css']['vendor'][$i] = Pantry::$web_root."/assets/css/vendor/{$page_params['include']['css']['vendor'][$i]}";
+        }
         for ($i=0; $i<count($page_params['include']['css']['root']); $i++) {
             $page_params['include']['css']['root'][$i] = Pantry::$web_root."/assets/css/{$page_params['include']['css']['root'][$i]}";
+        }
+
+        for ($i=0; $i<count($page_params['include']['js']['vendor']); $i++) {
+            $page_params['include']['js']['vendor'][$i] = Pantry::$web_root."/assets/js/vendor/{$page_params['include']['js']['vendor'][$i]}";
         }
         for ($i=0; $i<count($page_params['include']['js']['root']); $i++) {
             $page_params['include']['js']['root'][$i] = Pantry::$web_root."/assets/js/{$page_params['include']['js']['root'][$i]}";

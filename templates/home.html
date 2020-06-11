@@ -1,7 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-<p>
-    {{ lang.HOME_PAGE_TEXT }}.
-</p>
+
+<template id="recipe-card">
+    <h2>Excellent.</h2>
+</template>
+
+<h1>{{ lang.FEATURED_RECIPES }}</h1>
+<div id="featured-block" class="home-block">
+    <div class="row">
+        <div id="featured-loading" class="col-12 home-loading">
+            <i class="fas fa-sync fa-spin"></i>
+        </div>
+    </div>
+</div>
+
+<h1>{{ lang.NEW_RECIPES }}</h1>
+<div id="new-block" class="home-block">
+    <div class="row">
+        <div id="new-loading" class="col-12 home-loading">
+            <i class="fas fa-sync fa-spin"></i>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

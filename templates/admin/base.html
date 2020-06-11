@@ -15,6 +15,9 @@
     {% for cssfile in include.css.external -%}
     <link rel="stylesheet" href="{{ cssfile }}">
     {% endfor -%}
+    {% for cssfile in include.css.vendor -%}
+    <link rel="stylesheet" href="{{ cssfile }}">
+    {% endfor %}
     {% for cssfile in include.css.root -%}
     <link rel="stylesheet" href="{{ cssfile }}">
     {% endfor %}
@@ -23,6 +26,9 @@
     {% for jsfile in include.js.external -%}
     <script type="text/javascript" src="{{ jsfile }}"></script>
     {% endfor -%}
+    {% for jsfile in include.js.vendor -%}
+    <script type="text/javascript" src="{{ jsfile }}"></script>
+    {% endfor %}
     {% for jsfile in include.js.root -%}
     <script type="text/javascript" src="{{ jsfile }}"></script>
     {% endfor %}

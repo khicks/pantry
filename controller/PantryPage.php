@@ -47,19 +47,22 @@ class PantryPage extends PantryApp {
             'include' => [
                 'css' => [
                     'external' => [],
+                    'vendor' => [
+                        "bootstrap/bootstrap4.min.css"
+                    ],
                     'root' => [
-                        "bootstrap4.min.css",
                         "pantry.css"
                     ]
                 ],
                 'js' => [
                     'external' => [],
-                    'root' => [
-                        "jquery-3.3.1.min.js",
-                        "popper.min.js",
-                        "bootstrap4.min.js",
-                        "fontawesome-all.min.js"
-                    ]
+                    'vendor' => [
+                        "jquery/jquery-3.5.1.min.js",
+                        "popper/popper-1.16.0.min.js",
+                        "bootstrap/bootstrap-4.5.0.min.js",
+                        "fontawesome/fontawesome-all-5.13.0.min.js"
+                    ],
+                    'root' => []
                 ]
             ],
             'lang' => $this->language,
@@ -143,8 +146,15 @@ class PantryPage extends PantryApp {
 
         $page_params = $this->mergeParams($init_params, $params);
 
+        for ($i = 0; $i < count($page_params['include']['css']['vendor']); $i++) {
+            $page_params['include']['css']['vendor'][$i] = Pantry::$web_root . "/assets/css/vendor/{$page_params['include']['css']['vendor'][$i]}";
+        }
         for ($i = 0; $i < count($page_params['include']['css']['root']); $i++) {
             $page_params['include']['css']['root'][$i] = Pantry::$web_root . "/assets/css/{$page_params['include']['css']['root'][$i]}";
+        }
+
+        for ($i = 0; $i < count($page_params['include']['js']['vendor']); $i++) {
+            $page_params['include']['js']['vendor'][$i] = Pantry::$web_root . "/assets/js/vendor/{$page_params['include']['js']['vendor'][$i]}";
         }
         for ($i = 0; $i < count($page_params['include']['js']['root']); $i++) {
             $page_params['include']['js']['root'][$i] = Pantry::$web_root . "/assets/js/{$page_params['include']['js']['root'][$i]}";
@@ -201,12 +211,27 @@ class PantryPage extends PantryApp {
 
         $params = [
             'title' => $pantry->language['HOME_PAGE_TITLE'],
+            'include' => [
+                'css' => [
+                    'root' => [
+                        "home.css"
+                    ]
+                ],
+                'js' => [
+                    'root' => [
+                        "home.js"
+                    ]
+                ]
+            ],
             'navigation' => [
                 'left' => [
                     'home' => [
                         'active' => true
                     ]
                 ]
+            ],
+            'display' => [
+                'title' => false
             ]
         ];
 

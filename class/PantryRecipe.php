@@ -169,11 +169,15 @@ class PantryRecipe {
     }
 
     public function getPrepTime() {
-        return $this->prep_time;
+        return (int)$this->prep_time;
     }
 
     public function getCookTime() {
-        return $this->cook_time;
+        return (int)$this->cook_time;
+    }
+
+    public function getTotalTime() {
+        return $this->prep_time + $this->cook_time;
     }
 
     public function getIngredients() {
@@ -319,5 +323,49 @@ class PantryRecipe {
         }
 
         return false;
+    }
+
+    public static function getFeaturedRecipes() {
+        $sql_get_featured = Pantry::$db->prepare("SELECT id FROM recipes WHERE featured=1 AND public=1");
+        $sql_get_featured->execute();
+
+        $featured_list = [];
+        while($row = $sql_get_featured->fetch(PDO::FETCH_ASSOC)) {
+            try {
+                $recipe = new self($row['id']);
+            }
+            catch (PantryRecipeNotFoundException $e) {
+                Pantry::$logger->emergency($e->getMessage());
+                die();
+            }
+
+            $featured_list[] = [
+                'id' => $recipe->getId(),
+                'title' => $recipe->getTitle(),
+                'slug' => $recipe->getSlug(),
+                'blurb' => $recipe->getblurb(),
+                'total_time' => $recipe->getTotalTime(),
+                'author' => [
+                    'username' => $recipe->getAuthor()->getusername(),
+                    'first_name' => $recipe->getAuthor()->getFirstName(),
+                    'last_name' => $recipe->getAuthor()->getLastName(),
+                ],
+                'course' => (is_null($recipe->getCourse())) ? null : [
+                    'id' => $recipe->getCourse()->getID(),
+                    'title' => $recipe->getCourse()->getTitle(),
+                    'slug' => $recipe->getCourse()->getSlug()
+                ],
+                'cuisine' => (is_null($recipe->getCuisine())) ? null : [
+                    'id' => $recipe->getCuisine()->getID(),
+                    'title' => $recipe->getCuisine()->getTitle(),
+                    'slug' => $recipe->getCuisine()->getSlug()
+                ],
+                'image' => (is_null($recipe->getImage())) ? null : [
+                    'path' => $recipe->getImage()->getWebPath($recipe->getSlug())
+                ],
+            ];
+        }
+
+        return $featured_list;
     }
 }

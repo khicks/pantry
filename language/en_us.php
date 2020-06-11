@@ -37,7 +37,8 @@ return [
 
     // home page
     'HOME_PAGE_TITLE' => "Home",
-    'HOME_PAGE_TEXT' => "Home page",
+    'FEATURED_RECIPES' => "Featured Recipes",
+    'NEW_RECIPES' => "New Recipes",
 
     // view recipe page
     'VIEW_RECIPE_TITLE' => "View Recipe",
@@ -46,10 +47,13 @@ return [
     'COOK_TIME' => "Cook time",
     'DAY' => "day",
     'DAYS' => "days",
+    'DAYS_SHORT' => "d",
     'HOUR' => "hour",
     'HOURS' => "hours",
+    'HOURS_SHORT' => "h",
     'MINUTE' => "minute",
     'MINUTES' => "minutes",
+    'MINUTES_SHORT' => "m",
     'INGREDIENTS' => "Ingredients",
     'DIRECTIONS' => "Directions",
     'AUTHOR' => "Author",

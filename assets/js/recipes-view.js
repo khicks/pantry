@@ -134,11 +134,11 @@ $(function() {
         alert("Recipe failed to load.");
     };
 
-    recipeElements.buttons.edit.attr("href", webRoot + "/recipes/" + recipeSlug + "/edit");
+    recipeElements.buttons.edit.attr("href", webRoot + "/recipe/" + recipeSlug + "/edit");
 
     $.ajax({
         method: "GET",
-        url: webRoot + "/api/v1/recipes/" + recipeSlug,
+        url: webRoot + "/api/v1/recipe/" + recipeSlug,
         success: onRecipeLoad,
         error: onRecipeFail
     });

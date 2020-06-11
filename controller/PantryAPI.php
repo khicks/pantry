@@ -155,6 +155,21 @@ class PantryAPI extends PantryApp {
         $pantry->response->respond();
     }
 
+    public static function getFeaturedRecipes() {
+        $pantry = new self(false);
+
+        $featured = PantryRecipe::getFeaturedRecipes();
+        $pantry->response = new PantryAPISuccess("FEATURED_RECIPES_SUCCESS", "", [
+            'recipes' => $featured,
+            'lang' => [
+                'days_short' => $pantry->language['DAYS_SHORT'],
+                'hours_short' => $pantry->language['HOURS_SHORT'],
+                'minutes_short' => $pantry->language['MINUTES_SHORT'],
+            ]
+        ]);
+        $pantry->response->respond();
+    }
+
     public static function getRecipe($slug) {
         $pantry = new self(false);
         try {

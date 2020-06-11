@@ -1,0 +1,9 @@
+.home-block {
+    background-color: green;
+    min-height: 400px;
+}
+
+.home-loading {
+    font-size: 6em;
+    text-align: center;
+}
