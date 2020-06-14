@@ -30,7 +30,7 @@ class PantryPage extends PantryApp {
             $this->twig->display($filename, $this->getTemplateParams($params));
         }
         catch (Twig\Error\Error $e) {
-            Pantry::$logger->debug($e->getMessage());
+            Pantry::$logger->error($e->getMessage());
             Pantry::$logger->critical("Could not display templates: $filename");
             die();
         }
@@ -48,7 +48,7 @@ class PantryPage extends PantryApp {
                 'css' => [
                     'external' => [],
                     'vendor' => [
-                        "bootstrap/bootstrap4.min.css"
+                        "bootstrap/bootstrap-4.5.0.min.css"
                     ],
                     'root' => [
                         "pantry.css"
@@ -105,6 +105,14 @@ class PantryPage extends PantryApp {
         ];
 
         if ($this->current_session->isLoggedIn()) {
+            $init_params['navigation']['left']['create'] = [
+                'type' => "link",
+                'href' => Pantry::$web_root . "/recipes/create",
+                'icon' => "fas fa-plus",
+                'label' => "Create",
+                'active' => false
+            ];
+
             $init_params['navigation']['right'] = [
                 'account' => [
                     'type' => "link",
@@ -282,6 +290,40 @@ class PantryPage extends PantryApp {
         ];
 
         $pantry->displayTemplate("recipes-browse.html", $params);
+    }
+
+    public static function createRecipe() {
+        $pantry = new self();
+        $pantry->current_session->trackPage();
+        $pantry->requireLogin();
+
+        $params = [
+            'title' => $pantry->language['CREATE_RECIPE_TITLE'],
+            'include' => [
+                'css' => [
+                    'root' => [
+                        "recipes-create.css"
+                    ]
+                ],
+                'js' => [
+                    'root' => [
+                        "recipes-create.js"
+                    ]
+                ]
+            ],
+            'display' => [
+                'title' => false
+            ],
+            'navigation' => [
+                'left' => [
+                    'create' => [
+                        'active' => true
+                    ]
+                ]
+            ]
+        ];
+
+        $pantry->displayTemplate("recipes-create.html", $params);
     }
 
     public static function viewRecipe($slug) {

@@ -2,24 +2,52 @@
 
 {% block content %}
 
-<template id="recipe-card">
-    <h2>Excellent.</h2>
-</template>
+{% verbatim %}
+<script id="recipe-card-template" type="text/x-handlebars-template">
+    <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+        <div class="card h-100 recipe-card">
+            <img class="card-img-top" src="{{ recipe.image.path }}">
+            <div class="card-body">
+                <h4 class="card-title"><a href="/recipe/{{ recipe.slug }}" class="stretched-link">{{ recipe.title }}</a></h4>
+                <p class="card-text">{{ recipe.blurb }}</p>
+            </div>
+        </div>
+    </div>
+</script>
+{% endverbatim %}
+
+<script id="load-section-failed" type="text/x-handlebars-template">
+    <div class="col-12">
+        <div class="alert alert-danger">
+            <b>{{ lang.HOME_SECTION_FAILED }}</b>
+        </div>
+    </div>
+</script>
 
 <h1>{{ lang.FEATURED_RECIPES }}</h1>
 <div id="featured-block" class="home-block">
-    <div class="row">
+    <div id="featured-row" class="row h-100">
         <div id="featured-loading" class="col-12 home-loading">
             <i class="fas fa-sync fa-spin"></i>
+        </div>
+        <div id="featured-none" class="col-12 no-recipes-notice">
+            <div class="alert alert-info">
+                <b>{{ lang.NO_FEATURED_RECIPES }}</b>
+            </div>
         </div>
     </div>
 </div>
 
 <h1>{{ lang.NEW_RECIPES }}</h1>
 <div id="new-block" class="home-block">
-    <div class="row">
+    <div id="new-recipes-row" class="row">
         <div id="new-loading" class="col-12 home-loading">
             <i class="fas fa-sync fa-spin"></i>
+        </div>
+        <div id="new-none" class="col-12 no-recipes-notice">
+            <div class="alert alert-info">
+                <b>{{ lang.NO_NEW_RECIPES }}</b>
+            </div>
         </div>
     </div>
 </div>

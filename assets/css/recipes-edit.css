@@ -1,4 +1,4 @@
-#edit-recipe-form {
+#recipe-form {
     display: none;
 }
 
@@ -15,10 +15,6 @@ span.field-feedback-message {
     color: #28a745;
 }
 
-#edit-recipe-form label {
+#recipe-form label {
     font-weight: bold;
-}
-
-#no-permission-alert {
-    display: none;
 }

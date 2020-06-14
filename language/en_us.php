@@ -39,6 +39,12 @@ return [
     'HOME_PAGE_TITLE' => "Home",
     'FEATURED_RECIPES' => "Featured Recipes",
     'NEW_RECIPES' => "New Recipes",
+    'NO_FEATURED_RECIPES' => "There are no featured recipes.",
+    'NO_NEW_RECIPES' => "There are no recipes.",
+    'HOME_SECTION_FAILED' => "Section failed to load.",
+
+    // create recipe page
+    'CREATE_RECIPE_TITLE' => "Create Recipe",
 
     // view recipe page
     'VIEW_RECIPE_TITLE' => "View Recipe",
@@ -60,6 +66,8 @@ return [
     'SOURCE' => "Source",
     'EDIT' => "Edit",
     'DELETE' => "Delete",
+    'RECIPE_NOT_FOUND_TITLE' => "Recipe not found.",
+    'RECIPE_NOT_FOUND_DESC' => "The recipe does not exist or you do not have permission to view it.",
 
     // edit recipe page
     'EDIT_RECIPE_TITLE' => "Edit Recipe",
@@ -69,13 +77,13 @@ return [
     'BLURB' => "Blurb",
     'DESCRIPTION' => "Description",
     'MARKDOWN_SUPPORTED' => "Markdown is supported in this field.",
-    'EDIT_RECIPE_TITLE_ERROR_NONE' => "Please enter a recipe title.",
-    'EDIT_RECIPE_TITLE_ERROR_SHORT' => "Recipe title is too short.",
-    'EDIT_RECIPE_TITLE_ERROR_LONG' => "Recipe title is too long.",
-    'EDIT_RECIPE_SLUG_ERROR_NONE' => "Please enter a recipe slug.",
-    'EDIT_RECIPE_SLUG_ERROR_SHORT' => "Recipe slug is too short.",
-    'EDIT_RECIPE_SLUG_ERROR_LONG' => "Recipe slug is too long.",
-    'EDIT_RECIPE_BLURB_ERROR_LONG' => "Recipe blurb is too long.",
+    'RECIPE_TITLE_ERROR_NONE' => "Please enter a recipe title.",
+    'RECIPE_TITLE_ERROR_SHORT' => "Recipe title is too short.",
+    'RECIPE_TITLE_ERROR_LONG' => "Recipe title is too long.",
+    'RECIPE_SLUG_ERROR_NONE' => "Please enter a recipe slug.",
+    'RECIPE_SLUG_ERROR_SHORT' => "Recipe slug is too short.",
+    'RECIPE_SLUG_ERROR_LONG' => "Recipe slug is too long.",
+    'RECIPE_BLURB_ERROR_LONG' => "Recipe blurb is too long.",
     'EDIT_RECIPE_SERVINGS_ERROR_LOW' => "Number of servings is too low. The minimum is 0.",
     'EDIT_RECIPE_SERVINGS_ERROR_HIGH' => "Number of servings is too high. The maximum is 120.",
     'EDIT_RECIPE_PREP_TIME_ERROR_LOW' => "Value for Prep Time is too low. The minimum is 0.",
@@ -83,6 +91,10 @@ return [
     'EDIT_RECIPE_COOK_TIME_ERROR_LOW' => "Value for Cook Time is too low. The minimum is 0.",
     'EDIT_RECIPE_COOK_TIME_ERROR_HIGH' => "Value for Cook Time is too high. The maximum is 43200.",
     'EDIT_RECIPE_NO_PERMISSION' => "Whoops! You don't have permission to edit this recipe.",
+
+    // delete recipe modal
+    'DELETE_RECIPE_TITLE' => "Delete recipe",
+    'DELETE_RECIPE_PROMPT' => "Are you sure you want to delete this recipe?",
 
     // API success
     'ME_SUCCESS' => "Here are your user details.",

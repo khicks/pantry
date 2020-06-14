@@ -5,7 +5,7 @@
     "ext-openssl": "*",
     "ext-pdo": "*",
     "altorouter/altorouter": "^1.2",
-    "twig/twig": "^2.5",
+    "twig/twig": "^3.0",
     "erusev/parsedown": "^1.7",
     "ezyang/htmlpurifier": "^4.10"
   }

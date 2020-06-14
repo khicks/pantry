@@ -1,6 +1,7 @@
 $(function() {
     const appName = $("meta[name=app_name]").attr("content");
     const webRoot = $("meta[name=web_root]").attr("content");
+    const csrfToken = $("meta[name=csrf_token]").attr("content");
     const recipeSlug = $("meta[name=recipe_slug]").attr("content");
 
     const loadingWheel = $("#main-loading-wheel");
@@ -32,7 +33,18 @@ $(function() {
         },
         buttons: {
             edit: $("#recipe-edit-button"),
-            delete: $("#recipe-delete-button")
+            delete: $("#recipe-delete-button"),
+            deleteConfirm: $("#recipe-delete-confirm-button")
+        },
+        modals: {
+            delete: $("#recipe-delete-modal")
+        },
+        fields: {
+            deleteRecipeId: $("#recipe-delete-modal-recipeid"),
+            deleteRecipeName: $("#recipe-delete-modal-name")
+        },
+        icons: {
+            deleteConfirm: function() { return $("#recipe-delete-button-icon") }
         }
     };
 
@@ -124,6 +136,10 @@ $(function() {
             recipeElements.source.link.attr("href", response.data.source).text(response.data.source);
         }
 
+        // delete modal
+        recipeElements.fields.deleteRecipeId.val(response.data.id);
+        recipeElements.fields.deleteRecipeName.html(response.data.title);
+
         //render
         recipeElements.document.attr("title", response.data.title + " - " + appName);
         recipeWrapper.show();
@@ -131,10 +147,32 @@ $(function() {
     };
 
     const onRecipeFail = function() {
-        alert("Recipe failed to load.");
+        $("#recipe-fail").show();
+        loadingWheel.hide();
     };
 
+    const recipeDelete = function() {
+        recipeElements.buttons.deleteConfirm.prop('disabled', true);
+        recipeElements.icons.deleteConfirm().removeClass('fa-trash-alt').addClass('fa-sync fa-spin');
+
+        $.ajax({
+            method: "POST",
+            url: webRoot + "/api/v1/recipes/delete",
+            data: {
+                csrf_token: csrfToken,
+                id: recipeElements.fields.deleteRecipeId.val(),
+            },
+            success: function() {
+                recipeElements.icons.deleteConfirm().removeClass('fa-sync fa-spin').addClass('fa-check');
+                setTimeout(function() {
+                    window.location.replace(webRoot + "/recipes");
+                }, 500);
+            }
+        });
+    }
+
     recipeElements.buttons.edit.attr("href", webRoot + "/recipe/" + recipeSlug + "/edit");
+    recipeElements.buttons.deleteConfirm.on('click', recipeDelete)
 
     $.ajax({
         method: "GET",

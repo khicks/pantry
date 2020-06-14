@@ -42,3 +42,7 @@
 #recipe-source a {
     color: #6c757d;
 }
+
+#recipe-fail {
+    display: none;
+}

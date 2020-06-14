@@ -1,0 +1,135 @@
+<form id="recipe-form" class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-12 col-lg-9 mb-2 mb-lg-0">
+                <h1 class="card-title">{{ title }}</h1>
+            </div>
+            <div class="col-12 col-lg-3 d-print-none">
+                <div class="float-lg-right">
+                    <a id="cancel-button" class="btn btn-secondary" role="button"><i class="fas fa-times"></i> {{ lang.CANCEL }}</a>
+                    <button id="recipe-save-button" type="button" class="btn btn-success"><i id="recipe-save-button-icon" class="fas fa-fw fa-save"></i> {{ lang.SAVE }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div id="no-permission-alert" class="alert alert-danger" style="display:none"><b>{{ lang.EDIT_RECIPE_NO_PERMISSION }}</b></div>
+        <div class="form-row">
+            <input type="hidden" id="id">
+            <div class="col-12 col-md-6 mb-2">
+                <label for="recipe-title">{{ lang.TITLE }} <i id="title-feedback-icon" class="fas field-feedback-icon"></i></label>
+                <input type="text" id="recipe-title" class="form-control">
+                <div id="title-feedback-text" class="invalid-feedback">
+                    <span id="title-feedback-message-none" class="field-feedback-message title-feedback-message">{{ lang.RECIPE_TITLE_ERROR_NONE }}</span>
+                    <span id="title-feedback-message-short" class="field-feedback-message title-feedback-message">{{ lang.RECIPE_TITLE_ERROR_SHORT }}</span>
+                    <span id="title-feedback-message-long" class="field-feedback-message title-feedback-message">{{ lang.RECIPE_TITLE_ERROR_LONG }}</span>
+                    <span id="title-feedback-message-api" class="field-feedback-message title-feedback-message"></span>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 mb-2">
+                <label for="slug">{{ lang.SLUG }} <i id="slug-help-icon" class="fas fa-info-circle text-muted"></i><i id="slug-feedback-icon" class="fas field-feedback-icon"></i></label>
+                <div id="slug-help-text" class="d-none">{{ lang.RECIPE_SLUG_HELP }}</div>
+                <input type="text" id="slug" class="form-control">
+                <div id="slug-feedback-text" class="invalid-feedback">
+                    <span id="slug-feedback-message-none" class="field-feedback-message slug-feedback-message">{{ lang.RECIPE_SLUG_ERROR_NONE }}</span>
+                    <span id="slug-feedback-message-short" class="field-feedback-message slug-feedback-message">{{ lang.RECIPE_SLUG_ERROR_SHORT }}</span>
+                    <span id="slug-feedback-message-long" class="field-feedback-message slug-feedback-message">{{ lang.RECIPE_SLUG_ERROR_LONG }}</span>
+                    <span id="slug-feedback-message-api" class="field-feedback-message slug-feedback-message"></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-12 mb-2">
+                <label for="blurb">{{ lang.BLURB }} <i id="blurb-feedback-icon" class="fas field-feedback-icon"></i></label>
+                <input type="text" id="blurb" class="form-control">
+                <div id="blurb-feedback-text" class="invalid-feedback">
+                    <span id="blurb-feedback-message-long" class="field-feedback-message blurb-feedback-message">{{ lang.RECIPE_BLURB_ERROR_LONG }}</span>
+                    <span id="blurb-feedback-message-api" class="field-feedback-message blurb-feedback-message"></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="col-12 mb-2">
+                <label for="description">{{ lang.DESCRIPTION }} <i id="description-feedback-icon" class="fas field-feedback-icon"></i></label>
+                <textarea id="description" class="form-control" rows="4"></textarea>
+                <small id="description-help-text" class="form-text text-muted">{{ lang.MARKDOWN_SUPPORTED }}</small>
+                <div id="description-feedback-text" class="invalid-feedback">
+                    <span id="description-feedback-message-api" class="field-feedback-message description-feedback-message"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="col-12 col-md-8">
+                <div class="form-row">
+                    <div class="col-12 col-md-6 mb-2">
+                        <label for="course">{{ lang.COURSE }} <i id="course-feedback-icon" class="fas field-feedback-icon"></i></label>
+                        <select id="course" class="form-control">
+                            <option value="">({{ lang.NONE }})</option>
+                        </select>
+                        <div id="course-feedback-text" class="invalid-feedback">
+                            <span id="course-feedback-message-api" class="field-feedback-message servings-feedback-message"></span>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 mb-2">
+                        <label for="cuisine">{{ lang.CUISINE }} <i id="cuisine-feedback-icon" class="fas field-feedback-icon"></i></label>
+                        <select id="cuisine" class="form-control">
+                            <option value="">({{ lang.NONE }})</option>
+                        </select>
+                        <div id="cuisine-feedback-text" class="invalid-feedback">
+                            <span id="cuisine-feedback-message-api" class="field-feedback-message servings-feedback-message"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="col-12 col-md-4 mb-2">
+                        <label for="servings">{{ lang.SERVINGS }} <i id="servings-feedback-icon" class="fas field-feedback-icon"></i></label>
+                        <input type="number" id="servings" min="0" max="120" class="form-control" required>
+                        <div id="servings-feedback-text" class="invalid-feedback">
+                            <span id="servings-feedback-message-api" class="field-feedback-message servings-feedback-message"></span>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 mb-2">
+                        <label for="prep-time">{{ lang.PREP_TIME }} <i id="prep-time-feedback-icon" class="fas field-feedback-icon"></i></label>
+                        <input type="number" id="prep-time" min="0" max="43200" class="form-control">
+                        <div id="prep-time-feedback-text" class="invalid-feedback">
+                            <span id="prep-time-feedback-message-api" class="field-feedback-message prep-time-feedback-message"></span>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4 mb-2">
+                        <label for="cook-time">{{ lang.COOK_TIME }} <i id="cook-time-feedback-icon" class="fas field-feedback-icon"></i></label>
+                        <input type="number" id="cook-time" min="0" max="43200" class="form-control">
+                        <div id="cook-time-feedback-text" class="invalid-feedback">
+                            <span id="cook-time-feedback-message-api" class="field-feedback-message cook-time-feedback-message"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="col-12 col-md-4 mb-2">
+                <label for="ingredients">{{ lang.INGREDIENTS }}</label>
+                <textarea id="ingredients" class="form-control" rows="8"></textarea>
+                <small id="ingredients-help-text" class="form-text text-muted">{{ lang.MARKDOWN_SUPPORTED }}</small>
+                <div id="ingredients-feedback-text" class="invalid-feedback">
+                    <span id="ingredients-feedback-message-api" class="field-feedback-message ingredients-feedback-message"></span>
+                </div>
+            </div>
+            <div class="col-12 col-md-8 mb-2">
+                <label for="directions">{{ lang.DIRECTIONS }}</label>
+                <textarea id="directions" class="form-control" rows="8"></textarea>
+                <small id="directions-help-text" class="form-text text-muted">{{ lang.MARKDOWN_SUPPORTED }}</small>
+                <div id="directions-feedback-text" class="invalid-feedback">
+                    <span id="directions-feedback-message-api" class="field-feedback-message directions-feedback-message"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-footer">
+        Footer.
+    </div>
+</form>

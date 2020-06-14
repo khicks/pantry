@@ -16,7 +16,7 @@
             <div class="col-12 col-lg-3 d-print-none">
                 <div class="float-lg-right">
                     <a id="recipe-edit-button" class="btn btn-primary" role="button"><i class="fas fa-pencil-alt"></i> {{ lang.EDIT }}</a>
-                    <button id="recipe-delete-button" type="button" class="btn btn-danger"><i class="fas fa-fw fa-trash-alt"></i> {{ lang.DELETE }}</button>
+                    <button id="recipe-delete-button" type="button" class="btn btn-danger" data-toggle="modal" data-target="#recipe-delete-modal"><i class="fas fa-fw fa-trash-alt"></i> {{ lang.DELETE }}</button>
                 </div>
             </div>
         </div>
@@ -72,6 +72,31 @@
     <div class="card-footer text-muted">
         <b>{{ lang.AUTHOR }}:</b> <span id="recipe-author-none">{{ lang.NONE }}</span><span id="recipe-author-name"></span><br/>
         <span id="recipe-source"><b>{{ lang.SOURCE }}:</b> <a id="recipe-source-link" target="_blank"></a></span>
+    </div>
+</div>
+
+<div id="recipe-fail" class="alert alert-danger">
+    <b>{{ lang.RECIPE_NOT_FOUND_TITLE }}</b> {{ lang.RECIPE_NOT_FOUND_DESC }}
+</div>
+
+<div class="modal fade" id="recipe-delete-modal" tabindex="-1" role="dialog" aria-labelledby="recipe-delete-modal-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="recipe-delete-modal-label">{{ lang.DELETE_RECIPE_TITLE }}: <span id="recipe-delete-modal-name"></span></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {{ lang.DELETE_RECIPE_PROMPT }}
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" id="recipe-delete-modal-recipeid" value="">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ lang.CANCEL }}</button>
+                <button type="button" id="recipe-delete-confirm-button" class="btn btn-danger"><i id="recipe-delete-button-icon" class="fas fa-trash-alt"></i> {{ lang.DELETE }}</button>
+            </div>
+        </div>
     </div>
 </div>
 

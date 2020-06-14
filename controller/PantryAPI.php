@@ -170,6 +170,21 @@ class PantryAPI extends PantryApp {
         $pantry->response->respond();
     }
 
+    public static function getNewRecipes() {
+        $pantry = new self(false);
+
+        $featured = PantryRecipe::getNewRecipes();
+        $pantry->response = new PantryAPISuccess("LIST_NEW_RECIPES_SUCCESS", "", [
+            'recipes' => $featured,
+            'lang' => [
+                'days_short' => $pantry->language['DAYS_SHORT'],
+                'hours_short' => $pantry->language['HOURS_SHORT'],
+                'minutes_short' => $pantry->language['MINUTES_SHORT'],
+            ]
+        ]);
+        $pantry->response->respond();
+    }
+
     public static function getRecipe($slug) {
         $pantry = new self(false);
         try {
@@ -313,8 +328,44 @@ class PantryAPI extends PantryApp {
         $pantry->response->respond();
     }
 
+    public static function createRecipe() {
+        $pantry = new self();
+        $pantry->requireLogin();
+
+        if (!PantryRecipe::checkSlugAvailable($_POST['slug'])) {
+            $pantry->response = new PantryAPIError(422, "RECIPE_SLUG_UNAVAILABLE", $pantry->language['SLUG_UNAVAILABLE']);
+            $pantry->response->respond();
+        }
+
+        $recipe = new PantryRecipe();
+        //TODO: Form security
+        $recipe->setTitle($_POST['title']);
+        $recipe->setSlug($_POST['slug']);
+        $recipe->setBlurb($_POST['blurb']);
+        $recipe->setDescription($_POST['description']);
+        $recipe->setServings($_POST['servings']);
+        $recipe->setPrepTime($_POST['prep_time']);
+        $recipe->setCookTime($_POST['cook_time']);
+        $recipe->setIngredients($_POST['ingredients']);
+        $recipe->setDirections($_POST['directions']);
+        $recipe->setSource("");
+        $recipe->setIsPublic(true);
+        $recipe->setIsFeatured(false);
+        $recipe->setAuthor($pantry->current_user);
+        $recipe->setCourse(new PantryCourse($_POST['course_id']));
+        $recipe->setCuisine(new PantryCuisine($_POST['cuisine_id']));
+        $recipe->save();
+
+        $pantry->response = new PantryAPISuccess("CREATE_RECIPE_SUCCESS", $pantry->language['CREATE_RECIPE_SUCCESS'], [
+            'id' => $recipe->getID(),
+            'slug' => $recipe->getSlug()
+        ]);
+        $pantry->response->respond();
+    }
+
     public static function editRecipe() {
         $pantry = new self();
+        $pantry->requireLogin();
 
         try {
             $recipe = new PantryRecipe($_POST['id']);
@@ -358,5 +409,33 @@ class PantryAPI extends PantryApp {
 
         $pantry->response = new PantryAPISuccess();
         $pantry->response->respond();
+    }
+
+    public static function deleteRecipe() {
+        $pantry = new self();
+        $pantry->requireLogin();
+
+        try {
+            $recipe = new PantryRecipe($_POST['id']);
+            $permission = PantryRecipePermission::constructBySubjectAndObject($recipe, $pantry->current_user);
+            if ($permission->getLevel() < 1) {
+                throw new PantryRecipeNotFoundException("No read permission.");
+            }
+            if ($permission->getLevel() < 3) {
+                throw new PantryRecipePermissionDeniedException("No admin permission.");
+            }
+        }
+        catch (PantryRecipeNotFoundException $e) {
+            $pantry->response = new PantryAPIError(404, "RECIPE_NOT_FOUND", $pantry->language['RECIPE_NOT_FOUND']);
+            $pantry->response->respond();
+            die();
+        }
+        catch (PantryRecipePermissionDeniedException $e) {
+            $pantry->response = new PantryAPIError(403, "ACCESS_DENIED", $pantry->language['ACCESS_DENIED']);
+            $pantry->response->respond();
+            die();
+        }
+
+        $recipe->delete();
     }
 }

@@ -10,15 +10,15 @@ class PantryAdminPage extends PantryPage {
 
     private function loadTwig() {
         $templates[] = Pantry::$php_root."/templates/admin";
-        $loader = new Twig_Loader_Filesystem($templates);
-        $this->twig = new Twig_Environment($loader);
+        $loader = new Twig\Loader\FilesystemLoader($templates);
+        $this->twig = new Twig\Environment($loader);
     }
 
     public function renderTemplate($filename, $params = []) {
         try {
             return $this->twig->render($filename, $this->getTemplateParams($params));
         }
-        catch (Twig_Error $e) {
+        catch (Twig\Error\Error $e) {
             Pantry::$logger->critical("Could not render template: $filename");
             die();
         }
@@ -28,7 +28,7 @@ class PantryAdminPage extends PantryPage {
         try {
             $this->twig->display($filename, $this->getTemplateParams($params));
         }
-        catch (Twig_Error $e) {
+        catch (Twig\Error\Error $e) {
             Pantry::$logger->debug($e->getMessage());
             Pantry::$logger->critical("Could not display template: $filename");
             die();
@@ -47,7 +47,7 @@ class PantryAdminPage extends PantryPage {
                 'css' => [
                     'external' => [],
                     'vendor' => [
-                        "bootstrap/bootstrap4.min.css"
+                        "bootstrap/bootstrap-4.5.0.min.css"
                     ],
                     'root' => [
                         "admin/admin.css"

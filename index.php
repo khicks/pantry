@@ -19,6 +19,7 @@ try {
     $router->map('GET', '/', 'PantryPage::home');
     $router->map('GET', '/login', 'PantryPage::login');
     $router->map('GET', '/recipes', 'PantryPage::browseRecipes');
+    $router->map('GET', '/recipes/create', 'PantryPage::createRecipe');
     $router->map('GET', '/recipe/[slug:slug]', 'PantryPage::viewRecipe');
     $router->map('GET', '/recipe/[slug:slug]/edit', 'PantryPage::editRecipe');
     $router->map('GET', '/image/[img:img]', 'PantryAPI::getImage');
@@ -40,8 +41,10 @@ try {
 
     $router->map('GET', '/api/v1/recipes/featured', 'PantryAPI::getFeaturedRecipes');
     $router->map('GET', '/api/v1/recipes/new', 'PantryAPI::getNewRecipes');
+    $router->map('POST', '/api/v1/recipes/create', 'PantryAPI::createRecipe');
     $router->map('GET', '/api/v1/recipe/[slug:slug]', 'PantryAPI::getRecipe');
     $router->map('POST', '/api/v1/recipes/edit', 'PantryAPI::editRecipe');
+    $router->map('POST', '/api/v1/recipes/delete', 'PantryAPI::deleteRecipe');
 
     $router->map('GET', '/api/v1/courses', 'PantryAPI::listCourses');
     $router->map('GET', '/api/v1/cuisines', 'PantryAPI::listCuisines');

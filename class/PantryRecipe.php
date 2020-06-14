@@ -15,6 +15,7 @@ class PantryRecipe {
     private $directions;
     private $source;
     private $is_public;
+    private $is_featured;
 
     /** @var PantryUser $author */
     private $author;
@@ -54,6 +55,7 @@ class PantryRecipe {
                 $this->directions = $recipe_row['directions'];
                 $this->source = $recipe_row['source'];
                 $this->is_public = boolval($recipe_row['public']);
+                $this->is_featured = boolval($recipe_row['featured']);
 
                 if ($recipe_row['author_id']) {
                     try {
@@ -126,6 +128,7 @@ class PantryRecipe {
         $this->directions = null;
         $this->source = null;
         $this->is_public = null;
+        $this->is_featured = null;
         $this->author = null;
         $this->course = null;
         $this->cuisine = null;
@@ -204,6 +207,10 @@ class PantryRecipe {
         return $this->is_public;
     }
 
+    public function getIsFeatured() {
+        return $this->is_public;
+    }
+
     public function getAuthor() {
         return $this->author;
     }
@@ -256,12 +263,32 @@ class PantryRecipe {
         $this->directions = $directions;
     }
 
+    public function setSource($source) {
+        $this->source = $source;
+    }
+
+    public function setIsPublic($is_public) {
+        $this->is_public = boolval($is_public);
+    }
+
+    public function setIsFeatured($is_featured) {
+        $this->is_featured = boolval($is_featured);
+    }
+
+    public function setAuthor(PantryUser $author) {
+        $this->author = $author;
+    }
+
     public function setCourse(PantryCourse $course) {
         $this->course = $course;
     }
 
     public function setCuisine(PantryCuisine $cuisine) {
         $this->cuisine = $cuisine;
+    }
+
+    public function setImage(PantryImage $image) {
+        $this->image = $image;
     }
 
     public function save() {
@@ -285,10 +312,64 @@ class PantryRecipe {
                 }
             }
             else {
-                throw new PantryRecipeNotSavedException("not implemented yet");
+                $this->id = Pantry::generateUUID();
+                $sql_save_recipe = Pantry::$db->prepare("INSERT INTO recipes (id, created, updated, title, slug, blurb, description, servings, prep_time, cook_time, ingredients, directions, source, public, featured, author_id, course_id, cuisine_id, image_id) VALUES (:id, NOW(), NOW(), :title, :slug, :blurb, :description, :servings, :prep_time, :cook_time, :ingredients, :directions, :source, :public, :featured, :author_id, :course_id, :cuisine_id, :image_id)");
+                $sql_save_recipe->bindValue(':id', $this->id, PDO::PARAM_STR);
+                $sql_save_recipe->bindValue(':title', $this->title, PDO::PARAM_STR);
+                $sql_save_recipe->bindValue(':slug', $this->slug, PDO::PARAM_STR);
+                $sql_save_recipe->bindValue(':blurb', $this->blurb, PDO::PARAM_STR);
+                $sql_save_recipe->bindValue(':description', $this->description, PDO::PARAM_STR);
+                $sql_save_recipe->bindValue(':servings', $this->servings, PDO::PARAM_INT);
+                $sql_save_recipe->bindValue(':prep_time', $this->prep_time, PDO::PARAM_INT);
+                $sql_save_recipe->bindValue(':cook_time', $this->cook_time, PDO::PARAM_INT);
+                $sql_save_recipe->bindValue(':ingredients', $this->ingredients, PDO::PARAM_STR);
+                $sql_save_recipe->bindValue(':directions', $this->directions, PDO::PARAM_STR);
+                $sql_save_recipe->bindValue(':source', $this->source, PDO::PARAM_STR);
+                $sql_save_recipe->bindValue(':public', $this->is_public, PDO::PARAM_STR);
+                $sql_save_recipe->bindValue(':featured', $this->is_featured, PDO::PARAM_STR);
+                $sql_save_recipe->bindValue(':author_id', $this->getAuthor()->getID(), PDO::PARAM_STR); //TODO: in form
+                $sql_save_recipe->bindValue(':course_id', $this->getCourse()->getID(), PDO::PARAM_STR);
+                $sql_save_recipe->bindValue(':cuisine_id', $this->getCuisine()->getID(), PDO::PARAM_STR);
+                $sql_save_recipe->bindValue(':image_id', null, PDO::PARAM_STR); //TODO
+                if (!$sql_save_recipe->execute()) {
+                    Pantry::$logger->error(print_r($sql_save_recipe->errorInfo(), true));
+                    throw new PantryRecipeNotSavedException("Recipe {$this->slug} could not be saved.");
+                }
             }
         }
         catch (PantryRecipeNotSavedException $e) {
+            Pantry::$logger->emergency($e->getMessage());
+            die();
+        }
+    }
+
+    public function delete() {
+        //TODO: delete images
+        try {
+            if ($this->id) {
+                // purge permissions
+                $sql_delete_recipe_permission = Pantry::$db->prepare("DELETE FROM recipes_permissions WHERE recipe_id=:recipe_id");
+                $sql_delete_recipe_permission->bindValue(':recipe_id', $this->id, PDO::PARAM_STR);
+                if (!$sql_delete_recipe_permission->execute()) {
+                    Pantry::$logger->error("Could not delete recipe permission.");
+                    Pantry::$logger->error(print_r($sql_delete_recipe_permission->errorInfo(), true));
+                    throw new PantryRecipeNotDeletedException("Recipe {$this->slug} could not be deleted.");
+                }
+
+                // delete recipe
+                $sql_delete_recipe = Pantry::$db->prepare("DELETE FROM recipes WHERE id=:id");
+                $sql_delete_recipe->bindValue(':id', $this->id, PDO::PARAM_STR);
+                if (!$sql_delete_recipe->execute()) {
+                    Pantry::$logger->error("Could not delete recipe.");
+                    Pantry::$logger->error(print_r($sql_delete_recipe->errorInfo(), true));
+                    throw new PantryRecipeNotDeletedException("Recipe {$this->slug} could not be deleted.");
+                }
+            }
+            else {
+                throw new PantryRecipeNotFoundException("Recipe not found.");
+            }
+        }
+        catch (PantryRecipeNotFoundException | PantryRecipeNotDeletedException $e) {
             Pantry::$logger->emergency($e->getMessage());
             die();
         }
@@ -326,11 +407,11 @@ class PantryRecipe {
     }
 
     public static function getFeaturedRecipes() {
-        $sql_get_featured = Pantry::$db->prepare("SELECT id FROM recipes WHERE featured=1 AND public=1");
+        $sql_get_featured = Pantry::$db->prepare("SELECT id FROM recipes WHERE featured=1 AND public=1 ORDER BY title");
         $sql_get_featured->execute();
 
         $featured_list = [];
-        while($row = $sql_get_featured->fetch(PDO::FETCH_ASSOC)) {
+        while ($row = $sql_get_featured->fetch(PDO::FETCH_ASSOC)) {
             try {
                 $recipe = new self($row['id']);
             }
@@ -362,10 +443,54 @@ class PantryRecipe {
                 ],
                 'image' => (is_null($recipe->getImage())) ? null : [
                     'path' => $recipe->getImage()->getWebPath($recipe->getSlug())
-                ],
+                ]
             ];
         }
 
         return $featured_list;
+    }
+
+    public static function getNewRecipes() {
+        $sql_get_new = Pantry::$db->prepare("SELECT id FROM recipes WHERE public=1 ORDER BY created DESC LIMIT 4");
+        $sql_get_new->execute();
+
+        $new_list = [];
+        while ($row = $sql_get_new->fetch(PDO::FETCH_ASSOC)) {
+            try {
+                $recipe = new self($row['id']);
+            }
+            catch (PantryRecipeNotFoundException $e) {
+                Pantry::$logger->emergency($e->getMessage());
+                die();
+            }
+
+            $new_list[] = [
+                'id' => $recipe->getId(),
+                'title' => $recipe->getTitle(),
+                'slug' => $recipe->getSlug(),
+                'blurb' => $recipe->getblurb(),
+                'total_time' => $recipe->getTotalTime(),
+                'author' => [
+                    'username' => $recipe->getAuthor()->getusername(),
+                    'first_name' => $recipe->getAuthor()->getFirstName(),
+                    'last_name' => $recipe->getAuthor()->getLastName(),
+                ],
+                'course' => (is_null($recipe->getCourse())) ? null : [
+                    'id' => $recipe->getCourse()->getID(),
+                    'title' => $recipe->getCourse()->getTitle(),
+                    'slug' => $recipe->getCourse()->getSlug()
+                ],
+                'cuisine' => (is_null($recipe->getCuisine())) ? null : [
+                    'id' => $recipe->getCuisine()->getID(),
+                    'title' => $recipe->getCuisine()->getTitle(),
+                    'slug' => $recipe->getCuisine()->getSlug()
+                ],
+                'image' => (is_null($recipe->getImage())) ? null : [
+                    'path' => $recipe->getImage()->getWebPath($recipe->getSlug())
+                ]
+            ];
+        }
+
+        return $new_list;
     }
 }

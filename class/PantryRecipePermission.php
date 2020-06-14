@@ -87,7 +87,8 @@ class  PantryRecipePermission {
     }
 
     public function getLevel() {
-        if ($this->user && $this->user->getIsAdmin()) {
+        // site admins and recipe authors have recipe admin
+        if ($this->user && ($this->user->getIsAdmin() || $this->user->getID() === $this->recipe->getAuthor()->getID())) {
             return 3;
         }
 

@@ -5,19 +5,10 @@ html {
 
 body {
     margin-bottom: 80px;
-    /*background-color: #d5e5d7;*/
 }
 
 nav.navbar {
-    background-color: #5d4037;
-}
-
-#logout-button {
-    /*background-color: #881215;*/
-    /*color: rgba(255,255,255,.5);*/
-}
-#logout-button:hover {
-    /*color: rgba(255,255,255,.75);*/
+    background-color: #00442a;
 }
 
 main {

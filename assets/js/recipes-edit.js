@@ -4,7 +4,7 @@ $(function() {
     const recipeSlug = $("meta[name=recipe_slug]").attr("content");
 
     const elements = {
-        form: $("#edit-recipe-form"),
+        form: $("#recipe-form"),
         loading: $("#main-loading-wheel"),
         buttons: {
             cancel: $("#cancel-button"),
@@ -170,11 +170,9 @@ $(function() {
      */
     const onCCLoad = function(response) {
         $.each(response.data.courses, function() {
-            console.log(this);
             elements.fields.course.field.append($("<option />").val(this.id).text(this.title));
         });
         $.each(response.data.cuisines, function() {
-            console.log(this);
             elements.fields.cuisine.field.append($("<option />").val(this.id).text(this.title));
         });
 
@@ -218,18 +216,12 @@ $(function() {
             },
             success: function() {
                 icon().removeClass('fa-sync fa-spin').addClass('fa-check');
-                $(".card-body").slideUp(function() {
-                    setTimeout(function() {
-                        window.location.replace(webRoot + "/recipe/" + elements.fields.slug.field.val());
-                    }, 500);
-                });
+                setTimeout(function() {
+                    window.location.replace(webRoot + "/recipe/" + elements.fields.slug.field.val());
+                }, 500);
             }
         });
     };
-
-    $(".select-field").on('focus', function() {
-        $(this).select();
-    });
 
     elements.buttons.save.button.on('click', saveRecipe);
 

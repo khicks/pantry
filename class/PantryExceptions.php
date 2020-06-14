@@ -50,6 +50,8 @@ class PantryRecipeNotFoundException extends PantryException {}
 
 class PantryRecipeNotSavedException extends PantryException {}
 
+class PantryRecipeNotDeletedException extends PantryException {}
+
 class PantryCourseNotFoundException extends PantryException {}
 
 class PantryCuisineNotFoundException extends PantryException {}
