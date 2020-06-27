@@ -3,7 +3,10 @@ RewriteEngine On
 # Forbidden resources
 RewriteRule ^class/ - [F]
 RewriteRule ^controller/ - [F]
-RewriteRule ^log/ - [F]
+RewriteRule ^data/ - [F]
+RewriteRule ^language/ - [F]
+RewriteRule ^sql/ - [F]
+RewriteRule ^templates/ - [F]
 RewriteRule ^vendor/ - [F]
 RewriteRule \.log$ - [F]
 RewriteRule ^\.gitignore$ - [F]
