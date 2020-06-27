@@ -1,4 +1,5 @@
-/log
-/vendor
-/config.php
-/upload/images/*
+data/
+vendor/
+config.php
+
+pantry

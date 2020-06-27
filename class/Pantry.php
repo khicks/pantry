@@ -48,12 +48,13 @@ class Pantry {
 
     private static function loadDirectories() {
         self::$php_root = dirname(dirname(__FILE__));
-	self::$web_root = dirname($_SERVER['SCRIPT_NAME']);
-        self::$cookie_path = self::$web_root;
+	    self::$web_root = dirname($_SERVER['SCRIPT_NAME']);
 
         if (self::$web_root === "/") {
             self::$web_root = "";
         }
+
+        self::$cookie_path = self::$web_root . "/";
     }
 
     private static function loadFiles() {
@@ -88,6 +89,9 @@ class Pantry {
 
     private static function loadHTMLPurifier() {
         $config = HTMLPurifier_Config::createDefault();
+        $config->set('Cache.DefinitionImpl', null);
+        $config->set('Core.Encoding', "UTF-8");
+        $config->set('HTML.Allowed', "");
         self::$html_purifier = new HTMLPurifier($config);
     }
 

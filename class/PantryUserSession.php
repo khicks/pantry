@@ -50,6 +50,10 @@ class PantryUserSession {
         return $this->user_id;
     }
 
+    public function getSessionID() {
+        return $this->session_id;
+    }
+
     public function create($user_id, $ip_address) {
         $this->id = Pantry::generateUUID();
         $this->created = Pantry::getNow();
@@ -105,8 +109,14 @@ class PantryUserSession {
         }
     }
 
-    public static function purgeUser($user_id) {
-        $sql_purge_user = Pantry::$db->prepare("DELETE FROM user_sessions WHERE user_id=:user_id");
+    public static function purgeUser($user_id, PantryCurrentUserSession $exempt_session = null) {
+        if ($exempt_session) {
+            $sql_purge_user = Pantry::$db->prepare("DELETE FROM user_sessions WHERE user_id=:user_id AND session_id!=:session_id");
+            $sql_purge_user->bindValue(':session_id', $exempt_session->getSessionID());
+        }
+        else {
+            $sql_purge_user = Pantry::$db->prepare("DELETE FROM user_sessions WHERE user_id=:user_id");
+        }
         $sql_purge_user->bindValue(':user_id', $user_id, PDO::PARAM_STR);
         $sql_purge_user->execute();
     }

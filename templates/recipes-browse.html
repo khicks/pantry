@@ -2,7 +2,24 @@
 
 {% block content %}
 
-<p>This is where recipes would be.</p>
-<p>Test <a href="{{ meta.web_root }}/recipe/cheeseburger">cheeseburger</a>?</p>
+{% include "components/recipe-card.html" %}
+
+<p>Sorted by most recently saved. Search and filter features coming soon.</p>
+
+<div id="browse-row" class="row">
+    <div id="browse-loading" class="col-12">
+        <i class="fas fa-sync fa-spin"></i>
+    </div>
+    <div id="browse-none" class="col-12">
+        <div class="alert alert-info">
+            <b>{{ lang.NO_RECIPES }}</b>
+        </div>
+    </div>
+    <div id="browse-error" class="col-12">
+        <div class="alert alert-danger">
+            <b>{{ lang.BROWSE_LOAD_FAILED }}</b>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

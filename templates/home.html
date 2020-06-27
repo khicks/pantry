@@ -2,19 +2,7 @@
 
 {% block content %}
 
-{% verbatim %}
-<script id="recipe-card-template" type="text/x-handlebars-template">
-    <div class="col-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-        <div class="card h-100 recipe-card">
-            <img class="card-img-top" src="{{ recipe.image.path }}">
-            <div class="card-body">
-                <h4 class="card-title"><a href="/recipe/{{ recipe.slug }}" class="stretched-link">{{ recipe.title }}</a></h4>
-                <p class="card-text">{{ recipe.blurb }}</p>
-            </div>
-        </div>
-    </div>
-</script>
-{% endverbatim %}
+{% include "components/recipe-card.html" %}
 
 <script id="load-section-failed" type="text/x-handlebars-template">
     <div class="col-12">

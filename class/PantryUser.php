@@ -1,6 +1,18 @@
 <?php
 
 class PantryUser {
+    public static $error_map = [
+        'PantryUsernameNotProvidedException' => "USER_USERNAME_NOT_PROVIDED",
+        'PantryUsernameTooShortException' => "USER_USERNAME_TOO_SHORT",
+        'PantryUsernameTooLongException' => "USER_USERNAME_TOO_LONG",
+        'PantryUsernameInvalidException' => "USER_USERNAME_INVALID",
+        'PantryUsernameNotAvailableException' => "USER_USERNAME_NOT_AVAILABLE",
+        'PantryUserPasswordEmptyException' => "USER_PASSWORD_NOT_PROVIDED",
+        'PantryUserPasswordIncorrectException' => "USER_PASSWORD_INCORRECT",
+        'PantryUserFirstNameTooLongException' => "USER_FIRST_NAME_TOO_LONG",
+        'PantryUserLastNameTooLongException' => "USER_LAST_NAME_TOO_LONG"
+    ];
+
     protected $id;
     private $created;
     private $username;
@@ -101,11 +113,30 @@ class PantryUser {
         return "{$this->getFullName()} ({$this->getUsername()})";
     }
 
-    public function setUsername($username) {
+    /**
+     * @param $username
+     * @param bool $sanitize
+     * @throws PantryUsernameValidationException
+     */
+    public function setUsername($username, $sanitize = true) {
+        if ($sanitize) {
+            $username = Pantry::$html_purifier->purify($username);
+            $username = trim(preg_replace('/\s+/', " ", $username));
+            self::checkUsername($username, $this); // checks format and availability
+        }
+
         $this->username = $username;
     }
 
-    public function setPassword($password) {
+    /**
+     * @param string $password
+     * @throws PantryUserPasswordValidationException
+     */
+    public function setPassword(string $password) {
+        if (empty($password)) {
+            throw new PantryUserPasswordEmptyException();
+        }
+
         $this->password = password_hash($password, PASSWORD_DEFAULT);
     }
 
@@ -131,11 +162,37 @@ class PantryUser {
         $this->last_login = $last_login;
     }
 
-    public function setFirstName($first_name) {
+    /**
+     * @param $first_name
+     * @param bool $sanitize
+     * @throws PantryUserFirstNameTooLongException
+     */
+    public function setFirstName($first_name, $sanitize = true) {
+        if ($sanitize) {
+            $first_name = Pantry::$html_purifier->purify($first_name);
+            $first_name = trim(preg_replace('/\s+/', " ", $first_name));
+            if (strlen($first_name) > 64) {
+                throw new PantryUserFirstNameTooLongException($first_name);
+            }
+        }
+
         $this->first_name = trim($first_name);
     }
 
-    public function setLastName($last_name) {
+    /**
+     * @param $last_name
+     * @param bool $sanitize
+     * @throws PantryUserLastNameTooLongException
+     */
+    public function setLastName($last_name, $sanitize = true) {
+        if ($sanitize) {
+            $last_name = Pantry::$html_purifier->purify($last_name);
+            $last_name = trim(preg_replace('/\s+/', " ", $last_name));
+            if (strlen($last_name) > 64) {
+                throw new PantryUserLastNameTooLongException($last_name);
+            }
+        }
+
         $this->last_name = trim($last_name);
     }
 
@@ -244,28 +301,55 @@ class PantryUser {
         return false;
     }
 
-    public static function checkUsername($username) {
+    /**
+     * @param $username
+     * @param PantryUser|null $user
+     * @return string
+     * @throws PantryUsernameValidationException
+     */
+    public static function checkUsername($username, PantryUser $user = null) {
         if (empty($username)) {
-            return "none";
+            throw new PantryUsernameNotProvidedException($username);
         }
-
         if (strlen($username) < 3) {
-            return "short";
+            throw new PantryUsernameTooShortException($username);
         }
-
         if (strlen($username) > 32) {
-            return "long";
+            throw new PantryUsernameTooLongException($username);
+        }
+        if (!preg_match('/^[a-z0-9-_]+$/', $username)) {
+            throw new PantryUsernameInvalidException($username);
         }
 
-        if (!preg_match('/^[A-Za-z0-9-_]{3,32}$/', $username)) {
-            return "invalid";
+        $user_id = self::lookupUsername($username);
+        if ($user_id !== false && (!$user || $user_id !== $user->getID())) {
+            throw new PantryUsernameNotAvailableException($username);
+        }
+    }
+
+    /**
+     * @param $username
+     * @param $password
+     * @throws PantryUserNotFoundException
+     * @throws PantryUserValidationException
+     */
+    public static function checkPassword($username, $password) {
+        if (!$username) {
+            throw new PantryUsernameNotProvidedException($username);
+        }
+        if (!$password) {
+            throw new PantryUserPasswordEmptyException($password);
         }
 
-        if (self::lookupUsername($username)) {
-            return "taken";
+        $user_id = self::lookupUsername($username);
+        if (!$user_id) {
+            throw new PantryUserNotFoundException($username);
         }
+        $user = new PantryUser($user_id);
 
-        return "available";
+        if (!password_verify($password, $user->password)) {
+            throw new PantryUserPasswordIncorrectException();
+        }
     }
 
     public static function checkLogin($username, $password, $two_factor_code = null, $two_factor_session_secret = null) {

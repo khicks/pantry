@@ -76,7 +76,7 @@ $(function() {
     };
 
     /**
-     * @param response.data.permission_level
+     * @param response.data.effective_permission_level
      * @param response.data.description_html
      * @param response.data.ingredients_html
      * @param response.data.directions_html
@@ -93,10 +93,10 @@ $(function() {
         recipeElements.cookTime.html(convertMinutesToTime(response.data.cook_time, response.data.lang));
 
         // edit and delete buttons
-        if (response.data.permission_level < 2) {
+        if (response.data.effective_permission_level < 2) {
             recipeElements.buttons.edit.hide();
         }
-        if (response.data.permission_level < 3) {
+        if (response.data.effective_permission_level < 3) {
             recipeElements.buttons.delete.hide();
         }
 

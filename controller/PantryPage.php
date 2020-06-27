@@ -76,8 +76,9 @@ class PantryPage extends PantryApp {
                 'logged_in' => $this->current_session->isLoggedIn(),
             ],
             'brand' => [
+                'href' => Pantry::$web_root . "/",
+                'format' => Pantry::$config['brand_format'],
                 'label' => Pantry::$config['app_name'],
-                'href' => Pantry::$web_root . "/"
             ],
             'navigation' => [
                 'left' => [
@@ -274,12 +275,55 @@ class PantryPage extends PantryApp {
         $pantry->displayTemplate("login.html", $params);
     }
 
+    public static function account() {
+        $pantry = new self();
+        $pantry->current_session->trackPage();
+        $pantry->requireLogin();
+
+        $params = [
+            'title' => $pantry->language['MY_ACCOUNT_TITLE'],
+            'include' => [
+                'css' => [
+                    'root' => [
+                        "account.css"
+                    ]
+                ],
+                'js' => [
+                    'root' => [
+                        "account.js"
+                    ]
+                ]
+            ],
+            'navigation' => [
+                'right' => [
+                    'account' => [
+                        'active' => true
+                    ]
+                ]
+            ]
+        ];
+
+        $pantry->displayTemplate("account.html", $params);
+    }
+
     public static function browseRecipes() {
         $pantry = new self();
         $pantry->current_session->trackPage();
 
         $params = [
             'title' => "Browse Recipes",
+            'include' => [
+                'css' => [
+                    'root' => [
+                        "recipes-browse.css"
+                    ]
+                ],
+                'js' => [
+                    'root' => [
+                        "recipes-browse.js"
+                    ]
+                ]
+            ],
             'navigation' => [
                 'left' => [
                     'recipes' => [

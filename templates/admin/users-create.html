@@ -8,26 +8,26 @@
     <h3>{{ lang.ADMIN_USERS_ACCOUNT }}</h3>
     <div class="form-row mb-2">
         <div class="col-12">
-            <label for="username">{{ lang.ADMIN_USERS_USERNAME }} <i id="username-feedback-icon" class="fas field-feedback-icon"></i></label>
+            <label for="username">{{ lang.USERNAME }} <i id="username-feedback-icon" class="fas field-feedback-icon"></i></label>
             <input type="text" id="username" class="form-control">
             <div id="username-feedback-text" class="invalid-feedback">
-                <span id="username-feedback-message-none" class="field-feedback-message username-feedback-message">{{ lang.ADMIN_USERS_ERROR_USERNAME_NONE}}</span>
-                <span id="username-feedback-message-short" class="field-feedback-message username-feedback-message">{{ lang.ADMIN_USERS_ERROR_USERNAME_SHORT }}</span>
-                <span id="username-feedback-message-long" class="field-feedback-message username-feedback-message">{{ lang.ADMIN_USERS_ERROR_USERNAME_LONG }}</span>
+                <span id="username-feedback-message-none" class="field-feedback-message username-feedback-message">{{ lang.USER_USERNAME_NOT_PROVIDED }}</span>
+                <span id="username-feedback-message-short" class="field-feedback-message username-feedback-message">{{ lang.USER_USERNAME_TOO_SHORT }}</span>
+                <span id="username-feedback-message-long" class="field-feedback-message username-feedback-message">{{ lang.USER_USERNAME_TOO_LONG }}</span>
                 <span id="username-feedback-message-api" class="field-feedback-message username-feedback-message"></span>
             </div>
         </div>
     </div>
     <div class="form-row mb-2">
         <div class="col-12 col-md-6 mb-2">
-            <label for="first-name">{{ lang.ADMIN_USERS_FIRSTNAME }} <i id="firstname-feedback-icon" class="fas field-feedback-icon"></i></label>
+            <label for="first-name">{{ lang.FIRSTNAME }} <i id="firstname-feedback-icon" class="fas field-feedback-icon"></i></label>
             <input type="text" id="first-name" class="form-control">
             <div id="firstname-feedback-text" class="invalid-feedback">
                 <span id="firstname-feedback-message-api" class="field-feedback-message firstname-feedback-message"></span>
             </div>
         </div>
         <div class="col-12 col-md-6 mb-2">
-            <label for="last-name">{{ lang.ADMIN_USERS_LASTNAME }} <i id="lastname-feedback-icon" class="fas field-feedback-icon"></i></label>
+            <label for="last-name">{{ lang.LASTNAME }} <i id="lastname-feedback-icon" class="fas field-feedback-icon"></i></label>
             <input type="text" id="last-name" class="form-control">
             <div id="lastname-feedback-text" class="invalid-feedback">
                 <span id="lastname-feedback-message-api" class="field-feedback-message lastname-feedback-message"></span>
@@ -35,22 +35,22 @@
         </div>
     </div>
 
-    <h3>{{ lang.ADMIN_USERS_PASSWORD }}</h3>
+    <h3>{{ lang.PASSWORD }}</h3>
     <div class="form-row mb-2">
         <div class="col-12 col-md-6 mb-2">
-            <label for="password1">{{ lang.ADMIN_USERS_NEW_PASSWORD }} <i id="password1-feedback-icon" class="fas field-feedback-icon"></i></label>
+            <label for="password1">{{ lang.NEW_PASSWORD }} <i id="password1-feedback-icon" class="fas field-feedback-icon"></i></label>
             <input type="password" id="password1" class="form-control">
             <div id="password1-feedback-text" class="invalid-feedback">
-                <span id="password1-feedback-message-none" class="field-feedback-message password1-feedback-message">{{ lang.ADMIN_USERS_ERROR_PASSWORD1_NONE }}</span>
+                <span id="password1-feedback-message-none" class="field-feedback-message password1-feedback-message">{{ lang.USER_PASSWORD_NOT_PROVIDED }}</span>
                 <span id="password1-feedback-message-api" class="field-feedback-message username-feedback-message"></span>
             </div>
         </div>
         <div class="col-12 col-md-6 mb-2">
-            <label for="password2">{{ lang.ADMIN_USERS_CONFIRM_PASSWORD }} <i id="password2-feedback-icon" class="fas field-feedback-icon"></i></label>
+            <label for="password2">{{ lang.CONFIRM_PASSWORD }} <i id="password2-feedback-icon" class="fas field-feedback-icon"></i></label>
             <input type="password" id="password2" class="form-control">
             <div id="password2-feedback" class="invalid-feedback">
-                <span id="password2-feedback-message-none" class="field-feedback-message password2-feedback-message">{{ lang.ADMIN_USERS_ERROR_PASSWORD2_NONE }}</span>
-                <span id="password2-feedback-message-mismatch" class="field-feedback-message password2-feedback-message">{{ lang.ADMIN_USERS_ERROR_PASSWORD2_MISMATCH }}</span>
+                <span id="password2-feedback-message-none" class="field-feedback-message password2-feedback-message">{{ lang.CONFIRM_PASSWORD_BLANK }}</span>
+                <span id="password2-feedback-message-mismatch" class="field-feedback-message password2-feedback-message">{{ lang.CONFIRM_PASSWORD_MISMATCH }}</span>
                 <span id="password2-feedback-message-api" class="field-feedback-message username-feedback-message"></span>
             </div>
         </div>
@@ -72,10 +72,10 @@
 
     <div class="form-row justify-content-md-end">
         <div class="col-12 col-sm-6 col-md-auto mb-2">
-            <a href="{{ meta.web_root }}/admin/users" id="cancel-button" class="btn btn-secondary btn-block">{{ lang.CANCEL }}</a>
+            <button type="button" id="create-user-button" class="btn btn-success btn-block"><i id="create-user-button-icon" class="fas fa-sync fa-spin"></i> <span id="create-user-button-text">{{ lang.ADMIN_CREATE_USER_BUTTON }}</span></button>
         </div>
         <div class="col-12 col-sm-6 col-md-auto mb-2">
-            <button type="button" id="create-user-button" class="btn btn-success btn-block"><i id="create-user-button-icon" class="fas fa-sync fa-spin"></i> <span id="create-user-button-text">{{ lang.ADMIN_CREATE_USER_BUTTON }}</span></button>
+            <a href="{{ meta.web_root }}/admin/users" id="cancel-button" class="btn btn-secondary btn-block">{{ lang.CANCEL }}</a>
         </div>
     </div>
 </form>

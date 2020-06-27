@@ -19,7 +19,7 @@
             <input type="hidden" id="id">
             <div class="col-12 col-md-6 mb-2">
                 <label for="recipe-title">{{ lang.TITLE }} <i id="title-feedback-icon" class="fas field-feedback-icon"></i></label>
-                <input type="text" id="recipe-title" class="form-control">
+                <input type="text" id="recipe-title" class="form-control" maxlength="64">
                 <div id="title-feedback-text" class="invalid-feedback">
                     <span id="title-feedback-message-none" class="field-feedback-message title-feedback-message">{{ lang.RECIPE_TITLE_ERROR_NONE }}</span>
                     <span id="title-feedback-message-short" class="field-feedback-message title-feedback-message">{{ lang.RECIPE_TITLE_ERROR_SHORT }}</span>
@@ -28,9 +28,9 @@
                 </div>
             </div>
             <div class="col-12 col-md-6 mb-2">
-                <label for="slug">{{ lang.SLUG }} <i id="slug-help-icon" class="fas fa-info-circle text-muted"></i><i id="slug-feedback-icon" class="fas field-feedback-icon"></i></label>
+                <label for="slug">{{ lang.SLUG }} <i id="slug-help-icon" class="fas fa-info-circle text-muted"></i> <i id="slug-feedback-icon" class="fas field-feedback-icon"></i></label>
                 <div id="slug-help-text" class="d-none">{{ lang.RECIPE_SLUG_HELP }}</div>
-                <input type="text" id="slug" class="form-control">
+                <input type="text" id="slug" class="form-control" maxlength="40">
                 <div id="slug-feedback-text" class="invalid-feedback">
                     <span id="slug-feedback-message-none" class="field-feedback-message slug-feedback-message">{{ lang.RECIPE_SLUG_ERROR_NONE }}</span>
                     <span id="slug-feedback-message-short" class="field-feedback-message slug-feedback-message">{{ lang.RECIPE_SLUG_ERROR_SHORT }}</span>
@@ -42,7 +42,7 @@
         <div class="form-row">
             <div class="col-12 mb-2">
                 <label for="blurb">{{ lang.BLURB }} <i id="blurb-feedback-icon" class="fas field-feedback-icon"></i></label>
-                <input type="text" id="blurb" class="form-control">
+                <input type="text" id="blurb" class="form-control" maxlength="100">
                 <div id="blurb-feedback-text" class="invalid-feedback">
                     <span id="blurb-feedback-message-long" class="field-feedback-message blurb-feedback-message">{{ lang.RECIPE_BLURB_ERROR_LONG }}</span>
                     <span id="blurb-feedback-message-api" class="field-feedback-message blurb-feedback-message"></span>
@@ -61,7 +61,27 @@
         </div>
 
         <div class="form-row">
-            <div class="col-12 col-md-8">
+            <div class="col-12 col-lg-6">
+                <div class="form-row">
+                    <div class="col-12 mb-2">
+                        <label for="image">{{ lang.IMAGE }} <i id="image-feedback-icon" class="fas field-feedback-icon"></i></label>
+                        <div class="input-group">
+                            <div class="custom-file">
+                                <input type="hidden" id="image-clear" value="false">
+                                <input type="file" id="image" class="custom-file-input">
+                                <label id="image-label" class="custom-file-label" for="image">{{ lang.CHOOSE_FILE }}</label>
+                            </div>
+                            <div class="input-group-append">
+                                <button id="image-reset-button" type="button" class="btn btn-outline-info">Reset</button>
+                                <button id="image-clear-button" type="button" class="btn btn-outline-danger">{{ lang.CLEAR }}</button>
+                            </div>
+                        </div>
+                        <div id="image-feedback-text" class="invalid-feedback">
+                            <span id="image-feedback-message-api" class="field-feedback-message image-feedback-message"></span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-row">
                     <div class="col-12 col-md-6 mb-2">
                         <label for="course">{{ lang.COURSE }} <i id="course-feedback-icon" class="fas field-feedback-icon"></i></label>
@@ -86,25 +106,31 @@
                 <div class="form-row">
                     <div class="col-12 col-md-4 mb-2">
                         <label for="servings">{{ lang.SERVINGS }} <i id="servings-feedback-icon" class="fas field-feedback-icon"></i></label>
-                        <input type="number" id="servings" min="0" max="120" class="form-control" required>
+                        <input type="number" id="servings" min="0" max="100" class="form-control" required>
                         <div id="servings-feedback-text" class="invalid-feedback">
                             <span id="servings-feedback-message-api" class="field-feedback-message servings-feedback-message"></span>
                         </div>
                     </div>
                     <div class="col-12 col-md-4 mb-2">
                         <label for="prep-time">{{ lang.PREP_TIME }} <i id="prep-time-feedback-icon" class="fas field-feedback-icon"></i></label>
-                        <input type="number" id="prep-time" min="0" max="43200" class="form-control">
+                        <input type="number" id="prep-time" min="0" max="129600" class="form-control">
                         <div id="prep-time-feedback-text" class="invalid-feedback">
                             <span id="prep-time-feedback-message-api" class="field-feedback-message prep-time-feedback-message"></span>
                         </div>
                     </div>
                     <div class="col-12 col-md-4 mb-2">
                         <label for="cook-time">{{ lang.COOK_TIME }} <i id="cook-time-feedback-icon" class="fas field-feedback-icon"></i></label>
-                        <input type="number" id="cook-time" min="0" max="43200" class="form-control">
+                        <input type="number" id="cook-time" min="0" max="129600" class="form-control">
                         <div id="cook-time-feedback-text" class="invalid-feedback">
                             <span id="cook-time-feedback-message-api" class="field-feedback-message cook-time-feedback-message"></span>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div id="image-preview-wrapper" class="col-12 col-md-6 text-center">
+                <img id="image-preview" class="img-fluid" src="" alt="">
+                <div id="image-placeholder" class="rounded align-middle">
+                    <h1>[{{ lang.NO_IMAGE }}]</h1>
                 </div>
             </div>
         </div>
@@ -127,9 +153,69 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="card-footer">
-        Footer.
+        <hr>
+
+        <div class="form-row">
+            <div class="col-12">
+                <h2>{{ lang.PERMISSIONS }}</h2>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <h4>{{ lang.VISIBILITY }}</h4>
+                <div class="custom-control custom-radio mb-2">
+                    <input type="radio" id="visibility-private" name="visibility" class="custom-control-input" value="0">
+                    <label class="custom-control-label" for="visibility-private">
+                        <i class="fas fa-lock fa-fw"></i>
+                        <span class="option-title">{{ lang.PRIVATE }}</span>
+                        <span class="option-description text-muted">{{ lang.PRIVATE_DESC }}</span>
+                    </label>
+                </div>
+                <div class="custom-control custom-radio mb-2">
+                    <input type="radio" id="visibility-internal" name="visibility" class="custom-control-input" value="1">
+                    <label class="custom-control-label" for="visibility-internal">
+                        <i class="fas fa-shield-alt fa-fw"></i>
+                        <span class="option-title">{{ lang.INTERNAL }}</span>
+                        <span class="option-description text-muted">{{ lang.INTERNAL_DESC }}</span>
+                    </label>
+                </div>
+                <div class="custom-control custom-radio mb-2">
+                    <input type="radio" id="visibility-public" name="visibility" class="custom-control-input" value="2" checked>
+                    <label class="custom-control-label" for="visibility-public">
+                        <i class="fas fa-globe-americas fa-fw"></i>
+                        <span class="option-title">{{ lang.PUBLIC }}</span>
+                        <span class="option-description text-muted">{{ lang.PUBLIC_DESC }}</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6">
+                <h4>{{ lang.DEFAULT_PERMISSION_LEVEL }}</h4>
+                <div class="custom-control custom-radio mb-2">
+                    <input type="radio" id="default-permission-read" name="default-permission" class="custom-control-input" value="1" checked>
+                    <label class="custom-control-label" for="default-permission-read">
+                        <i class="fas fa-book-reader fa-fw"></i>
+                        <span class="option-title">{{ lang.READ }}</span>
+                        <span class="option-description text-muted">{{ lang.READ_DESC }}</span>
+                    </label>
+                </div>
+                <div class="custom-control custom-radio mb-2">
+                    <input type="radio" id="default-permission-write" name="default-permission" class="custom-control-input" value="2">
+                    <label class="custom-control-label" for="default-permission-write">
+                        <i class="fas fa-pencil-alt fa-fw"></i>
+                        <span class="option-title">{{ lang.WRITE }}</span>
+                        <span class="option-description text-muted">{{ lang.WRITE_DESC }}</span>
+                    </label>
+                </div>
+                <div class="custom-control custom-radio mb-2">
+                    <input type="radio" id="default-permission-admin" name="default-permission" class="custom-control-input" value="3">
+                    <label class="custom-control-label" for="default-permission-admin">
+                        <i class="fas fa-wrench fa-fw"></i>
+                        <span class="option-title">{{ lang.ADMIN }}</span>
+                        <span class="option-description text-muted">{{ lang.ADMIN_DESC }}</span>
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
 </form>

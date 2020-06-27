@@ -115,7 +115,7 @@ $(function() {
 
             $.ajax({
                 method: "GET",
-                url: webRoot + "/api/v1/admin/users/check",
+                url: webRoot + "/api/v1/admin/users/check-username",
                 data: {
                     csrf_token: csrfToken,
                     username: username

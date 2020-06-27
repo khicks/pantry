@@ -1,6 +1,19 @@
 <?php
 
 class  PantryRecipePermission {
+    public static $permission_level_map = [
+        'NONE' => 0,
+        'READ' => 1,
+        'WRITE' => 2,
+        'ADMIN' => 3
+    ];
+
+    public static $visibility_level_map = [
+        'PRIVATE' => 0,
+        'INTERNAL' => 1,
+        'PUBLIC' => 2
+    ];
+
     private $id;
     private $level;
     private $saved;
@@ -18,7 +31,7 @@ class  PantryRecipePermission {
      */
     public function __construct($recipe_permission_id = null) {
         $this->setNull();
-        $this->level = 0;
+        $this->level = self::$permission_level_map['NONE'];
         $this->saved = false;
 
         if ($recipe_permission_id) {
@@ -28,7 +41,7 @@ class  PantryRecipePermission {
 
             if ($permission_row = $sql_get_permission->fetch(PDO::FETCH_ASSOC)) {
                 $this->id = $permission_row['id'];
-                $this->level = (int)$permission_row['level'];
+                $this->level = self::boundPermissionLevel((int)$permission_row['level']);
                 $this->saved = true;
 
                 try {
@@ -66,16 +79,10 @@ class  PantryRecipePermission {
             }
         }
 
-        try {
-            $permission = new self(null);
-            $permission->recipe = $recipe;
-            $permission->user = $user;
-            return $permission;
-        }
-        catch (PantryRecipePermissionNotFoundException $e) {
-            Pantry::$logger->critical("Recipe permission not found in constructBySubjectAndObject 2.");
-            die();
-        }
+        $permission = new self(null);
+        $permission->recipe = $recipe;
+        $permission->user = $user;
+        return $permission;
     }
 
     private function setNull() {
@@ -87,13 +94,45 @@ class  PantryRecipePermission {
     }
 
     public function getLevel() {
-        // site admins and recipe authors have recipe admin
-        if ($this->user && ($this->user->getIsAdmin() || $this->user->getID() === $this->recipe->getAuthor()->getID())) {
-            return 3;
+        return self::boundPermissionLevel($this->level);
+    }
+
+    private static function boundPermissionLevel(int $level) {
+        return max(self::$permission_level_map['NONE'], min($level, self::$permission_level_map['ADMIN']));
+    }
+
+    public static function getEffectivePermissionLevel(PantryRecipe $recipe, PantryUser $user = null) {
+        // logged in
+        if ($user && $user->getID()) {
+            // site admins get recipe admin
+            if ($user->getIsAdmin()) {
+                return self::$permission_level_map['ADMIN'];
+            }
+
+            // recipe author gets admin
+            if ($user->getID() === $recipe->getAuthorID()) {
+                return self::$permission_level_map['ADMIN'];
+            }
+
+            // get recipe-user specific permission
+            $sql_get_permission = Pantry::$db->prepare("SELECT level FROM recipes_permissions WHERE recipe_id=:recipe_id AND user_id=:user_id");
+            $sql_get_permission->bindValue(':recipe_id', $recipe->getID(), PDO::PARAM_STR);
+            $sql_get_permission->bindValue(':user_id', $user->getID(), PDO::PARAM_STR);
+            $sql_get_permission->execute();
+            if ($row = $sql_get_permission->fetch(PDO::FETCH_ASSOC)) {
+                return self::boundPermissionLevel($row['level']);
+            }
+
+            // recipe default permission level
+            return self::boundPermissionLevel($recipe->getDefaultPermissionLevel());
         }
 
-        $lower_bound = ($this->recipe->getIsPublic()) ? 1 : 0;
-        $upper_bound = min($this->level, 3);
-        return max($lower_bound, $upper_bound);
+        // logged out, public
+        if ($recipe->getVisibilityLevel() === self::$visibility_level_map['PUBLIC']) {
+            return self::$permission_level_map['READ'];
+        }
+
+        // denied
+        return self::$permission_level_map['NONE'];
     }
 }

@@ -57,15 +57,17 @@ class PantrySession {
     }
 
     public function destroy($session_id) {
-        Pantry::$logger->info("Destroying session");
+        Pantry::$logger->info("Destroying session: $session_id");
         $sql_destroy_session = Pantry::$db->prepare("DELETE FROM sessions WHERE id=:id");
         $sql_destroy_session->bindValue(':id', $session_id, PDO::PARAM_STR);
 
         if ($sql_destroy_session->execute()) {
-            setcookie("pantry_session", null, time()-3600, Pantry::$web_root, null, true, true);
+            Pantry::$logger->info("Session destroyed: {$sql_destroy_session->rowCount()}");
+            setcookie("pantry_session", null, -1, Pantry::$cookie_path, null, true, true);
             return true;
         }
 
+        Pantry::$logger->warning("Session destroy failed: $session_id");
         return false;
     }
 

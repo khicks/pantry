@@ -1,12 +1,13 @@
 {
   "require": {
-    "php": ">=7.1",
+    "php": ">=7.2",
+    "ext-gd": "*",
     "ext-json": "*",
     "ext-openssl": "*",
     "ext-pdo": "*",
-    "altorouter/altorouter": "^1.2",
+    "altorouter/altorouter": "^2.0",
     "twig/twig": "^3.0",
     "erusev/parsedown": "^1.7",
-    "ezyang/htmlpurifier": "^4.10"
+    "ezyang/htmlpurifier": "^4.12"
   }
 }

@@ -18,6 +18,7 @@ try {
     // Pages
     $router->map('GET', '/', 'PantryPage::home');
     $router->map('GET', '/login', 'PantryPage::login');
+    $router->map('GET', '/account', 'PantryPage::account');
     $router->map('GET', '/recipes', 'PantryPage::browseRecipes');
     $router->map('GET', '/recipes/create', 'PantryPage::createRecipe');
     $router->map('GET', '/recipe/[slug:slug]', 'PantryPage::viewRecipe');
@@ -27,20 +28,20 @@ try {
     // Admin pages
     $router->map('GET', '/admin', 'PantryAdminPage::dashboard');
     $router->map('GET', '/admin/courses-cuisines', 'PantryAdminPage::coursesCuisines');
-    $router->map('GET', '/admin/courses/[slug:slug]/edit', 'PantryAdminPage::editCourse');
-    $router->map('GET', '/admin/cuisines/[slug:slug]/edit', 'PantryAdminPage::editCuisine');
     $router->map('GET', '/admin/users', 'PantryAdminPage::users');
     $router->map('GET', '/admin/users/create', 'PantryAdminPage::createUser');
-    $router->map('GET', '/admin/users/edit/[un:username]', 'PantryAdminPage::editUser');
+    $router->map('GET', '/admin/user/[un:username]', 'PantryAdminPage::editUser');
 
     // API
     $router->map('GET', '/api/v1/me', 'PantryAPI::me');
     $router->map('GET', '/api/v1/language', 'PantryAPI::language');
     $router->map('POST', '/api/v1/login', 'PantryAPI::login');
     $router->map('POST', '/api/v1/logout', 'PantryAPI::logout');
+    $router->map('POST', '/api/v1/account', 'PantryAPI::account');
 
     $router->map('GET', '/api/v1/recipes/featured', 'PantryAPI::getFeaturedRecipes');
     $router->map('GET', '/api/v1/recipes/new', 'PantryAPI::getNewRecipes');
+    $router->map('GET', '/api/v1/recipes/all', 'PantryAPI::getAllRecipes');
     $router->map('POST', '/api/v1/recipes/create', 'PantryAPI::createRecipe');
     $router->map('GET', '/api/v1/recipe/[slug:slug]', 'PantryAPI::getRecipe');
     $router->map('POST', '/api/v1/recipes/edit', 'PantryAPI::editRecipe');
@@ -53,7 +54,7 @@ try {
     // Admin API
     $router->map('GET', '/api/v1/admin/users', 'PantryAdminAPI::getUsers');
     $router->map('GET', '/api/v1/admin/user', 'PantryAdminAPI::getUser');
-    $router->map('GET', '/api/v1/admin/users/check', 'PantryAdminAPI::checkUsername');
+    $router->map('GET', '/api/v1/admin/users/check-username', 'PantryAdminAPI::checkUsername');
     $router->map('POST', '/api/v1/admin/users/create', 'PantryAdminAPI::createUser');
     $router->map('POST', '/api/v1/admin/users/edit', 'PantryAdminAPI::editUser');
     $router->map('POST', '/api/v1/admin/users/delete', 'PantryAdminAPI::deleteUser');
@@ -61,6 +62,7 @@ try {
     // Temp
     $router->map('GET', '/test', 'PantryPage::test');
     $router->map('GET', '/uuid', function() {
+        header("Content-Type: text/plain");
         echo Pantry::generateUUID();
     });
 }

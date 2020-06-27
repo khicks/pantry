@@ -1,0 +1,34 @@
+#account-loading {
+    font-size: 6em;
+    text-align: center;
+}
+
+#account-saved-alert,
+#account-saved-alert-logout {
+    display: none;
+}
+
+#account-form {
+    display: none;
+}
+
+.field-feedback-icon,
+span.field-feedback-message {
+    display: none;
+}
+
+.field-feedback-red {
+    color: #dc3545;
+}
+
+.field-feedback-green {
+    color: #28a745;
+}
+
+#disable-twofactor-button {
+    display: none;
+}
+
+#save-button-icon {
+    display: none;
+}

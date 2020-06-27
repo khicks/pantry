@@ -1,10 +1,11 @@
-.home-block {
-    min-height: 18rem;
-}
-
-.home-loading {
+#browse-loading {
     font-size: 6em;
     text-align: center;
+}
+
+#browse-none,
+#browse-error {
+    display: none;
 }
 
 .recipe-card-image-placeholder {
@@ -19,8 +20,4 @@
 .recipe-card > .card-img-top {
     height: 9em;
     object-fit: cover;
-}
-
-.no-recipes-notice {
-    display: none;
 }

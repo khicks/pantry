@@ -20,6 +20,9 @@ $(function() {
         }
     }
 
+    /**
+     * @param response.data.recipes
+     */
     const onFeaturedRecipesLoad = function(response) {
         elements.loadingWheels.featured.hide();
 

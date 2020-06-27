@@ -2,6 +2,10 @@
     display: none;
 }
 
+#recipe-edit-load-failed {
+    display: none;
+}
+
 .field-feedback-icon,
 span.field-feedback-message {
     display: none;
@@ -15,6 +19,33 @@ span.field-feedback-message {
     color: #28a745;
 }
 
-#recipe-form label {
+#recipe-form div.col-12 > label {
     font-weight: bold;
+}
+
+#image-label {
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+#image-reset-button {
+    display: none;
+}
+
+#image-preview {
+    max-height: 234px;
+    display: none;
+}
+
+#image-placeholder {
+    height: 234px;
+    padding: 90px 0;
+    background-color: #a0a0a0;
+    color: white;
+}
+
+.option-description {
+    display: block;
+    margin-left: 25px;
+    margin-top: -2px;
 }

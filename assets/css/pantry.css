@@ -29,3 +29,7 @@ footer {
     text-align: center;
 }
 
+.navbar-brand {
+    padding-top: 0;
+    padding-bottom: 0;
+}

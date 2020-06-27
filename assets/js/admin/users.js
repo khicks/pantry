@@ -117,7 +117,7 @@ $(function() {
                         "<td class=\"fit icon-col\">"+placeCheckMark(elem.is_admin)+"</td>" +
                         "<td class=\"fit icon-col\">"+placeCheckMark(!elem.is_disabled)+"</td>" +
                         "<td class=\"fit user-action-buttons\">" +
-                        "<a class=\"btn btn-primary mr-1 btn-edit\" href=\""+webRoot+"/admin/users/edit/"+elem.username+"\" title=\""+language.ADMIN_USERS_EDIT_BUTTON+"\" role=\"button\"><i class=\"fas fa-pencil-alt\"></i></a>" +
+                        "<a class=\"btn btn-primary mr-1 btn-edit\" href=\""+webRoot+"/admin/user/"+elem.username+"\" title=\""+language.ADMIN_USERS_EDIT_BUTTON+"\" role=\"button\"><i class=\"fas fa-pencil-alt\"></i></a>" +
                         "<button class=\"btn btn-danger btn-delete\" title=\""+language.ADMIN_USERS_DELETE_BUTTON+"\" data-toggle=\"modal\" data-target=\"#delete-user-modal\" data-userid=\""+elem.id+"\" data-username=\""+elem.username+"\" "+placeDisabledProperty(elem.is_self)+"><i class=\"fas fa-trash-alt\"></i></button>" +
                         "</td>" +
                         "</tr>";

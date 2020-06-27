@@ -1,6 +1,10 @@
 <nav class="navbar sticky-top navbar-expand-lg navbar-dark">
     <div class="container">
+        {% if brand.format == "logo" %}
+        <a class="navbar-brand" href="{{ brand.href }}"><img src="{{ meta.web_root }}/assets/images/pantry-logo-small.png" height="36"></a>
+        {% else %}
         <a class="navbar-brand" href="{{ brand.href }}">{{ brand.label }}</a>
+        {% endif %}
 
         {% if display.navigation %}
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-items" aria-controls="$navbar-items" aria-expanded="false" aria-label="Toggle navigation">

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div id="account-loading">
+    <i class="fas fa-sync fa-spin"></i>
+</div>
+
+<div id="account-saved-alert" class="alert alert-success">
+    <b>{{ lang.ACCOUNT_SAVED }}</b>
+</div>
+
+<form id="account-form">
+    <h3>{{ lang.NAME }}</h3>
+    <div class="form-row mb-2">
+        <div class="col-12">
+            <label for="username">{{ lang.USERNAME }} <i id="username-help-icon" class="fas fa-info-circle text-muted"></i></label>
+            <div id="username-help-text" class="d-none">{{ lang.ACCOUNT_USERNAME_HELP }}</div>
+            <input type="text" id="username" class="form-control" disabled>
+        </div>
+    </div>
+    <div class="form-row mb-2">
+        <div class="col-12 col-md-6 mb-2">
+            <label for="first-name">{{ lang.FIRSTNAME }} <i id="firstname-feedback-icon" class="fas field-feedback-icon"></i></label>
+            <input type="text" id="first-name" class="form-control">
+            <div id="firstname-feedback-text" class="invalid-feedback">
+                <span id="firstname-feedback-message-api" class="field-feedback-message firstname-feedback-message"></span>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 mb-2">
+            <label for="last-name">{{ lang.LASTNAME }} <i id="lastname-feedback-icon" class="fas field-feedback-icon"></i></label>
+            <input type="text" id="last-name" class="form-control">
+            <div id="lastname-feedback-text" class="invalid-feedback">
+                <span id="lastname-feedback-message-api" class="field-feedback-message lastname-feedback-message"></span>
+            </div>
+        </div>
+    </div>
+
+    <h3>{{ lang.PASSWORD }}</h3>
+    <p class="text-muted">{{ lang.EDIT_USER_PASSWORD_BLANK_TIP }} {{ lang.EDIT_USER_PASSWORD_LOGOUT_TIP }}</p>
+    <div class="form-row mb-2">
+        <div class="col-12 col-md-6 mb-2">
+            <label for="old-password">{{ lang.OLD_PASSWORD }} <i id="old-password-feedback-icon" class="fas field-feedback-icon"></i></label>
+            <input type="password" id="old-password" class="form-control select-field">
+            <div id="old-password-feedback-text" class="invalid-feedback">
+                <span id="old-password-feedback-message-none" class="field-feedback-message old-password-feedback-message">{{ lang.OLD_PASSWORD_BLANK }}</span>
+                <span id="old-password-feedback-message-api" class="field-feedback-message old-password-feedback-message"></span>
+            </div>
+        </div>
+    </div>
+    <div class="form-row mb-2">
+        <div class="col-12 col-md-6 mb-2">
+            <label for="password1">{{ lang.NEW_PASSWORD }} <i id="password1-feedback-icon" class="fas field-feedback-icon"></i></label>
+            <input type="password" id="password1" class="form-control select-field">
+            <div id="password1-feedback-text" class="invalid-feedback">
+                <span id="password1-feedback-message-none" class="field-feedback-message password1-feedback-message">{{ lang.USER_PASSWORD_NOT_PROVIDED }}</span>
+                <span id="password1-feedback-message-api" class="field-feedback-message password1-feedback-message"></span>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 mb-2">
+            <label for="password2">{{ lang.CONFIRM_PASSWORD }} <i id="password2-feedback-icon" class="fas field-feedback-icon"></i></label>
+            <input type="password" id="password2" class="form-control select-field">
+            <div id="password2-feedback" class="invalid-feedback">
+                <span id="password2-feedback-message-none" class="field-feedback-message password2-feedback-message">{{ lang.CONFIRM_PASSWORD_BLANK }}</span>
+                <span id="password2-feedback-message-mismatch" class="field-feedback-message password2-feedback-message">{{ lang.CONFIRM_PASSWORD_MISMATCH }}</span>
+                <span id="password2-feedback-message-api" class="field-feedback-message password2-feedback-message"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-row justify-content-md-end">
+        <div class="col-12 col-sm-6 col-md-auto mb-2">
+            <button type="button" id="save-button" class="btn btn-primary btn-block"><i id="save-button-icon" class="fas fa-sync fa-spin"></i><span id="save-button-text"> {{ lang.SAVE }}</span></button>
+        </div>
+        <div class="col-12 col-sm-6 col-md-auto mb-2">
+            <a href="{{ meta.web_root }}/" id="cancel-button" class="btn btn-secondary btn-block">{{ lang.CANCEL }}</a>
+        </div>
+    </div>
+</form>
+
+{% endblock %}

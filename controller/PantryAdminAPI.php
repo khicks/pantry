@@ -79,126 +79,51 @@ class PantryAdminAPI extends PantryAPI {
         $pantry = new self();
         $username = $_GET['username'];
 
-        $user_check = PantryUser::checkUsername($username);
-        $available = false;
-
-        if ($user_check === "short") {
-            $message = $pantry->language['ADMIN_USERS_ERROR_USERNAME_SHORT'];
+        try {
+            PantryUser::checkUsername($username);
+            $pantry->response = new PantryAPISuccess("CHECK_USERNAME_SUCCESS", $pantry->language['CHECK_USERNAME_SUCCESS'], [
+                'available' => true,
+                'message' => $pantry->language['ADMIN_USERS_USERNAME_AVAILABLE']
+            ]);
         }
-        elseif ($user_check === "long") {
-            $message = $pantry->language['ADMIN_USERS_ERROR_USERNAME_LONG'];
-        }
-        elseif ($user_check === "invalid") {
-            $message = $pantry->language['ADMIN_USERS_ERROR_USERNAME_INVALID'];
-        }
-        elseif ($user_check === "taken") {
-            $message = $pantry->language['ADMIN_USERS_ERROR_USERNAME_TAKEN'];
-        }
-        elseif ($user_check === "available") {
-            $available = true;
-            $message = $pantry->language['ADMIN_USERS_USERNAME_AVAILABLE'];
-        }
-        else {
-            $pantry->response = new PantryAPIError(500, "INTERNAL_ERROR", $pantry->language['INTERNAL_ERROR']);
+        catch (PantryUserValidationException $e) {
+            $error_code = PantryUser::$error_map[get_class($e)];
+            $pantry->response = new PantryAPISuccess("CHECK_USERNAME_SUCCESS", $pantry->language['CHECK_USERNAME_SUCCESS'], [
+                'available' => false,
+                'message' => $pantry->language[$error_code]
+            ]);
             $pantry->response->respond();
-            die();
         }
 
-        $pantry->response = new PantryAPISuccess("CHECK_USERNAME_SUCCESS", $pantry->language['CHECK_USERNAME_SUCCESS'], [
-            'available' => $available,
-            'message' => $message
-        ]);
         $pantry->response->respond();
     }
 
     public static function createUser() {
         $pantry = new self();
-        $errors = [];
-        $first_name = $last_name = $password = null;
 
-        // Check username
-        if (empty($_POST['username'])) {
-            $errors['username'] = [
-                'code' => "none",
-                'message' => $pantry->language['ADMIN_USERS_ERROR_USERNAME_NONE']
-            ];
-        }
-        else {
-            $check_user = PantryUser::checkUsername($_POST['username']);
-            if (in_array($check_user, ["none", "short", "long", "invalid", "taken"], true)) {
-                $errors['username'] = [
-                    'code' => $check_user,
-                    'message' => $pantry->language['ADMIN_USERS_ERROR_USERNAME_'.strtoupper($check_user)]
-                ];
-            }
-        }
-
-        // Check first name
-        if (!empty($_POST['first_name'])) {
-            $first_name = trim($_POST['first_name']);
-            if (strlen($first_name) > 32) {
-                $errors['first_name'] = [
-                    'code' => "long",
-                    'message' => $pantry->language['ADMIN_USERS_ERROR_FIRSTNAME_LONG']
-                ];
-            }
-            elseif (!preg_match("/^[A-Za-zÀ-ÖØ-öø-ÿ0-9-'\"\\s]*$/", $first_name)) {
-                $errors['first_name'] = [
-                    'code' => "invalid",
-                    'message' => $pantry->language['ADMIN_USERS_ERROR_FIRSTNAME_INVALID']
-                ];
-            }
-        }
-
-        // Check last name
-        if (!empty($_POST['last_name'])) {
-            $last_name = trim($_POST['last_name']);
-            if (strlen($last_name) > 32) {
-                $errors['last_name'] = [
-                    'code' => "long",
-                    'message' => $pantry->language['ADMIN_USERS_ERROR_LASTNAME_LONG']
-                ];
-            }
-            elseif (!preg_match("/^[A-Za-zÀ-ÖØ-öø-ÿ0-9-'\"\\s]*$/", $last_name)) {
-                $errors['last_name'] = [
-                    'code' => "invalid",
-                    'message' => $pantry->language['ADMIN_USERS_ERROR_LASTNAME_INVALID']
-                ];
-            }
-        }
-
-        // Check password
-        if (empty($_POST['password'])) {
-            $errors['password1'] = [
-                'code' => "none",
-                'message' => $pantry->language['ADMIN_USERS_ERROR_PASSWORD1_NONE']
-            ];
-        }
-
-        // Respond to errors
-        if (!empty($errors)) {
-            $pantry->response = new PantryAPIError(422, "CREATE_USER_FAILED", $pantry->language['CREATE_USER_FAILED'], $errors);
-            $pantry->response->respond();
-            die();
-        }
-
-        // Create user
-        $admin = (!empty($_POST['admin']) && in_array($_POST['admin'], ["true", "1"], true));
-        $disabled = (!empty($_POST['disabled']) && in_array($_POST['disabled'], ["true", "1"], true));
+        $new_user = new PantryUser(null);
 
         try {
-            $new_user = new PantryUser(null);
+            $new_user->setUsername($_POST['username']);
+            $new_user->setFirstName($_POST['first_name']);
+            $new_user->setLastName($_POST['last_name']);
+            $new_user->setPassword($_POST['password']);
         }
-        catch (PantryUserNotFoundException $e) {
-            Pantry::$logger->emergency("New user could not be instantiated.");
-            die();
+        catch (PantryUserValidationException $e) {
+            $error_code = PantryUser::$error_map[get_class($e)];
+            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language[$error_code], [
+                'issue' => "validation",
+                'field' => $e->getField()
+            ]);
+            $pantry->response->respond();
         }
-        $new_user->setUsername($_POST['username']);
-        $new_user->setFirstName($first_name);
-        $new_user->setLastName($last_name);
-        $new_user->setPassword($_POST['password']);
+
+        $admin = (!empty($_POST['admin']) && in_array($_POST['admin'], ["true", "1"], true));
         $new_user->setIsAdmin($admin);
+
+        $disabled = (!empty($_POST['disabled']) && in_array($_POST['disabled'], ["true", "1"], true));
         $new_user->setIsDisabled($disabled);
+
         $new_user->save();
         Pantry::$logger->debug("User {$_POST['username']} created.");
 
@@ -212,16 +137,15 @@ class PantryAdminAPI extends PantryAPI {
         $pantry->response->respond();
     }
 
-    public static function editUser() {
+    public function editUser() {
         $pantry = new self();
-        $errors = [];
 
-        if (empty($_POST['user_id'])) {
+        $user_id = $_POST['user_id'];
+        if (empty($user_id)) {
             $pantry->response = new PantryAPIError(422, "NO_USER_ID", $pantry->language['NO_USER_ID']);
             $pantry->response->respond();
         }
 
-        $user_id = $_POST['user_id'];
         try {
             $user = new PantryUser($user_id);
         }
@@ -231,116 +155,44 @@ class PantryAdminAPI extends PantryAPI {
             die();
         }
 
-        // Check username
-        if (isset($_POST['username'])) {
-            if (empty($_POST['username'])) {
-                $errors['username'] = [
-                    'code' => "none",
-                    'message' => $pantry->language['ADMIN_USERS_ERROR_USERNAME_NONE']
-                ];
+        try {
+            if (isset($_POST['username'])) {
+                $user->setUsername($_POST['username']);
             }
-            elseif ($_POST['username'] !== $user->getUsername()) {
-                $check_user = PantryUser::checkUsername($_POST['username']);
-                if (in_array($check_user, ["none", "short", "long", "invalid", "taken"], true)) {
-                    $errors['username'] = [
-                        'code' => $check_user,
-                        'message' => $pantry->language['ADMIN_USERS_ERROR_USERNAME_'.strtoupper($check_user)]
-                    ];
-                }
-                else {
-                    $username = $_POST['username'];
-                }
+            if (isset($_POST['first_name'])) {
+                $user->setFirstName($_POST['first_name']);
             }
-        }
-
-        // Check first name
-        if (isset($_POST['first_name'])) {
-            $first_name = preg_replace('/\s+/', " ", $_POST['first_name']);
-            if (strlen($first_name) > 32) {
-                $errors['first_name'] = [
-                    'code' => "long",
-                    'message' => $pantry->language['ADMIN_USERS_ERROR_FIRSTNAME_LONG']
-                ];
+            if (isset($_POST['last_name'])) {
+                $user->setLastName($_POST['last_name']);
             }
-            elseif (!preg_match("/^[A-Za-zÀ-ÖØ-öø-ÿ0-9-'\"\\s]*$/", $first_name)) {
-                $errors['first_name'] = [
-                    'code' => "invalid",
-                    'message' => $pantry->language['ADMIN_USERS_ERROR_FIRSTNAME_INVALID']
-                ];
-            }
-        }
-
-        // Check last name
-        if (isset($_POST['last_name'])) {
-            $last_name = preg_replace('/\s+/', " ", $_POST['last_name']);
-            if (strlen($last_name) > 32) {
-                $errors['last_name'] = [
-                    'code' => "long",
-                    'message' => $pantry->language['ADMIN_USERS_ERROR_LASTNAME_LONG']
-                ];
-            }
-            elseif (!preg_match("/^[A-Za-zÀ-ÖØ-öø-ÿ0-9-'\"\\s]*$/", $last_name)) {
-                $errors['last_name'] = [
-                    'code' => "invalid",
-                    'message' => $pantry->language['ADMIN_USERS_ERROR_LASTNAME_INVALID']
-                ];
-            }
-        }
-
-        // Check password
-        if (isset($_POST['password']) && !empty($_POST['password'])) {
-            $password = $_POST['password'];
-        }
-
-        // Check admin
-        if (isset($_POST['admin']) && $user_id !== $pantry->current_user->getID()) {
-            $admin = (!empty($_POST['admin']) && in_array($_POST['admin'], ["true", "1"], true));
-        }
-
-        // Check disabled
-        if (isset($_POST['disabled']) && $user_id !== $pantry->current_user->getID()) {
-            $disabled = (!empty($_POST['disabled']) && in_array($_POST['disabled'], ["true", "1"], true));
-        }
-
-        // Check disable two factor auth
-        if (isset($_POST['disable_two_factor_auth'])) {
-            $disable_two_factor_auth = (!empty($_POST['disable_two_factor_auth']) && in_array($_POST['disable_two_factor_auth'], ["true", "1"], true));
-        }
-
-        // Respond to errors
-        if (!empty($errors)) {
-            $pantry->response = new PantryAPIError(422, "CREATE_USER_FAILED", $pantry->language['CREATE_USER_FAILED'], $errors);
-            $pantry->response->respond();
-            die();
-        }
-
-        if (isset($username)) {
-            $user->setUsername($username);
-        }
-        if (isset($first_name)) {
-            $user->setFirstName($first_name);
-        }
-        if (isset($last_name)) {
-            $user->setLastName($last_name);
-        }
-        if (isset($password)) {
-            $user->setPassword($password);
-            PantryUserSession::purgeUser($user->getID());
-        }
-        if (isset($admin)) {
-            $user->setIsAdmin($admin);
-        }
-        if (isset($disabled)) {
-            $user->setIsDisabled($disabled);
-            if ($disabled) {
+            if (isset($_POST['password']) && !empty($_POST['password'])) {
+                $user->setPassword($_POST['password']);
                 PantryUserSession::purgeUser($user->getID());
             }
         }
-        $user->save();
-
-        if (isset($disable_two_factor_auth) && $disable_two_factor_auth) {
-            $user->disableTwoFactorAuth();
+        catch (PantryUserValidationException $e) {
+            $error_code = PantryUser::$error_map[get_class($e)];
+            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language[$error_code], [
+                'issue' => "validation",
+                'field' => $e->getField()
+            ]);
+            $pantry->response->respond();
         }
+
+        if (isset($_POST['admin']) && $user_id !== $pantry->current_user->getID()) {
+            $admin = (!empty($_POST['admin']) && in_array($_POST['admin'], ["true", "1"], true));
+            $user->setIsAdmin($admin);
+        }
+        if (isset($_POST['disabled']) && $user_id !== $pantry->current_user->getID()) {
+            $disabled = (!empty($_POST['disabled']) && in_array($_POST['disabled'], ["true", "1"], true));
+            $user->setIsDisabled($disabled);
+            if ($user->getIsDisabled()) {
+                PantryUserSession::purgeUser($user->getID());
+            }
+        }
+
+        $user->save();
+        Pantry::$logger->debug("User {$user_id} edited.");
 
         $_SESSION['alert'] = [
             'type' => "success",
@@ -355,12 +207,13 @@ class PantryAdminAPI extends PantryAPI {
     public static function deleteUser() {
         $pantry = new self();
 
-        if (empty($_POST['user_id'])) {
+        $user_id = $_POST['user_id'];
+
+        if (empty($user_id)) {
             $pantry->response = new PantryAPIError(422, "NO_USER_ID", $pantry->language['NO_USER_ID']);
             $pantry->response->respond();
         }
 
-        $user_id = $_POST['user_id'];
         try {
             $user = new PantryUser($user_id);
         }
@@ -379,6 +232,7 @@ class PantryAdminAPI extends PantryAPI {
         PantryTwoFactorLogin::purgeUser($user->getID());
         PantryTwoFactorKey::purgeUser($user->getID());
         PantryUserSession::purgeUser($user->getID());
+        PantryRecipe::purgeUser($user->getID());
         $user->delete();
 
         $_SESSION['alert'] = [
