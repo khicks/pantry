@@ -89,7 +89,7 @@
                             <option value="">({{ lang.NONE }})</option>
                         </select>
                         <div id="course-feedback-text" class="invalid-feedback">
-                            <span id="course-feedback-message-api" class="field-feedback-message servings-feedback-message"></span>
+                            <span id="course-feedback-message-api" class="field-feedback-message course-feedback-message"></span>
                         </div>
                     </div>
                     <div class="col-12 col-md-6 mb-2">
@@ -98,7 +98,7 @@
                             <option value="">({{ lang.NONE }})</option>
                         </select>
                         <div id="cuisine-feedback-text" class="invalid-feedback">
-                            <span id="cuisine-feedback-message-api" class="field-feedback-message servings-feedback-message"></span>
+                            <span id="cuisine-feedback-message-api" class="field-feedback-message cuisine-feedback-message"></span>
                         </div>
                     </div>
                 </div>
@@ -106,21 +106,21 @@
                 <div class="form-row">
                     <div class="col-12 col-md-4 mb-2">
                         <label for="servings">{{ lang.SERVINGS }} <i id="servings-feedback-icon" class="fas field-feedback-icon"></i></label>
-                        <input type="number" id="servings" min="0" max="100" class="form-control" required>
+                        <input type="number" id="servings" value="1" min="1" max="100" class="form-control" required>
                         <div id="servings-feedback-text" class="invalid-feedback">
                             <span id="servings-feedback-message-api" class="field-feedback-message servings-feedback-message"></span>
                         </div>
                     </div>
                     <div class="col-12 col-md-4 mb-2">
                         <label for="prep-time">{{ lang.PREP_TIME }} <i id="prep-time-feedback-icon" class="fas field-feedback-icon"></i></label>
-                        <input type="number" id="prep-time" min="0" max="129600" class="form-control">
+                        <input type="number" id="prep-time" value="0" min="0" max="129600" class="form-control">
                         <div id="prep-time-feedback-text" class="invalid-feedback">
                             <span id="prep-time-feedback-message-api" class="field-feedback-message prep-time-feedback-message"></span>
                         </div>
                     </div>
                     <div class="col-12 col-md-4 mb-2">
                         <label for="cook-time">{{ lang.COOK_TIME }} <i id="cook-time-feedback-icon" class="fas field-feedback-icon"></i></label>
-                        <input type="number" id="cook-time" min="0" max="129600" class="form-control">
+                        <input type="number" id="cook-time" value="0" min="0" max="129600" class="form-control">
                         <div id="cook-time-feedback-text" class="invalid-feedback">
                             <span id="cook-time-feedback-message-api" class="field-feedback-message cook-time-feedback-message"></span>
                         </div>
