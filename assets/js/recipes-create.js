@@ -346,14 +346,4 @@ $(function() {
         success: onCCLoad,
         error: onCCFail,
     });
-
-    elements.fields.title.field.val("Cheeseburger 3");
-    elements.fields.slug.field.val("cheeseburger3");
-    elements.fields.blurb.field.val("Yet another cheeseburger");
-    elements.fields.description.field.val("They're the best.");
-    elements.fields.servings.field.val(1);
-    elements.fields.prep_time.field.val(1);
-    elements.fields.cook_time.field.val(1);
-    elements.fields.ingredients.field.val("* Cheeseburger");
-    elements.fields.directions.field.val("Cook it.");
 });
