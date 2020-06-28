@@ -392,6 +392,7 @@ class PantryAPI extends PantryApp {
             $recipe->setServings($_POST['servings']);
             $recipe->setPrepTime($_POST['prep_time']);
             $recipe->setCookTime($_POST['cook_time']);
+            $recipe->setSource($_POST['source']);
         }
         catch (PantryRecipeValidationException $e) {
             $error_code = PantryRecipe::$error_map[get_class($e)];
@@ -410,7 +411,6 @@ class PantryAPI extends PantryApp {
         $recipe->setDefaultPermissionLevel($_POST['default_permission_level']);
 
         //TODO: these fields
-        $recipe->setSource("");
         $recipe->setIsFeatured(false);
         $recipe->setAuthor($pantry->current_user);
 
@@ -497,6 +497,7 @@ class PantryAPI extends PantryApp {
             $recipe->setServings($_POST['servings']);
             $recipe->setPrepTime($_POST['prep_time']);
             $recipe->setCookTime($_POST['cook_time']);
+            $recipe->setSource($_POST['source']);
             //TODO: featured, author (admin only)
             //$recipe->setIsFeatured(false);
             //$recipe->setAuthor($pantry->current_user);

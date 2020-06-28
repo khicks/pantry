@@ -214,6 +214,14 @@ class PantryRecipeCookTimeTooSmallException extends PantryRecipeCookTimeValidati
 
 class PantryRecipeCookTimeTooBigException extends PantryRecipeCookTimeValidationException {}
 
+class PantryRecipeSourceValidationException extends PantryRecipeValidationException {
+    public function __construct($bad_value, $code = 0, Exception $previous = null) {
+        parent::__construct("source", $bad_value, $code, $previous);
+    }
+}
+
+class PantryRecipeSourceInvalidException extends PantryRecipeSourceValidationException {}
+
 class PantryImageNotFoundException extends PantryException {}
 
 class PantryImageTypeNotAllowedException extends PantryException {}

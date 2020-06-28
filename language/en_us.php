@@ -207,6 +207,7 @@ return [
     'RECIPE_COOK_TIME_INVALID' => "The value for cook time is invalid.",
     'RECIPE_COOK_TIME_TOO_SMALL' => "The value for cook time is too small.",
     'RECIPE_COOK_TIME_TOO_BIG' => "The value for cook time is too big.",
+    'RECIPE_SOURCE_INVALID' => "Source URL is invalid. (Must start with \"http://\" or \"https://\".)",
 
     // Admin pages
     'ADMIN_BRAND' => "Admin",

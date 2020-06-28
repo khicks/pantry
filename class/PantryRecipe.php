@@ -18,7 +18,8 @@ class PantryRecipe {
         'PantryRecipePrepTimeTooBigException' => "RECIPE_PREP_TIME_TOO_BIG",
         'PantryRecipeCookTimeInvalidException' => "RECIPE_PREP_TIME_INVALID",
         'PantryRecipeCookTimeTooSmallException' => "RECIPE_COOK_TIME_TOO_SMALL",
-        'PantryRecipeCookTimeTooBigException' => "RECIPE_COOK_TIME_TOO_BIG"
+        'PantryRecipeCookTimeTooBigException' => "RECIPE_COOK_TIME_TOO_BIG",
+        'PantryRecipeSourceInvalidException' => "RECIPE_SOURCE_INVALID"
     ];
 
     private $id;
@@ -443,8 +444,22 @@ class PantryRecipe {
         $this->directions = $directions;
     }
 
-    public function setSource($source) {
-        // TODO: FILTER_VALIDATE_URL
+    /**
+     * @param $source
+     * @param bool $sanitize
+     * @throws PantryRecipeSourceInvalidException
+     */
+    public function setSource($source, $sanitize = true) {
+        if ($sanitize && !empty($source)) {
+            $source = Pantry::$html_purifier->purify($source);
+            $source = trim($source);
+            $validate_url = filter_var($source, FILTER_VALIDATE_URL,
+                FILTER_FLAG_SCHEME_REQUIRED | FILTER_FLAG_HOST_REQUIRED);
+            if ($validate_url === false || !preg_match('/^https?:\/\//', $source)) {
+                throw new PantryRecipeSourceInvalidException($source);
+            }
+        }
+
         $this->source = $source;
     }
 

@@ -132,6 +132,14 @@ $(function() {
                     api: $("#directions-feedback-message-api")
                 }
             },
+            source: {
+                field: $("#source"),
+                icon: function() { return $("#source-feedback-icon"); },
+                messages: {
+                    all: $(".source-feedback-message"),
+                    api: $("#source-feedback-message-api")
+                }
+            },
             visibility: {
                 all: $("input[name=visibility]"),
                 selected: function() { return $("input[name=visibility]:checked") },
@@ -294,6 +302,7 @@ $(function() {
             cook_time: elements.fields.cook_time.field.val(),
             ingredients: elements.fields.ingredients.field.val(),
             directions: elements.fields.directions.field.val(),
+            source: elements.fields.source.field.val(),
             course_id: elements.fields.course.field.val(),
             cuisine_id: elements.fields.cuisine.field.val(),
             visibility_level: elements.fields.visibility.value(),
