@@ -6,8 +6,8 @@
             </div>
             <div class="col-12 col-lg-3 d-print-none">
                 <div class="float-lg-right">
-                    <a id="cancel-button" class="btn btn-secondary" role="button"><i class="fas fa-times"></i> {{ lang.CANCEL }}</a>
                     <button id="recipe-save-button" type="button" class="btn btn-success"><i id="recipe-save-button-icon" class="fas fa-fw fa-save"></i> {{ lang.SAVE }}</button>
+                    <a id="cancel-button" class="btn btn-secondary" role="button"><i class="fas fa-times"></i> {{ lang.CANCEL }}</a>
                 </div>
             </div>
         </div>
@@ -17,7 +17,7 @@
         <div id="no-permission-alert" class="alert alert-danger" style="display:none"><b>{{ lang.EDIT_RECIPE_NO_PERMISSION }}</b></div>
         <div class="form-row">
             <input type="hidden" id="id">
-            <div class="col-12 col-md-6 mb-2">
+            <div class="col-12 col-md-5 mb-2">
                 <label for="recipe-title">{{ lang.TITLE }} <i id="title-feedback-icon" class="fas field-feedback-icon"></i></label>
                 <input type="text" id="recipe-title" class="form-control" maxlength="64">
                 <div id="title-feedback-text" class="invalid-feedback">
@@ -27,7 +27,7 @@
                     <span id="title-feedback-message-api" class="field-feedback-message title-feedback-message"></span>
                 </div>
             </div>
-            <div class="col-12 col-md-6 mb-2">
+            <div class="col-12 col-md-5 mb-2">
                 <label for="slug">{{ lang.SLUG }} <i id="slug-help-icon" class="fas fa-info-circle text-muted"></i> <i id="slug-feedback-icon" class="fas field-feedback-icon"></i></label>
                 <div id="slug-help-text" class="d-none">{{ lang.RECIPE_SLUG_HELP }}</div>
                 <input type="text" id="slug" class="form-control" maxlength="40">
@@ -37,6 +37,14 @@
                     <span id="slug-feedback-message-long" class="field-feedback-message slug-feedback-message">{{ lang.RECIPE_SLUG_ERROR_LONG }}</span>
                     <span id="slug-feedback-message-api" class="field-feedback-message slug-feedback-message"></span>
                 </div>
+            </div>
+            <div class="col-12 col-md-2 mb-4 mb-md-2">
+                <label>{{ lang.FEATURED }} <i id="featured-help-icon" class="fas fa-info-circle text-muted"></i> <i id="featured-feedback-icon" class="fas field-feedback-icon"></i></label>
+                <div id="featured-help-text" class="d-none">{{ lang.FEATURED_HELP }}</div>
+                <button type="button" id="featured" class="btn btn-block btn-outline-secondary" data-toggle="button" aria-pressed="false">
+                    <span id="not-featured-text">{{ lang.NOT_FEATURED }}</span>
+                    <span id="featured-text"><i class="fas fa-check"></i> {{ lang.FEATURED }}</span>
+                </button>
             </div>
         </div>
         <div class="form-row">

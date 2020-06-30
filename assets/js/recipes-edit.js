@@ -49,6 +49,14 @@ $(function() {
                     api: $("#slug-feedback-message-api")
                 }
             },
+            featured: {
+                button: $("#featured"),
+                value: function() { return $("#featured").hasClass('active').toString() },
+                helpIcon: function() { return $("#featured-help-icon"); },
+                helpText: $("#featured-help-text"),
+                featuredText: $("#featured-text"),
+                notFeaturedText: $("#not-featured-text")
+            },
             blurb: {
                 field: $("#blurb"),
                 icon: function() { return $("#blurb-feedback-icon"); },
@@ -203,6 +211,10 @@ $(function() {
             elements.fields.image.resetButton.show();
         }
 
+        if (response.data.featured) {
+            elements.fields.featured.button.click();
+        }
+
         if (response.data.course)
             elements.fields.course.field.val(response.data.course.id);
         if (response.data.cuisine)
@@ -230,12 +242,6 @@ $(function() {
             elements.fields.visibility.all.prop('disabled', true);
             elements.fields.default_permission.all.prop('disabled', true);
         }
-
-        elements.fields.slug.helpIcon().tooltip({
-            container: "body",
-            placement: "top",
-            title: elements.fields.slug.helpText
-        });
 
         elements.buttons.cancel.attr("href", webRoot + "/recipe/" + recipeSlug);
 
@@ -270,6 +276,20 @@ $(function() {
 
     const onCCFail = function() {
         alert("courses-cuisines failed to load");
+    };
+
+    const onFeaturedToggle = function() {
+        let was_pressed = $(this).hasClass('active');
+        if (was_pressed) {
+            elements.fields.featured.button.addClass('btn-outline-secondary').removeClass('btn-primary');
+            elements.fields.featured.notFeaturedText.show();
+            elements.fields.featured.featuredText.hide();
+        }
+        else {
+            elements.fields.featured.button.addClass('btn-primary').removeClass('btn-outline-secondary');
+            elements.fields.featured.notFeaturedText.hide();
+            elements.fields.featured.featuredText.show();
+        }
     };
 
     const onImageChange = function() {
@@ -384,7 +404,8 @@ $(function() {
             course_id: elements.fields.course.field.val(),
             cuisine_id: elements.fields.cuisine.field.val(),
             visibility_level: elements.fields.visibility.value(),
-            default_permission_level: elements.fields.default_permission.value()
+            default_permission_level: elements.fields.default_permission.value(),
+            featured: elements.fields.featured.value()
         };
 
         let formData = new FormData();
@@ -413,12 +434,26 @@ $(function() {
     }
 
     elements.buttons.save.button.on('click', saveRecipe);
+    elements.fields.featured.button.on('click', onFeaturedToggle);
     elements.fields.image.field.on('change', onImageChange);
     elements.fields.image.resetButton.on('click', onImageReset);
     elements.fields.image.clearButton.on('click', onImageClear);
     elements.fields.visibility.all.on('change', onVisibilityChange);
+
     $.each(elements.fieldGroups, function() {
         this.on('input propertychange', clearFieldErrors);
+    });
+
+    elements.fields.slug.helpIcon().tooltip({
+        container: "body",
+        placement: "top",
+        title: elements.fields.slug.helpText
+    });
+
+    elements.fields.featured.helpIcon().tooltip({
+        container: "body",
+        placement: "top",
+        title: elements.fields.featured.helpText
     });
 
     $.ajax({

@@ -267,6 +267,7 @@ class PantryAPI extends PantryApp {
             'source' => $recipe->getSource(),
             'visibility_level' => $recipe->getVisibilityLevel(),
             'default_permission_level' => $recipe->getDefaultPermissionLevel(),
+            'featured' => $recipe->getIsFeatured(),
             'author' => (is_null($recipe->getAuthor())) ? null : [
                 'username' => $recipe->getAuthor()->getusername(),
                 'first_name' => $recipe->getAuthor()->getFirstName(),
@@ -409,6 +410,7 @@ class PantryAPI extends PantryApp {
         $recipe->setDirections($_POST['directions']);
         $recipe->setVisibilityLevel($_POST['visibility_level']);
         $recipe->setDefaultPermissionLevel($_POST['default_permission_level']);
+        $recipe->setIsFeatured(in_array($_POST['featured'], ["true", "1"], true));
 
         //TODO: these fields
         $recipe->setIsFeatured(false);
@@ -498,8 +500,7 @@ class PantryAPI extends PantryApp {
             $recipe->setPrepTime($_POST['prep_time']);
             $recipe->setCookTime($_POST['cook_time']);
             $recipe->setSource($_POST['source']);
-            //TODO: featured, author (admin only)
-            //$recipe->setIsFeatured(false);
+            //TODO: author (admin only)
             //$recipe->setAuthor($pantry->current_user);
         }
         catch (PantryRecipeValidationException $e) {
@@ -515,6 +516,7 @@ class PantryAPI extends PantryApp {
         $recipe->setDescription($_POST['description']);
         $recipe->setIngredients($_POST['ingredients']);
         $recipe->setDirections($_POST['directions']);
+        $recipe->setIsFeatured(in_array($_POST['featured'], ["true", "1"], true));
 
         // set permissions if admin
         if (PantryRecipePermission::getEffectivePermissionLevel($recipe, $pantry->current_user) === PantryRecipePermission::$permission_level_map['ADMIN']) {

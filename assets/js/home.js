@@ -6,6 +6,10 @@ $(function() {
             featured: $("#featured-loading"),
             newRecipes: $("#new-loading"),
         },
+        recipeBlocks: {
+            featured: $("#featured-block"),
+            newRecipes: $("#new-recipes-block")
+        },
         recipeRows: {
             featured: $("#featured-row"),
             newRecipes: $("#new-recipes-row")
@@ -28,6 +32,7 @@ $(function() {
 
         if (response.data.recipes.length === 0) {
             elements.alerts.featuredNone.show();
+            elements.recipeBlocks.featured.css('min-height', 0);
             return;
         }
 

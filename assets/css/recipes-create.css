@@ -19,6 +19,10 @@ span.field-feedback-message {
     font-weight: bold;
 }
 
+#featured-text {
+    display: none;
+}
+
 #image-label {
     overflow: hidden;
     white-space: nowrap;
