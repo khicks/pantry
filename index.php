@@ -11,7 +11,8 @@ $router->addMatchTypes([
     'uuid' => "[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}",
     'un' => "[A-Za-z0-9-_]{3,32}",
     'slug' => "[a-z0-9-]{3,40}",
-    'img' => "[a-z0-9-]{3,40}\\.(bmp|jpg|png)"
+    'img' => "[a-z0-9-]{3,40}\\.[a-z0-9]+",
+    'img_size' => "(md|sm)"
 ]);
 
 try {
@@ -24,6 +25,7 @@ try {
     $router->map('GET', '/recipe/[slug:slug]', 'PantryPage::viewRecipe');
     $router->map('GET', '/recipe/[slug:slug]/edit', 'PantryPage::editRecipe');
     $router->map('GET', '/image/[img:img]', 'PantryAPI::getImage');
+    $router->map('GET', '/image/[img_size:size]/[img:img]', 'PantryAPI::getImageSize');
 
     // Admin pages
     $router->map('GET', '/admin', 'PantryAdminPage::dashboard');

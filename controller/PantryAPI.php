@@ -285,7 +285,9 @@ class PantryAPI extends PantryApp {
                 'slug' => $recipe->getCuisine()->getSlug()
             ],
             'image' => (is_null($recipe->getImage())) ? null : [
-                'path' => $recipe->getImage()->getWebPath($recipe->getSlug())
+                'path' => $recipe->getImage()->getWebPath($recipe->getSlug()),
+                'md_path' => $recipe->getImage()->getWebPath($recipe->getSlug(), "md"),
+                'sm_path' => $recipe->getImage()->getWebPath($recipe->getSlug(), "sm")
             ],
             //'permission_level' => $recipe_permission->getLevel(),
             'effective_permission_level' => PantryRecipePermission::getEffectivePermissionLevel($recipe, $pantry->current_user),
@@ -301,9 +303,11 @@ class PantryAPI extends PantryApp {
         $pantry->response->respond();
     }
 
-    public static function getImage($img) {
+    public static function getImage($img, $size = null) {
         $pantry = new self(false);
         $img_elements = explode(".", $img);
+        Pantry::$logger->emergency($img);
+        Pantry::$logger->emergency($size);
         try {
             $recipe = PantryRecipe::constructBySlug($img_elements[0]);
         }
@@ -328,11 +332,15 @@ class PantryAPI extends PantryApp {
         }
 
         if (isset($_GET['download']) && !in_array(strtolower($_GET['download']), ["0", "false"], true)) {
-            $image->download($img);
+            $image->download($img, $size);
         }
         else {
-            $image->display();
+            $image->display($size);
         }
+    }
+
+    public static function getImageSize($size, $img) {
+        self::getImage($img, $size);
     }
 
     public static function listCourses() {

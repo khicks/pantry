@@ -633,7 +633,9 @@ class PantryRecipe {
                     'slug' => $recipe->getCuisine()->getSlug()
                 ],
                 'image' => (is_null($recipe->getImage())) ? null : [
-                    'path' => $recipe->getImage()->getWebPath($recipe->getSlug())
+                    'path' => $recipe->getImage()->getWebPath($recipe->getSlug()),
+                    'md_path' => $recipe->getImage()->getWebPath($recipe->getSlug(), "md"),
+                    'sm_path' => $recipe->getImage()->getWebPath($recipe->getSlug(), "sm")
                 ]
             ];
         }
@@ -679,7 +681,9 @@ class PantryRecipe {
                     'slug' => $recipe->getCuisine()->getSlug()
                 ],
                 'image' => (is_null($recipe->getImage())) ? null : [
-                    'path' => $recipe->getImage()->getWebPath($recipe->getSlug())
+                    'path' => $recipe->getImage()->getWebPath($recipe->getSlug()),
+                    'md_path' => $recipe->getImage()->getWebPath($recipe->getSlug(), "md"),
+                    'sm_path' => $recipe->getImage()->getWebPath($recipe->getSlug(), "sm")
                 ]
             ];
         }
@@ -725,7 +729,9 @@ class PantryRecipe {
                     'slug' => $recipe->getCuisine()->getSlug()
                 ],
                 'image' => (is_null($recipe->getImage())) ? null : [
-                    'path' => $recipe->getImage()->getWebPath($recipe->getSlug())
+                    'path' => $recipe->getImage()->getWebPath($recipe->getSlug()),
+                    'md_path' => $recipe->getImage()->getWebPath($recipe->getSlug(), "md"),
+                    'sm_path' => $recipe->getImage()->getWebPath($recipe->getSlug(), "sm")
                 ]
             ];
         }

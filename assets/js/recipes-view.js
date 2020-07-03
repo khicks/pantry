@@ -113,7 +113,7 @@ $(function() {
             recipeElements.descriptionCol.addClass("col-12");
             recipeElements.tableCol.addClass("col-12");
             recipeElements.imageCol.addClass("col-md-6").show();
-            recipeElements.image.attr("src", response.data.image.path);
+            recipeElements.image.attr("src", response.data.image.md_path);
         }
 
         // ingredients

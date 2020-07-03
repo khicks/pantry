@@ -224,6 +224,8 @@ class PantryRecipeSourceInvalidException extends PantryRecipeSourceValidationExc
 
 class PantryImageNotFoundException extends PantryException {}
 
+class PantryImageFileSizeTooBigException extends PantryException {}
+
 class PantryImageTypeNotAllowedException extends PantryException {}
 
 class PantryFileNotFoundException extends PantryException {}

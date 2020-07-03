@@ -205,7 +205,7 @@ $(function() {
         elements.fields.source.field.val(response.data.source);
 
         if (response.data.image) {
-            elements.fields.image.originalPath = response.data.image.path;
+            elements.fields.image.originalPath = response.data.image.md_path;
             elements.fields.image.preview.attr('src', elements.fields.image.originalPath).show();
             elements.fields.image.placeholder.hide();
             elements.fields.image.resetButton.show();
