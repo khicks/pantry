@@ -117,7 +117,7 @@ class PantryRecipe {
     /**
      * PantryRecipe alt constructor. Uses URL slug instead.
      * @param string|null $slug
-     * @return PantryRecipe
+     * @return PantryRecipe|null
      * @throws PantryRecipeNotFoundException
      */
     public static function constructBySlug($slug = null) {
@@ -320,13 +320,12 @@ class PantryRecipe {
         $sql_check_slug->bindValue(':slug', $slug, PDO::PARAM_STR);
         $sql_check_slug->execute();
         if ($sql_check_slug->rowCount() > 0) {
-            if ($this->id) {
-                $row = $sql_check_slug->fetch(PDO::FETCH_ASSOC);
-                if ($row['id'] !== $this->id) {
-                    throw new PantryRecipeSlugNotAvailableException($slug);
-                }
+            if (!$this->id) {
+                throw new PantryRecipeSlugNotAvailableException($slug);
             }
-            else {
+
+            $row = $sql_check_slug->fetch(PDO::FETCH_ASSOC);
+            if ($row['id'] !== $this->id) {
                 throw new PantryRecipeSlugNotAvailableException($slug);
             }
         }
@@ -499,100 +498,76 @@ class PantryRecipe {
         $this->image = $image;
     }
 
+    /**
+     * @throws PantryRecipeNotSavedException
+     */
     public function save() {
-        try {
-            if ($this->id) {
-                $sql_save_recipe = Pantry::$db->prepare("UPDATE recipes SET updated=NOW(), title=:title, slug=:slug, blurb=:blurb, description=:description, servings=:servings, prep_time=:prep_time, cook_time=:cook_time, ingredients=:ingredients, directions=:directions, source=:source, visibility_level=:visibility_level, default_permission_level=:default_permission_level, featured=:featured, author_id=:author_id, course_id=:course_id, cuisine_id=:cuisine_id, image_id=:image_id WHERE id=:id");
-                $sql_save_recipe->bindValue(':id', $this->id, PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':title', $this->title, PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':slug', $this->slug, PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':blurb', $this->blurb, PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':description', $this->description, PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':servings', $this->servings, PDO::PARAM_INT);
-                $sql_save_recipe->bindValue(':prep_time', $this->prep_time, PDO::PARAM_INT);
-                $sql_save_recipe->bindValue(':cook_time', $this->cook_time, PDO::PARAM_INT);
-                $sql_save_recipe->bindValue(':ingredients', $this->ingredients, PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':directions', $this->directions, PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':source', $this->source, PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':visibility_level', $this->visibility_level, PDO::PARAM_INT);
-                $sql_save_recipe->bindValue(':default_permission_level', $this->default_permission_level, PDO::PARAM_INT);
-                $sql_save_recipe->bindValue(':featured', $this->is_featured, PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':author_id', $this->getAuthorID(), PDO::PARAM_STR); //TODO: in form
-                $sql_save_recipe->bindValue(':course_id', $this->getCourseID(), PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':cuisine_id', $this->getCuisineID(), PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':image_id', $this->getImageID(), PDO::PARAM_STR);
-                if (!$sql_save_recipe->execute()) {
-                    throw new PantryRecipeNotSavedException("Recipe {$this->slug} could not be saved.");
-                }
-            }
-            else {
-                $this->id = Pantry::generateUUID();
-                $sql_save_recipe = Pantry::$db->prepare("INSERT INTO recipes (id, created, updated, title, slug, blurb, description, servings, prep_time, cook_time, ingredients, directions, source, visibility_level, default_permission_level, featured, author_id, course_id, cuisine_id, image_id) VALUES (:id, NOW(), NOW(), :title, :slug, :blurb, :description, :servings, :prep_time, :cook_time, :ingredients, :directions, :source, :visibility_level, :default_permission_level, :featured, :author_id, :course_id, :cuisine_id, :image_id)");
-                $sql_save_recipe->bindValue(':id', $this->id, PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':title', $this->title, PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':slug', $this->slug, PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':blurb', $this->blurb, PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':description', $this->description, PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':servings', $this->servings, PDO::PARAM_INT);
-                $sql_save_recipe->bindValue(':prep_time', $this->prep_time, PDO::PARAM_INT);
-                $sql_save_recipe->bindValue(':cook_time', $this->cook_time, PDO::PARAM_INT);
-                $sql_save_recipe->bindValue(':ingredients', $this->ingredients, PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':directions', $this->directions, PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':source', $this->source, PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':visibility_level', $this->visibility_level, PDO::PARAM_INT);
-                $sql_save_recipe->bindValue(':default_permission_level', $this->default_permission_level, PDO::PARAM_INT);
-                $sql_save_recipe->bindValue(':featured', $this->is_featured, PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':author_id', $this->getAuthorID(), PDO::PARAM_STR); //TODO: in form
-                $sql_save_recipe->bindValue(':course_id', $this->getCourseID(), PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':cuisine_id', $this->getCuisineID(), PDO::PARAM_STR);
-                $sql_save_recipe->bindValue(':image_id', $this->getImageID(), PDO::PARAM_STR);
-                if (!$sql_save_recipe->execute()) {
-                    Pantry::$logger->error(print_r($sql_save_recipe->errorInfo(), true));
-                    throw new PantryRecipeNotSavedException("Recipe {$this->slug} could not be saved.");
-                }
-            }
+        if ($this->id) {
+            $sql_save_recipe = Pantry::$db->prepare("UPDATE recipes SET updated=NOW(), title=:title, slug=:slug, blurb=:blurb, description=:description, servings=:servings, prep_time=:prep_time, cook_time=:cook_time, ingredients=:ingredients, directions=:directions, source=:source, visibility_level=:visibility_level, default_permission_level=:default_permission_level, featured=:featured, author_id=:author_id, course_id=:course_id, cuisine_id=:cuisine_id, image_id=:image_id WHERE id=:id");
         }
-        catch (PantryRecipeNotSavedException $e) {
-            Pantry::$logger->emergency($e->getMessage());
-            die();
+        else {
+            $this->id = Pantry::generateUUID();
+            $sql_save_recipe = Pantry::$db->prepare("INSERT INTO recipes (id, created, updated, title, slug, blurb, description, servings, prep_time, cook_time, ingredients, directions, source, visibility_level, default_permission_level, featured, author_id, course_id, cuisine_id, image_id) VALUES (:id, NOW(), NOW(), :title, :slug, :blurb, :description, :servings, :prep_time, :cook_time, :ingredients, :directions, :source, :visibility_level, :default_permission_level, :featured, :author_id, :course_id, :cuisine_id, :image_id)");
+        }
+
+        $sql_save_recipe->bindValue(':id', $this->id, PDO::PARAM_STR);
+        $sql_save_recipe->bindValue(':title', $this->title, PDO::PARAM_STR);
+        $sql_save_recipe->bindValue(':slug', $this->slug, PDO::PARAM_STR);
+        $sql_save_recipe->bindValue(':blurb', $this->blurb, PDO::PARAM_STR);
+        $sql_save_recipe->bindValue(':description', $this->description, PDO::PARAM_STR);
+        $sql_save_recipe->bindValue(':servings', $this->servings, PDO::PARAM_INT);
+        $sql_save_recipe->bindValue(':prep_time', $this->prep_time, PDO::PARAM_INT);
+        $sql_save_recipe->bindValue(':cook_time', $this->cook_time, PDO::PARAM_INT);
+        $sql_save_recipe->bindValue(':ingredients', $this->ingredients, PDO::PARAM_STR);
+        $sql_save_recipe->bindValue(':directions', $this->directions, PDO::PARAM_STR);
+        $sql_save_recipe->bindValue(':source', $this->source, PDO::PARAM_STR);
+        $sql_save_recipe->bindValue(':visibility_level', $this->visibility_level, PDO::PARAM_INT);
+        $sql_save_recipe->bindValue(':default_permission_level', $this->default_permission_level, PDO::PARAM_INT);
+        $sql_save_recipe->bindValue(':featured', $this->is_featured, PDO::PARAM_STR);
+        $sql_save_recipe->bindValue(':author_id', $this->getAuthorID(), PDO::PARAM_STR); //TODO: in form
+        $sql_save_recipe->bindValue(':course_id', $this->getCourseID(), PDO::PARAM_STR);
+        $sql_save_recipe->bindValue(':cuisine_id', $this->getCuisineID(), PDO::PARAM_STR);
+        $sql_save_recipe->bindValue(':image_id', $this->getImageID(), PDO::PARAM_STR);
+
+        if (!$sql_save_recipe->execute()) {
+            Pantry::$logger->critical("Recipe {$this->slug} could not be saved.");
+            throw new PantryRecipeNotSavedException($this->slug);
         }
     }
 
+    /**
+     * @throws PantryRecipeNotFoundException
+     * @throws PantryRecipeNotDeletedException
+     */
     public function delete() {
-        try {
-            if ($this->id) {
-                // purge permissions
-                $sql_delete_recipe_permission = Pantry::$db->prepare("DELETE FROM recipes_permissions WHERE recipe_id=:recipe_id");
-                $sql_delete_recipe_permission->bindValue(':recipe_id', $this->id, PDO::PARAM_STR);
-                if (!$sql_delete_recipe_permission->execute()) {
-                    Pantry::$logger->error("Could not delete recipe permission.");
-                    Pantry::$logger->error(print_r($sql_delete_recipe_permission->errorInfo(), true));
-                    throw new PantryRecipeNotDeletedException("Recipe {$this->slug} could not be deleted.");
-                }
-
-                // delete image
-                if ($this->getImageID()) {
-                    $this->image->delete();
-                }
-
-                // delete recipe
-                $sql_delete_recipe = Pantry::$db->prepare("DELETE FROM recipes WHERE id=:id");
-                $sql_delete_recipe->bindValue(':id', $this->id, PDO::PARAM_STR);
-                if (!$sql_delete_recipe->execute()) {
-                    Pantry::$logger->error("Could not delete recipe.");
-                    Pantry::$logger->error(print_r($sql_delete_recipe->errorInfo(), true));
-                    throw new PantryRecipeNotDeletedException("Recipe {$this->slug} could not be deleted.");
-                }
-                $this->setNull();
-            }
-            else {
-                throw new PantryRecipeNotFoundException("Recipe not found.");
-            }
+        if (!$this->id) {
+            Pantry::$logger->critical("Tried to delete non-existent recipe.");
+            throw new PantryRecipeNotFoundException("");
         }
-        catch (PantryRecipeNotFoundException | PantryRecipeNotDeletedException $e) {
-            Pantry::$logger->emergency($e->getMessage());
-            die();
+
+        // purge permissions
+        $sql_delete_recipe_permission = Pantry::$db->prepare("DELETE FROM recipes_permissions WHERE recipe_id=:recipe_id");
+        $sql_delete_recipe_permission->bindValue(':recipe_id', $this->id, PDO::PARAM_STR);
+        if (!$sql_delete_recipe_permission->execute()) {
+            Pantry::$logger->critical("Could not delete recipe {$this->id} (purge permissions).");
+            throw new PantryRecipeNotDeletedException("Recipe {$this->slug} could not be deleted.");
         }
+
+        // delete image
+        if ($this->getImageID()) {
+            $this->image->delete();
+        }
+
+        // delete recipe
+        $sql_delete_recipe = Pantry::$db->prepare("DELETE FROM recipes WHERE id=:id");
+        $sql_delete_recipe->bindValue(':id', $this->id, PDO::PARAM_STR);
+        if (!$sql_delete_recipe->execute()) {
+            Pantry::$logger->error("Could not delete recipe.");
+            Pantry::$logger->error(print_r($sql_delete_recipe->errorInfo(), true));
+            throw new PantryRecipeNotDeletedException("Recipe {$this->slug} could not be deleted.");
+        }
+
+        $this->setNull();
     }
 
     public static function getFeaturedRecipes(PantryUser $user = null) {

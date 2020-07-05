@@ -2,7 +2,38 @@
 
 {% block content %}
 
-<p>Dashboard!</p>
-<p><a href="{{ meta.web_root }}/admin/users">Users</a></p>
+<div class="row">
+    <div class="col-12 col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h2>{{ lang.ADMIN_DASHBOARD_USERS_USERS }}</h2>
+
+                <div id="users-loading" class="dashboard-loading">
+                    <i class="fas fa-sync fa-spin"></i>
+                </div>
+
+                <div id="users-content" class="dashboard-content">
+                    <div class="row">
+                        <div class="col-12 mt-2 mb-4">
+                            <table id="users-table" class="m-auto">
+                                <tr><td class="h5 pb-1 pr-2">{{ lang.ADMIN_DASHBOARD_USERS_TOTAL }}:</td><td id="users-total" class="h5 pb-1"></td></tr>
+                                <tr><td class="h5 pb-1 pr-2">{{ lang.ADMIN_DASHBOARD_USERS_ADMINS }}:</td><td id="users-admins" class="h5 pb-1"></td></tr>
+                                <tr><td class="h5 pb-1 pr-2">{{ lang.ADMIN_USERS_DISABLED }}:</td><td id="users-disabled" class="h5 pb-1"></td></tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <a id="users-add" class="btn btn-success btn-block" href="{{ meta.web_root }}/admin/users/create"><i class="fas fa-plus"></i> {{ lang.ADMIN_USERS_CREATE_BUTTON }}</a>
+                            <a id="users-view" class="btn btn-secondary btn-block" href="{{ meta.web_root }}/admin/users"><i class="fas fa-users"></i> {{ lang.ADMIN_DASHBOARD_USERS_VIEW }}</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

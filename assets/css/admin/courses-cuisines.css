@@ -12,3 +12,20 @@
 td.action-buttons {
     text-align: right;
 }
+
+label {
+    font-weight: bold;
+}
+
+.field-feedback-icon,
+span.field-feedback-message {
+    display: none;
+}
+
+.field-feedback-red {
+    color: #dc3545;
+}
+
+.field-feedback-green {
+    color: #28a745;
+}

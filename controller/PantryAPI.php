@@ -346,9 +346,7 @@ class PantryAPI extends PantryApp {
     public static function listCourses() {
         $pantry = new self(false);
 
-        $search = (!empty($_GET['search'])) ? $_GET['search'] : null;
-        $sort_by = (!empty($_GET['sort_by'])) ? $_GET['sort_by'] : "title";
-        $courses = PantryCourse::list($search, $sort_by);
+        $courses = PantryCourse::getCourses();
 
         $pantry->response = new PantryAPISuccess("LIST_COURSES_SUCCESS", $pantry->language['LIST_COURSES_SUCCESS'], [
             'courses' => $courses
@@ -359,9 +357,7 @@ class PantryAPI extends PantryApp {
     public static function listCuisines() {
         $pantry = new self(false);
 
-        $search = (!empty($_GET['search'])) ? $_GET['search'] : null;
-        $sort_by = (!empty($_GET['sort_by'])) ? $_GET['sort_by'] : "title";
-        $cuisines = PantryCuisine::list($search, $sort_by);
+        $cuisines = PantryCuisine::getCuisines();
 
         $pantry->response = new PantryAPISuccess("LIST_CUISINES_SUCCESS", $pantry->language['LIST_CUISINES_SUCCESS'], [
             'cuisines' => $cuisines
@@ -372,11 +368,8 @@ class PantryAPI extends PantryApp {
     public static function listCoursesAndCuisines() {
         $pantry = new self(false);
 
-        $search = (!empty($_GET['search'])) ? $_GET['search'] : null;
-        $sort_by = (!empty($_GET['sort_by'])) ? $_GET['sort_by'] : "title";
-
-        $courses = PantryCourse::list($search, $sort_by);
-        $cuisines = PantryCuisine::list($search, $sort_by);
+        $courses = PantryCourse::getCourses();
+        $cuisines = PantryCuisine::getCuisines();
 
         $pantry->response = new PantryAPISuccess("LIST_COURSES_CUISINES_SUCCESS", $pantry->language['LIST_COURSES_CUISINES_SUCCESS'], [
             'courses' => $courses,
@@ -388,8 +381,6 @@ class PantryAPI extends PantryApp {
     public static function createRecipe() {
         $pantry = new self();
         $pantry->requireLogin();
-
-        Pantry::$logger->error(print_r($_POST, true));
 
         $recipe = new PantryRecipe();
 
@@ -465,7 +456,13 @@ class PantryAPI extends PantryApp {
             $pantry->response->respond();
         }
 
-        $recipe->save();
+        try {
+            $recipe->save();
+        }
+        catch (PantryRecipeNotSavedException $e) {
+            $pantry->response = new PantryAPIError(500, "RECIPE_NOT_SAVED", $pantry->language['RECIPE_NOT_SAVED']);
+            $pantry->response->respond();
+        }
 
         $pantry->response = new PantryAPISuccess("CREATE_RECIPE_SUCCESS", $pantry->language['CREATE_RECIPE_SUCCESS'], [
             'id' => $recipe->getID(),
@@ -553,6 +550,13 @@ class PantryAPI extends PantryApp {
                 ]);
                 $pantry->response->respond();
             }
+            catch (PantryImageFileSizeTooBigException $e) {
+                $pantry->response = new PantryAPIError(413, "RECIPE_IMAGE_FILE_SIZE_TOO_BIG", $pantry->language['IMAGE_FILE_SIZE_TOO_BIG'], [
+                    'issue' => "validation",
+                    'field' => "image"
+                ]);
+                $pantry->response->respond();
+            }
             catch (PantryFileNotFoundException $e) {
                 $pantry->response = new PantryAPIError(500, "INTERNAL_IMAGE_UPLOAD_FAILED", $pantry->language['IMAGE_UPLOAD_FAILED'], [
                     'issue' => "validation",
@@ -595,7 +599,13 @@ class PantryAPI extends PantryApp {
         }
 
         // save
-        $recipe->save();
+        try {
+            $recipe->save();
+        }
+        catch (PantryRecipeNotSavedException $e) {
+            $pantry->response = new PantryAPIError(500, "RECIPE_NOT_SAVED", $pantry->language['RECIPE_NOT_SAVED']);
+            $pantry->response->respond();
+        }
 
         // delete old image if new or clear
         if (isset($old_image)) {
@@ -613,6 +623,7 @@ class PantryAPI extends PantryApp {
 
         try {
             $recipe = new PantryRecipe($_POST['id']);
+
             $permission_level = PantryRecipePermission::getEffectivePermissionLevel($recipe, $pantry->current_user);
             if ($permission_level < PantryRecipePermission::$permission_level_map['READ']) {
                 throw new PantryRecipeNotFoundException("No read permission.");
@@ -620,18 +631,23 @@ class PantryAPI extends PantryApp {
             if ($permission_level < PantryRecipePermission::$permission_level_map['ADMIN']) {
                 throw new PantryRecipePermissionDeniedException("No admin permission.");
             }
+
+            $recipe->delete();
         }
         catch (PantryRecipeNotFoundException $e) {
             $pantry->response = new PantryAPIError(404, "RECIPE_NOT_FOUND", $pantry->language['RECIPE_NOT_FOUND']);
             $pantry->response->respond();
-            die();
         }
         catch (PantryRecipePermissionDeniedException $e) {
             $pantry->response = new PantryAPIError(403, "ACCESS_DENIED", $pantry->language['ACCESS_DENIED']);
             $pantry->response->respond();
-            die();
+        }
+        catch (PantryRecipeNotDeletedException $e) {
+            $pantry->response = new PantryAPIError(500, "RECIPE_NOT_DELETED", $pantry->language['RECIPE_NOT_DELETED']);
+            $pantry->response->respond();
         }
 
-        $recipe->delete();
+        $pantry->response = new PantryAPISuccess();
+        $pantry->response->respond();
     }
 }

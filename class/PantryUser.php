@@ -433,4 +433,24 @@ class PantryUser {
 
         return $users;
     }
+
+    public static function getUserCounts() {
+        $count = [
+            'total' => 0,
+            'admins' => 0,
+            'disabled' => 0
+        ];
+
+        $sql_get_users = Pantry::$db->prepare("SELECT id, is_admin, is_disabled FROM users");
+        $sql_get_users->execute();
+        while ($row = $sql_get_users->fetch(PDO::FETCH_ASSOC)) {
+            $count['total']++;
+            if (boolval($row['is_admin']))
+                $count['admins']++;
+            if (boolval($row['is_disabled']))
+                $count['disabled']++;
+        }
+
+        return $count;
+    }
 }

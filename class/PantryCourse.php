@@ -1,7 +1,18 @@
 <?php
 
 class PantryCourse {
+    public static $error_map = [
+        'PantryCourseTitleNoneException' => "COURSE_TITLE_NONE",
+        'PantryCourseTitleTooLongException' => "COURSE_TITLE_TOO_LONG",
+        'PantryCourseSlugNoneException' => "COURSE_SLUG_NONE",
+        'PantryCourseSlugTooShortException' => "COURSE_SLUG_TOO_SHORT",
+        'PantryCourseSlugTooLongException' => "COURSE_SLUG_TOO_LONG",
+        'PantryCourseSlugInvalidException' => "COURSE_SLUG_INVALID",
+        'PantryCourseSlugNotAvailableException' => "COURSE_SLUG_NOT_AVAILABLE"
+    ];
+
     private $id;
+    private $created;
     private $title;
     private $slug;
 
@@ -10,16 +21,17 @@ class PantryCourse {
      * @param $course_id
      * @throws PantryCourseNotFoundException
      */
-    public function __construct($course_id) {
+    public function __construct($course_id = null) {
         $this->setNull();
 
         if ($course_id) {
-            $sql_get_course = Pantry::$db->prepare("SELECT id, title, slug FROM courses WHERE id=:id");
+            $sql_get_course = Pantry::$db->prepare("SELECT id, created, title, slug FROM courses WHERE id=:id");
             $sql_get_course->bindParam(':id', $course_id, PDO::FETCH_ASSOC);
             $sql_get_course->execute();
 
             if ($course_row = $sql_get_course->fetch(PDO::FETCH_ASSOC)) {
                 $this->id = $course_row['id'];
+                $this->created = $course_row['created'];
                 $this->title = $course_row['title'];
                 $this->slug = $course_row['slug'];
             }
@@ -30,9 +42,9 @@ class PantryCourse {
     }
 
     /**
-     * PantryRecipe alt constructor. Uses URL slug instead.
+     * PantryCourse alt constructor. Uses URL slug instead.
      * @param string|null $slug
-     * @return PantryCourse
+     * @return PantryCourse|null
      * @throws PantryCourseNotFoundException
      */
     public static function constructBySlug($slug = null) {
@@ -45,7 +57,7 @@ class PantryCourse {
                 return new self($course_id_row['id']);
             }
 
-            throw new PantryCourseNotFoundException("Course not found.");
+            throw new PantryCourseNotFoundException($slug);
         }
 
         return new self(null);
@@ -61,6 +73,10 @@ class PantryCourse {
         return $this->id;
     }
 
+    public function getCreated() {
+        return $this->created;
+    }
+
     public function getTitle() {
         return $this->title;
     }
@@ -69,43 +85,133 @@ class PantryCourse {
         return $this->slug;
     }
 
-    public function setTitle($title) {
+    /**
+     * @param $title
+     * @param bool $sanitize
+     * @throws PantryCourseTitleNoneException
+     * @throws PantryCourseTitleTooLongException
+     */
+    public function setTitle($title, $sanitize = true) {
+        if ($sanitize) {
+            $title = Pantry::$html_purifier->purify($title);
+            $title = trim(preg_replace('/\s+/', " ", $title));
+            if (strlen($title) === 0) {
+                throw new PantryCourseTitleNoneException($title);
+            }
+            if (strlen($title) > 32) {
+                throw new PantryCourseTitleTooLongException($title);
+            }
+        }
         $this->title = $title;
     }
 
-    public function setSlug($slug) {
+    /**
+     * @param $slug
+     * @param bool $sanitize
+     * @throws PantryCourseSlugNoneException
+     * @throws PantryCourseSlugTooLongException
+     * @throws PantryCourseSlugTooShortException
+     * @throws PantryCourseSlugInvalidException
+     * @throws PantryCourseSlugNotAvailableException
+     */
+    public function setSlug($slug, $sanitize = true) {
+        if ($sanitize) {
+            $slug = Pantry::$html_purifier->purify($slug);
+            $slug = trim(preg_replace('/\s+/', " ", $slug));
+            if (strlen($slug) === 0) {
+                throw new PantryCourseSlugNoneException($slug);
+            }
+            if (strlen($slug) < 3) {
+                throw new PantryCourseSlugTooShortException($slug);
+            }
+            if (strlen($slug) > 32) {
+                throw new PantryCourseSlugTooLongException($slug);
+            }
+            if (!preg_match('/^[a-z0-9-]{3,32}$/', $slug)) {
+                throw new PantryCourseSlugInvalidException($slug);
+            }
+        }
+
+        // check availability
+        $sql_check_slug = Pantry::$db->prepare("SELECT id FROM courses WHERE slug=:slug");
+        $sql_check_slug->bindValue(':slug', $slug, PDO::PARAM_STR);
+        $sql_check_slug->execute();
+        if ($sql_check_slug->rowCount() > 0) {
+            if (!$this->id) {
+                throw new PantryCourseSlugNotAvailableException($slug);
+            }
+
+            $row = $sql_check_slug->fetch(PDO::FETCH_ASSOC);
+            if ($row['id'] !== $this->id) {
+                throw new PantryCourseSlugNotAvailableException($slug);
+            }
+        }
+
         $this->slug = $slug;
     }
 
+    /**
+     * @throws PantryCourseNotSavedException
+     */
     public function save() {
-        try {
-            if ($this->id) {
-
-            }
-        }
-        catch (PantryCourseNotSavedException $e) {
-            Pantry::$logger->emergency($e->getMessage());
-            die();
-        }
-    }
-
-    public function purgeFromRecipes() {
         if ($this->id) {
-            $sql_purge_recipes = Pantry::$db->prepare("UPDATE recipes SET course_id=NULL WHERE course_id=:id");
-            $sql_purge_recipes->bindValue(':id', $this->id, PDO::PARAM_STR);
-            $sql_purge_recipes->execute();
+            $sql_save_course = Pantry::$db->prepare("UPDATE courses SET title=:title, slug=:slug WHERE id=:id");
+        }
+        else {
+            $this->id = Pantry::generateUUID();
+            $sql_save_course = Pantry::$db->prepare("INSERT INTO courses (id, created, title, slug) VALUES (:id, NOW(), :title, :slug)");
+        }
+
+        $sql_save_course->bindValue(':id', $this->id, PDO::PARAM_STR);
+        $sql_save_course->bindValue(':title', $this->title, PDO::PARAM_STR);
+        $sql_save_course->bindValue(':slug', $this->slug, PDO::PARAM_STR);
+
+        if (!$sql_save_course->execute()) {
+            Pantry::$logger->critical("Course {$this->slug} could not be saved.");
+            throw new PantryCourseNotSavedException($this->slug);
         }
     }
 
-    public static function list($search = "", $sort_by = "title") {
-        $sort_map = [
-            'title' => "title, slug",
-            'slug' => "slug"
-        ];
-        $sort_query = (array_key_exists($sort_by, $sort_map)) ? $sort_map[$sort_by] : "title";
+    /**
+     * @param string|null $replace_id
+     * @throws PantryCourseNotFoundException
+     * @throws PantryCourseDeleteReplacementIsSameException
+     * @throws PantryCourseNotDeletedException
+     */
+    public function delete($replace_id = null) {
+        if (!$this->id) {
+            Pantry::$logger->critical("Tried to delete non-existent course.");
+            throw new PantryCourseNotFoundException("");
+        }
 
-        $sql_list_courses = Pantry::$db->prepare("SELECT id, title, slug FROM courses WHERE title LIKE :search OR slug LIKE :search ORDER BY {$sort_query}");
-        $sql_list_courses->bindValue(':search', "{$search}%", PDO::PARAM_STR);
+        if ($this->id === $replace_id) {
+            throw new PantryCourseDeleteReplacementIsSameException("");
+        }
+
+        $replace = new self($replace_id);
+
+        // purge from recipes
+        $sql_purge_recipe_course = Pantry::$db->prepare("UPDATE recipes SET course_id=:replace_id WHERE course_id=:course_id");
+        $sql_purge_recipe_course->bindValue(':course_id', $this->id, PDO::PARAM_STR);
+        $sql_purge_recipe_course->bindValue(':replace_id', $replace->getID(), PDO::PARAM_STR);
+        if (!$sql_purge_recipe_course->execute()) {
+            Pantry::$logger->critical("Could not delete course {$this->id} (purge from recipes).");
+            throw new PantryCourseNotDeletedException("Could not delete course {$this->slug}.");
+        }
+
+        // delete course
+        $sql_delete_course = Pantry::$db->prepare("DELETE FROM courses WHERE id=:id");
+        $sql_delete_course->bindValue(':id', $this->id, PDO::PARAM_STR);
+        if (!$sql_delete_course->execute()) {
+            Pantry::$logger->critical("Could not delete course {$this->id} (delete course).");
+            throw new PantryCourseNotDeletedException("Could not delete course {$this->slug}.");
+        }
+
+        $this->setNull();
+    }
+
+    public static function getCourses() {
+        $sql_list_courses = Pantry::$db->prepare("SELECT id, title, slug FROM courses ORDER BY title,slug");
         $sql_list_courses->execute();
 
         $courses = [];

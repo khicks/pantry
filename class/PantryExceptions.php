@@ -42,15 +42,21 @@ class PantryGetRandomDataParamNotIntException extends PantryException {}
 
 class PantryGetRandomDataParamNotSecureException extends PantryException {}
 
-class PantryUserValidationException extends PantryException {
+class PantryValidationException extends PantryException {
+    private $type;
     private $field;
     private $bad_value;
 
-    public function __construct($field, $bad_value, $code = 0, Exception $previous = null) {
+    public function __construct($type, $field, $bad_value, $code = 0, Exception $previous = null) {
+        $this->type = $type;
         $this->field = $field;
         $this->bad_value = $bad_value;
-        $message = "Unexpected value for field $field: $bad_value";
+        $message = "Unexpected value on $type for field $field: $bad_value";
         parent::__construct($message, $code, $previous);
+    }
+
+    public function getType() {
+        return $this->type;
     }
 
     public function getField() {
@@ -59,6 +65,12 @@ class PantryUserValidationException extends PantryException {
 
     public function getBadValue() {
         return $this->bad_value;
+    }
+}
+
+class PantryUserValidationException extends PantryValidationException {
+    public function __construct($field, $bad_value, $code = 0, Exception $previous = null) {
+        parent::__construct("PantryUser", $field, $bad_value, $code, $previous);
     }
 }
 
@@ -122,27 +134,98 @@ class PantryRecipeNotSavedException extends PantryException {}
 
 class PantryRecipeNotDeletedException extends PantryException {}
 
+//========================================
+// PantryCourse
+//========================================
 class PantryCourseNotFoundException extends PantryException {}
 
+class PantryCourseNotSavedException extends PantryException {}
+
+class PantryCourseNotDeletedException extends PantryException {}
+
+class PantryCourseDeleteReplacementIsSameException extends PantryException {}
+
+class PantryCourseValidationException extends PantryValidationException {
+    public function __construct($field, $bad_value, $code = 0, Exception $previous = null) {
+        parent::__construct("PantryCourse", $field, $bad_value, $code, $previous);
+    }
+}
+
+class PantryCourseTitleValidationException extends PantryCourseValidationException {
+    public function __construct($bad_value, $code = 0, Exception $previous = null) {
+        parent::__construct("title", $bad_value, $code, $previous);
+    }
+}
+
+class PantryCourseTitleNoneException extends PantryCourseTitleValidationException {}
+
+class PantryCourseTitleTooLongException extends PantryCourseTitleValidationException {}
+
+class PantryCourseSlugValidationException extends PantryCourseValidationException {
+    public function __construct($bad_value, $code = 0, Exception $previous = null) {
+        parent::__construct("slug", $bad_value, $code, $previous);
+    }
+}
+
+class PantryCourseSlugNoneException extends PantryCourseSlugValidationException {}
+
+class PantryCourseSlugTooShortException extends PantryCourseSlugValidationException {}
+
+class PantryCourseSlugTooLongException extends PantryCourseSlugValidationException {}
+
+class PantryCourseSlugInvalidException extends PantryCourseSlugValidationException {}
+
+class PantryCourseSlugNotAvailableException extends PantryCourseSlugValidationException {}
+
+//========================================
+// PantryCuisine
+//========================================
 class PantryCuisineNotFoundException extends PantryException {}
 
-class PantryRecipeValidationException extends PantryException {
-    private $field;
-    private $bad_value;
+class PantryCuisineNotSavedException extends PantryException {}
 
+class PantryCuisineNotDeletedException extends PantryException {}
+
+class PantryCuisineDeleteReplacementIsSameException extends PantryException {}
+
+class PantryCuisineValidationException extends PantryValidationException {
     public function __construct($field, $bad_value, $code = 0, Exception $previous = null) {
-        $this->field = $field;
-        $this->bad_value = $bad_value;
-        $message = "Unexpected value for field $field: $bad_value";
-        parent::__construct($message, $code, $previous);
+        parent::__construct("PantryCuisine", $field, $bad_value, $code, $previous);
     }
+}
 
-    public function getField() {
-        return $this->field;
+class PantryCuisineTitleValidationException extends PantryCuisineValidationException {
+    public function __construct($bad_value, $code = 0, Exception $previous = null) {
+        parent::__construct("title", $bad_value, $code, $previous);
     }
+}
 
-    public function getBadValue() {
-        return $this->bad_value;
+class PantryCuisineTitleNoneException extends PantryCuisineTitleValidationException {}
+
+class PantryCuisineTitleTooLongException extends PantryCuisineTitleValidationException {}
+
+class PantryCuisineSlugValidationException extends PantryCuisineValidationException {
+    public function __construct($bad_value, $code = 0, Exception $previous = null) {
+        parent::__construct("slug", $bad_value, $code, $previous);
+    }
+}
+
+class PantryCuisineSlugNoneException extends PantryCuisineSlugValidationException {}
+
+class PantryCuisineSlugTooShortException extends PantryCuisineSlugValidationException {}
+
+class PantryCuisineSlugTooLongException extends PantryCuisineSlugValidationException {}
+
+class PantryCuisineSlugInvalidException extends PantryCuisineSlugValidationException {}
+
+class PantryCuisineSlugNotAvailableException extends PantryCuisineSlugValidationException {}
+
+//========================================
+// PantryRecipe
+//========================================
+class PantryRecipeValidationException extends PantryValidationException {
+    public function __construct($field, $bad_value, $code = 0, Exception $previous = null) {
+        parent::__construct("PantryRecipe", $field, $bad_value, $code, $previous);
     }
 }
 

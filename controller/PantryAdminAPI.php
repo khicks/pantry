@@ -9,6 +9,17 @@ class PantryAdminAPI extends PantryAPI {
         }
     }
 
+    public static function getUserCounts() {
+        $pantry = new self();
+
+        $counts = PantryUser::getUserCounts();
+
+        $pantry->response = new PantryAPISuccess('GET_USER_COUNT_SUCCESS', "", [
+            'counts' => $counts
+        ]);
+        $pantry->response->respond();
+    }
+
     public static function getUsers() {
         $pantry = new self();
 
@@ -242,6 +253,174 @@ class PantryAdminAPI extends PantryAPI {
         ];
 
         $pantry->response = new PantryAPISuccess("DELETE_USER_SUCCESS", $pantry->language['DELETE_USER_SUCCESS']);
+        $pantry->response->respond();
+    }
+
+    public static function createCourse() {
+        $pantry = new self();
+
+        $course = new PantryCourse();
+
+        try {
+            $course->setTitle($_POST['title']);
+            $course->setSlug($_POST['slug']);
+            $course->save();
+        }
+        catch (PantryCourseValidationException $e) {
+            $error_code = PantryCourse::$error_map[get_class($e)];
+            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language[$error_code], [
+                'issue' => "validation",
+                'field' => $e->getField()
+            ]);
+            $pantry->response->respond();
+        }
+        catch (PantryCourseNotSavedException $e) {
+            $pantry->response = new PantryAPIError(500, "COURSE_NOT_SAVED", $pantry->language['COURSE_NOT_SAVED']);
+            $pantry->response->respond();
+        }
+
+        $pantry->response = new PantryAPISuccess("CREATE_COURSE_SUCCESS", $pantry->language['CREATE_COURSE_SUCCESS'], [
+            'id' => $course->getID(),
+            'slug' => $course->getSlug(),
+        ]);
+        $pantry->response->respond();
+    }
+
+    public static function editCourse() {
+        $pantry = new self();
+
+        try {
+            $course = new PantryCourse($_POST['id']);
+            $course->setTitle($_POST['title']);
+            $course->setSlug($_POST['slug']);
+            $course->save();
+        }
+        catch (PantryCourseNotFoundException $e) {
+            $pantry->response = new PantryAPIError(404, "COURSE_NOT_FOUND", $pantry->language['COURSE_NOT_FOUND']);
+            $pantry->response->respond();
+        }
+        catch (PantryCourseValidationException $e) {
+            $error_code = PantryCourse::$error_map[get_class($e)];
+            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language[$error_code], [
+                'issue' => "validation",
+                'field' => $e->getField()
+            ]);
+            $pantry->response->respond();
+        }
+        catch (PantryCourseNotSavedException $e) {
+            $pantry->response = new PantryAPIError(500, "COURSE_NOT_SAVED", $pantry->language['COURSE_NOT_SAVED']);
+            $pantry->response->respond();
+        }
+
+        $pantry->response = new PantryAPISuccess();
+        $pantry->response->respond();
+    }
+
+    public static function deleteCourse() {
+        $pantry = new self();
+
+        try {
+            $course = new PantryCourse($_POST['id']);
+            $course->delete($_POST['replace_id']);
+        }
+        catch (PantryCourseNotFoundException $e) {
+            $pantry->response = new PantryAPIError(404, "COURSE_NOT_FOUND", $pantry->language['COURSE_NOT_FOUND']);
+            $pantry->response->respond();
+        }
+        catch (PantryCourseDeleteReplacementIsSameException $e) {
+            $pantry->response = new PantryAPIError(422, "COURSE_DELETE_REPLACE_IS_SAME", $pantry->language['COURSE_DELETE_REPLACE_IS_SAME']);
+            $pantry->response->respond();
+        }
+        catch (PantryCourseNotDeletedException $e) {
+            $pantry->response = new PantryAPIError(500, "COURSE_NOT_DELETED", $pantry->language['COURSE_NOT_DELETED']);
+            $pantry->response->respond();
+        }
+
+        $pantry->response = new PantryAPISuccess();
+        $pantry->response->respond();
+    }
+
+    public static function createCuisine() {
+        $pantry = new self();
+
+        $cuisine = new PantryCuisine();
+
+        try {
+            $cuisine->setTitle($_POST['title']);
+            $cuisine->setSlug($_POST['slug']);
+            $cuisine->save();
+        }
+        catch (PantryCuisineValidationException $e) {
+            $error_code = PantryCuisine::$error_map[get_class($e)];
+            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language[$error_code], [
+                'issue' => "validation",
+                'field' => $e->getField()
+            ]);
+            $pantry->response->respond();
+        }
+        catch (PantryCuisineNotSavedException $e) {
+            $pantry->response = new PantryAPIError(500, "CUISINE_NOT_SAVED", $pantry->language['CUISINE_NOT_SAVED']);
+            $pantry->response->respond();
+        }
+
+        $pantry->response = new PantryAPISuccess("CREATE_CUISINE_SUCCESS", $pantry->language['CREATE_CUISINE_SUCCESS'], [
+            'id' => $cuisine->getID(),
+            'slug' => $cuisine->getSlug(),
+        ]);
+        $pantry->response->respond();
+    }
+
+    public static function editCuisine() {
+        $pantry = new self();
+
+        try {
+            $cuisine = new PantryCuisine($_POST['id']);
+            $cuisine->setTitle($_POST['title']);
+            $cuisine->setSlug($_POST['slug']);
+            $cuisine->save();
+        }
+        catch (PantryCuisineNotFoundException $e) {
+            $pantry->response = new PantryAPIError(404, "CUISINE_NOT_FOUND", $pantry->language['CUISINE_NOT_FOUND']);
+            $pantry->response->respond();
+        }
+        catch (PantryCuisineValidationException $e) {
+            $error_code = PantryCuisine::$error_map[get_class($e)];
+            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language[$error_code], [
+                'issue' => "validation",
+                'field' => $e->getField()
+            ]);
+            $pantry->response->respond();
+        }
+        catch (PantryCuisineNotSavedException $e) {
+            $pantry->response = new PantryAPIError(500, "CUISINE_NOT_SAVED", $pantry->language['CUISINE_NOT_SAVED']);
+            $pantry->response->respond();
+        }
+
+        $pantry->response = new PantryAPISuccess();
+        $pantry->response->respond();
+    }
+
+    public static function deleteCuisine() {
+        $pantry = new self();
+
+        try {
+            $cuisine = new PantryCuisine($_POST['id']);
+            $cuisine->delete($_POST['replace_id']);
+        }
+        catch (PantryCuisineNotFoundException $e) {
+            $pantry->response = new PantryAPIError(404, "CUISINE_NOT_FOUND", $pantry->language['CUISINE_NOT_FOUND']);
+            $pantry->response->respond();
+        }
+        catch (PantryCuisineDeleteReplacementIsSameException $e) {
+            $pantry->response = new PantryAPIError(422, "CUISINE_DELETE_REPLACE_IS_SAME", $pantry->language['CUISINE_DELETE_REPLACE_IS_SAME']);
+            $pantry->response->respond();
+        }
+        catch (PantryCuisineNotDeletedException $e) {
+            $pantry->response = new PantryAPIError(500, "CUISINE_NOT_DELETED", $pantry->language['CUISINE_NOT_DELETED']);
+            $pantry->response->respond();
+        }
+
+        $pantry->response = new PantryAPISuccess();
         $pantry->response->respond();
     }
 }

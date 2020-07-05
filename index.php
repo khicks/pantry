@@ -55,12 +55,21 @@ try {
 
     // Admin API
     $router->map('GET', '/api/v1/admin/users', 'PantryAdminAPI::getUsers');
-    $router->map('GET', '/api/v1/admin/user', 'PantryAdminAPI::getUser');
+    $router->map('GET', '/api/v1/admin/users/count', 'PantryAdminAPI::getUserCounts');
     $router->map('GET', '/api/v1/admin/users/check-username', 'PantryAdminAPI::checkUsername');
+    $router->map('GET', '/api/v1/admin/user', 'PantryAdminAPI::getUser');
     $router->map('POST', '/api/v1/admin/users/create', 'PantryAdminAPI::createUser');
     $router->map('POST', '/api/v1/admin/users/edit', 'PantryAdminAPI::editUser');
     $router->map('POST', '/api/v1/admin/users/delete', 'PantryAdminAPI::deleteUser');
 
+    $router->map('POST', '/api/v1/admin/courses/create', 'PantryAdminAPI::createCourse');
+    $router->map('POST', '/api/v1/admin/courses/edit', 'PantryAdminAPI::editCourse');
+    $router->map('POST', '/api/v1/admin/courses/delete', 'PantryAdminAPI::deleteCourse');
+
+    $router->map('POST', '/api/v1/admin/cuisines/create', 'PantryAdminAPI::createCuisine');
+    $router->map('POST', '/api/v1/admin/cuisines/edit', 'PantryAdminAPI::editCuisine');
+    $router->map('POST', '/api/v1/admin/cuisines/delete', 'PantryAdminAPI::deleteCuisine');
+    
     // Temp
     $router->map('GET', '/test', 'PantryPage::test');
     $router->map('GET', '/uuid', function() {

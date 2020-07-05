@@ -2,18 +2,35 @@
 
 {% block content %}
 
+{% verbatim %}
+<script id="cc-row" type="text/x-handlebars-template">
+    <tr>
+        <th scope="row">{{ item.title }}</th>
+        <td>{{ item.slug }}</td>
+        <td class="fit action-buttons">
+            <button type="button" class="btn btn-primary mr-1 btn-edit" data-toggle="modal" data-target="#edit-{{ type }}-modal" data-id="{{ item.id }}" data-title="{{ item.title }}" data-slug="{{ item.slug }}"><i class="fas fa-pencil-alt"></i></button>
+            <button type="button" class="btn btn-danger btn-delete" data-toggle="modal" data-target="#delete-{{ type }}-modal" data-id="{{ item.id }}" data-title="{{ item.title }}"><i class="fas fa-trash-alt"></i></button>
+        </td>
+    </tr>
+</script>
+{% endverbatim %}
+
+<script id="select-field-none" type="text/x-handlebars-template">
+    <option value="">({{ lang.NONE }})</option>
+</script>
+
+
 <div id="cc-wrapper" class="row">
     <div class="col-12 col-lg-6">
         <div class="courses-table-wrapper">
-            <h2>{{ lang.COURSES }}</h2>
-            <form id="courses-table-header" class="form-row mb-3">
-                <div class="col-12 col-sm-9 mb-2 mb-lg-9">
-                    <input type="text" id="courses-search" class="form-control" placeholder="{{ lang.ADMIN_CC_SEARCH_FIELD }}">
+            <div class="row">
+                <div class="col-12 col-sm-8 col-lg-6 col-xl-8">
+                    <h2>{{ lang.COURSES }}</h2>
                 </div>
-                <div class="col-12 col-sm-3 col-lg-3">
-                    <a class="btn btn-success btn-block" href="{{ meta.web_root }}/admin/courses/create"><i class="fas fa-plus"></i> {{ lang.NEW }}</a>
+                <div class="col-12 col-sm-4 col-lg-6 col-xl-4 text-right">
+                    <button type="button" id="courses-new" class="btn btn-success btn-block" data-toggle="modal" data-target="#create-course-modal"><i class="fas fa-plus"></i> {{ lang.ADMIN_CC_COURSE_CREATE_BUTTON }}</button>
                 </div>
-            </form>
+            </div>
             <div id="courses-table" class="table-responsive-lg">
                 <table class="table table-hover">
                     <thead>
@@ -30,15 +47,14 @@
     </div>
     <div class="col-12 col-lg-6">
         <div class="cuisines-table-wrapper">
-            <h2>{{ lang.CUISINES }}</h2>
-            <form id="cuisines-table-header" class="form-row mb-3">
-                <div class="col-12 col-sm-9 mb-2 mb-lg-9">
-                    <input type="text" id="cuisines-search" class="form-control" placeholder="{{ lang.ADMIN_CC_SEARCH_FIELD }}">
+            <div class="row">
+                <div class="col-12 col-sm-8 col-lg-6 col-xl-8">
+                    <h2>{{ lang.CUISINES }}</h2>
                 </div>
-                <div class="col-12 col-sm-3 col-lg-3">
-                    <a class="btn btn-success btn-block" href="{{ meta.web_root }}/admin/cuisines/create"><i class="fas fa-plus"></i> {{ lang.NEW }}</a>
+                <div class="col-12 col-sm-4 col-lg-6 col-xl-4 text-right">
+                    <button type="button" id="cuisines-new" class="btn btn-success btn-block" data-toggle="modal" data-target="#create-cuisine-modal"><i class="fas fa-plus"></i> {{ lang.ADMIN_CC_CUISINE_CREATE_BUTTON }}</button>
                 </div>
-            </form>
+            </div>
             <div id="cuisines-table" class="table-responsive-lg">
                 <table class="table table-hover">
                     <thead>
@@ -58,22 +74,217 @@
     </div>
 </div>
 
-<div class="modal fade" id="delete-course-modal" tabindex="-1" role="dialog" aria-labelledby="delete-course-modal-label" aria-hidden="true">
+<div class="modal fade" id="create-course-modal" tabindex="-1" role="dialog" aria-labelledby="create-course-modal-label" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="delete-course-modal-label">{{ lang.ADMIN_CC_DELETE_COURSE_TITLE }} "<span id="delete-course-modal-title"></span>"</h5>
+                <h4 class="modal-title" id="create-course-modal-label">{{ lang.ADMIN_CC_COURSE_CREATE_TITLE }}</h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                {{ lang.ADMIN_CC_DELETE_COURSE_PROMPT }}
+                <div class="form-row">
+                    <div class="col-12 mb-3">
+                        <label for="create-course-title">{{ lang.TITLE }} <i id="create-course-title-feedback-icon" class="fas field-feedback-icon"></i></label>
+                        <input type="text" id="create-course-title" class="form-control" maxlength="32">
+                        <div id="create-course-title-feedback-text" class="invalid-feedback">
+                            <span id="create-course-title-feedback-message-api" class="field-feedback-message"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col-12 mb-3">
+                        <label for="create-course-slug">{{ lang.SLUG }} <i id="create-course-slug-feedback-icon" class="fas field-feedback-icon"></i></label>
+                        <input type="text" id="create-course-slug" class="form-control" maxlength="32">
+                        <div id="create-course-slug-feedback-text" class="invalid-feedback">
+                            <span id="create-course-slug-feedback-message-api" class="field-feedback-message"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
-                <input type="hidden" id="delete-course-modal-id">
+                <button type="button" id="create-course-button" class="btn btn-success"><i id="create-course-button-icon" class="fas fa-plus"></i> {{ lang.ADMIN_CC_CREATE_LABEL }}</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ lang.CANCEL }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="edit-course-modal" tabindex="-1" role="dialog" aria-labelledby="edit-course-modal-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="edit-course-modal-label">{{ lang.ADMIN_CC_COURSE_EDIT_TITLE }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-course-id">
+                <div class="form-row">
+                    <div class="col-12 mb-3">
+                        <label for="edit-course-title">{{ lang.TITLE }} <i id="edit-course-title-feedback-icon" class="fas field-feedback-icon"></i></label>
+                        <input type="text" id="edit-course-title" class="form-control" maxlength="32">
+                        <div id="edit-course-title-feedback-text" class="invalid-feedback">
+                            <span id="edit-course-title-feedback-message-api" class="field-feedback-message"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col-12 mb-3">
+                        <label for="edit-course-slug">{{ lang.SLUG }} <i id="edit-course-slug-feedback-icon" class="fas field-feedback-icon"></i></label>
+                        <input type="text" id="edit-course-slug" class="form-control" maxlength="32">
+                        <div id="edit-course-slug-feedback-text" class="invalid-feedback">
+                            <span id="edit-course-slug-feedback-message-api" class="field-feedback-message"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="edit-course-button" class="btn btn-primary"><i id="edit-course-button-icon" class="fas fa-save"></i> {{ lang.SAVE }}</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ lang.CANCEL }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="delete-course-modal" tabindex="-1" role="dialog" aria-labelledby="delete-course-modal-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="delete-course-modal-label">{{ lang.ADMIN_CC_COURSE_DELETE_TITLE }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {{ lang.ADMIN_CC_COURSE_DELETE_PROMPT }}
+                <input type="hidden" id="delete-course-id">
+                <div class="form-row">
+                    <div class="col-12 mb-3">
+                        <label for="delete-course-title">{{ lang.TITLE }}</label>
+                        <input type="text" id="delete-course-title" class="form-control no-edit" disabled>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col-12 mb-3">
+                        <label for="delete-course-replace">{{ lang.ADMIN_CC_COURSE_DELETE_REPLACE_LABEL }}</label>
+                        <select id="delete-course-replace" class="form-control"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ lang.CANCEL }}</button>
                 <button type="button" id="delete-course-button" class="btn btn-danger"><i id="delete-course-button-icon" class="fas fa-trash-alt"></i> {{ lang.DELETE }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="create-cuisine-modal" tabindex="-1" role="dialog" aria-labelledby="create-cuisine-modal-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="create-cuisine-modal-label">{{ lang.ADMIN_CC_CUISINE_CREATE_TITLE }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="col-12 mb-3">
+                        <label for="create-cuisine-title">{{ lang.TITLE }} <i id="create-cuisine-title-feedback-icon" class="fas field-feedback-icon"></i></label>
+                        <input type="text" id="create-cuisine-title" class="form-control" maxlength="32">
+                        <div id="create-cuisine-title-feedback-text" class="invalid-feedback">
+                            <span id="create-cuisine-title-feedback-message-api" class="field-feedback-message"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col-12 mb-3">
+                        <label for="create-cuisine-slug">{{ lang.SLUG }} <i id="create-cuisine-slug-feedback-icon" class="fas field-feedback-icon"></i></label>
+                        <input type="text" id="create-cuisine-slug" class="form-control" maxlength="32">
+                        <div id="create-cuisine-slug-feedback-text" class="invalid-feedback">
+                            <span id="create-cuisine-slug-feedback-message-api" class="field-feedback-message"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="create-cuisine-button" class="btn btn-success"><i id="create-cuisine-button-icon" class="fas fa-plus"></i> {{ lang.ADMIN_CC_CREATE_LABEL }}</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ lang.CANCEL }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="edit-cuisine-modal" tabindex="-1" role="dialog" aria-labelledby="edit-cuisine-modal-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="edit-cuisine-modal-label">{{ lang.ADMIN_CC_CUISINE_EDIT_TITLE }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-cuisine-id">
+                <div class="form-row">
+                    <div class="col-12 mb-3">
+                        <label for="edit-cuisine-title">{{ lang.TITLE }} <i id="edit-cuisine-title-feedback-icon" class="fas field-feedback-icon"></i></label>
+                        <input type="text" id="edit-cuisine-title" class="form-control" maxlength="32">
+                        <div id="edit-cuisine-title-feedback-text" class="invalid-feedback">
+                            <span id="edit-cuisine-title-feedback-message-api" class="field-feedback-message"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col-12 mb-3">
+                        <label for="edit-cuisine-slug">{{ lang.SLUG }} <i id="edit-cuisine-slug-feedback-icon" class="fas field-feedback-icon"></i></label>
+                        <input type="text" id="edit-cuisine-slug" class="form-control" maxlength="32">
+                        <div id="edit-cuisine-slug-feedback-text" class="invalid-feedback">
+                            <span id="edit-cuisine-slug-feedback-message-api" class="field-feedback-message"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="edit-cuisine-button" class="btn btn-primary"><i id="edit-cuisine-button-icon" class="fas fa-save"></i> {{ lang.SAVE }}</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ lang.CANCEL }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="delete-cuisine-modal" tabindex="-1" role="dialog" aria-labelledby="delete-cuisine-modal-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="delete-cuisine-modal-label">{{ lang.ADMIN_CC_CUISINE_DELETE_TITLE }}</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {{ lang.ADMIN_CC_CUISINE_DELETE_PROMPT }}
+                <input type="hidden" id="delete-cuisine-id">
+                <div class="form-row">
+                    <div class="col-12 mb-3">
+                        <label for="delete-cuisine-title">{{ lang.TITLE }}</label>
+                        <input type="text" id="delete-cuisine-title" class="form-control no-edit" disabled>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col-12 mb-3">
+                        <label for="delete-cuisine-replace">{{ lang.ADMIN_CC_CUISINE_DELETE_REPLACE_LABEL }}</label>
+                        <select id="delete-cuisine-replace" class="form-control"></select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ lang.CANCEL }}</button>
+                <button type="button" id="delete-cuisine-button" class="btn btn-danger"><i id="delete-cuisine-button-icon" class="fas fa-trash-alt"></i> {{ lang.DELETE }}</button>
             </div>
         </div>
     </div>
