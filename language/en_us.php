@@ -88,6 +88,7 @@ return [
     'SOURCE' => "Source",
     'EDIT' => "Edit",
     'DELETE' => "Delete",
+    'DOWNLOAD_FULL_IMAGE' => "Download full image",
     'RECIPE_NOT_FOUND_TITLE' => "Recipe not found.",
     'RECIPE_NOT_FOUND_DESC' => "The recipe does not exist or you do not have permission to view it.",
 

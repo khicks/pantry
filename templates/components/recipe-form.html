@@ -1,13 +1,19 @@
 <form id="recipe-form" class="card">
     <div class="card-header">
         <div class="row">
-            <div class="col-12 col-lg-9 mb-2 mb-lg-0">
+            <div class="col-12 col-lg-8 col-xl-9 mb-2 mb-lg-0">
                 <h1 class="card-title">{{ title }}</h1>
             </div>
-            <div class="col-12 col-lg-3 d-print-none">
-                <div class="float-lg-right">
-                    <button id="recipe-save-button" type="button" class="btn btn-success"><i id="recipe-save-button-icon" class="fas fa-fw fa-save"></i> {{ lang.SAVE }}</button>
-                    <a id="cancel-button" class="btn btn-secondary" role="button"><i class="fas fa-times"></i> {{ lang.CANCEL }}</a>
+            <div class="col-12 col-lg-4 col-xl-3 d-print-none">
+                <div class="">
+                    <div class="row no-gutters">
+                        <div class="col-6 pr-1">
+                            <button id="recipe-save-button" type="button" class="btn btn-success btn-block"><i id="recipe-save-button-icon" class="fas fa-fw fa-save"></i> {{ lang.SAVE }}</button>
+                        </div>
+                        <div class="col-6 pl-1">
+                            <a id="cancel-button" class="btn btn-secondary btn-block" role="button"><i class="fas fa-times"></i> {{ lang.CANCEL }}</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
