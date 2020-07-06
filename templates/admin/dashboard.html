@@ -3,13 +3,13 @@
 {% block content %}
 
 <div class="row">
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-md-6 col-xl-4 mb-3">
         <div class="card h-100">
-            <div class="card-body text-center">
-                <h2>{{ lang.ADMIN_DASHBOARD_USERS_USERS }}</h2>
+            <div class="card-body d-flex flex-column text-center">
+                <h2 class="card-title">{{ lang.ADMIN_DASHBOARD_USERS_USERS }}</h2>
 
-                <div id="users-loading" class="dashboard-loading">
-                    <i class="fas fa-sync fa-spin"></i>
+                <div id="users-loading" class="dashboard-loading mb-3">
+                    <i id="users-loading-icon" class="fas fa-sync fa-spin"></i>
                 </div>
 
                 <div id="users-content" class="dashboard-content">
@@ -22,7 +22,9 @@
                             </table>
                         </div>
                     </div>
+                </div>
 
+                <div id="users-buttons" class="mt-auto">
                     <div class="row">
                         <div class="col-12">
                             <a id="users-add" class="btn btn-success btn-block" href="{{ meta.web_root }}/admin/users/create"><i class="fas fa-plus"></i> {{ lang.ADMIN_USERS_CREATE_BUTTON }}</a>
@@ -30,7 +32,36 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-xl-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body d-flex flex-column text-center">
+                <h2 class="card-title">{{ lang.ADMIN_DASHBOARD_CC_TITLE }}</h2>
 
+                <div id="cc-loading" class="dashboard-loading">
+                    <i id="cc-loading-icon" class="fas fa-sync fa-spin"></i>
+                </div>
+
+                <div id="cc-content" class="dashboard-content">
+                    <div class="row">
+                        <div class="col-12 mt-2 mb-4">
+                            <table id="cc-table" class="m-auto">
+                                <tr><td class="h5 pb-1 pr-2">{{ lang.COURSES }}:</td><td id="cc-courses" class="h5 pb-1"></td></tr>
+                                <tr><td class="h5 pb-1 pr-2">{{ lang.CUISINES }}:</td><td id="cc-cuisines" class="h5 pb-1"></td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="cc-buttons" class="mt-auto">
+                    <div class="row">
+                        <div class="col-12">
+                            <a id="cc-view" class="btn btn-secondary btn-block" href="{{ meta.web_root }}/admin/courses-cuisines"><i class="fas fa-utensils"></i> {{ lang.ADMIN_DASHBOARD_CC_VIEW }}</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

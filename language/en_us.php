@@ -220,12 +220,16 @@ return [
     'ADMIN_BRAND' => "Admin",
     'ADMIN_BACK' => "Back to",
     'ADMIN_BREADCRUMBS_ADMIN' => "Admin",
+
     'ADMIN_DASHBOARD_BUTTON' => "Dashboard",
     'ADMIN_DASHBOARD_TITLE' => "Dashboard",
     'ADMIN_DASHBOARD_USERS_USERS' => "Users",
     'ADMIN_DASHBOARD_USERS_TOTAL' => "Total",
     'ADMIN_DASHBOARD_USERS_ADMINS' => "Admins",
     'ADMIN_DASHBOARD_USERS_VIEW' => "View users",
+    'ADMIN_DASHBOARD_CC_TITLE' => "Courses and Cuisines",
+    'ADMIN_DASHBOARD_CC_VIEW' => "View courses and cuisines",
+
     'ADMIN_SORT_BY_FIELD_LABEL' => "Sort by...",
     'ADMIN_USERS_BUTTON' => "Users",
     'ADMIN_USERS_TITLE' => "User Accounts",

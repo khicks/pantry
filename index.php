@@ -69,7 +69,7 @@ try {
     $router->map('POST', '/api/v1/admin/cuisines/create', 'PantryAdminAPI::createCuisine');
     $router->map('POST', '/api/v1/admin/cuisines/edit', 'PantryAdminAPI::editCuisine');
     $router->map('POST', '/api/v1/admin/cuisines/delete', 'PantryAdminAPI::deleteCuisine');
-    
+
     // Temp
     $router->map('GET', '/test', 'PantryPage::test');
     $router->map('GET', '/uuid', function() {
