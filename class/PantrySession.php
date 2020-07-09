@@ -7,7 +7,7 @@ class PantrySession {
         ini_set('session.gc_divisor', '10');
 
         session_name("pantry_session");
-        session_set_cookie_params(0, Pantry::$cookie_path, null, true, true);
+        session_set_cookie_params(31536000, Pantry::$cookie_path, null, true, true);
         session_set_save_handler(
             [$this, "open"],
             [$this, "close"],
