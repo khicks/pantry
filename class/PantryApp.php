@@ -42,7 +42,7 @@ class PantryApp {
     }
 
     public function loadLanguage() {
-        $lang_code = (isset(Pantry::$config['language'])) ? Pantry::$config['language'] : "en_us";
+        $lang_code = Pantry::$config->get('app_language');
         $lang_file = Pantry::$php_root . "/language/{$lang_code}.php";
         $this->language = (file_exists($lang_file)) ? require_once($lang_file) : require_once(Pantry::$php_root."/language/en_us.php");
     }

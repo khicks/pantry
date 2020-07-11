@@ -19,10 +19,10 @@ class PantryLogger {
     private $max_files;
 
     public function __construct() {
-        $this->file_name = Pantry::$php_root."/".Pantry::$config['log_file'];
-        $this->log_level = Pantry::$config['log_level'];
-        $this->max_size = Pantry::$config['log_max_size'];
-        $this->max_files = Pantry::$config['log_max_files'];
+        $this->file_name = Pantry::$config->get('log_dir')."/pantry.log";
+        $this->log_level = Pantry::$config->get('log_level');
+        $this->max_size = Pantry::$config->get('log_max_size');
+        $this->max_files = Pantry::$config->get('log_max_files');
 
         $this->openFile();
         $this->rotate();

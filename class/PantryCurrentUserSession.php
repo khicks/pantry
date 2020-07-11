@@ -84,7 +84,7 @@ class PantryCurrentUserSession extends PantryUserSession {
     }
 
     public function checkCSRF() {
-        if (!Pantry::$config['csrf_required']) {
+        if (!Pantry::$config->get('csrf_required')) {
             Pantry::$logger->debug("CSRF not required.");
             return true;
         }

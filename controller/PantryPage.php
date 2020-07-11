@@ -38,7 +38,7 @@ class PantryPage extends PantryApp {
 
     private function getTemplateParams($params = []) {
         $init_params = [
-            'app_name' => Pantry::$config['app_name'],
+            'app_name' => Pantry::$config->get('app_name'),
             'meta' => [
                 'web_root' => Pantry::$web_root,
                 'csrf_token' => $this->current_session->getCSRF(),
@@ -77,8 +77,7 @@ class PantryPage extends PantryApp {
             ],
             'brand' => [
                 'href' => Pantry::$web_root . "/",
-                'format' => Pantry::$config['brand_format'],
-                'label' => Pantry::$config['app_name'],
+                'format' => Pantry::$config->get('app_brand_format'),
             ],
             'navigation' => [
                 'left' => [

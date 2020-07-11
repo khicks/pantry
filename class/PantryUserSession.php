@@ -35,7 +35,7 @@ class PantryUserSession {
     private static function purgeSessions() {
         try {
             $sql_purge_sessions = Pantry::$db->prepare("DELETE FROM user_sessions WHERE updated <= NOW() - INTERVAL :seconds SECOND");
-            $sql_purge_sessions->bindValue(':seconds', Pantry::$config['session_time'], PDO::PARAM_INT);
+            $sql_purge_sessions->bindValue(':seconds', Pantry::$config->get('session_timeout'), PDO::PARAM_INT);
             if (!$sql_purge_sessions->execute()) {
                 throw new PantrySessionsNotPurgedException("Sessions could not be purged.");
             }

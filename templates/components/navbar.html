@@ -1,9 +1,9 @@
 <nav class="navbar sticky-top navbar-expand-lg navbar-dark">
     <div class="container">
         {% if brand.format == "logo" %}
-        <a class="navbar-brand" href="{{ brand.href }}"><img src="{{ meta.web_root }}/assets/images/pantry-logo-small.png" height="36"></a>
+        <a class="navbar-brand navbar-brand-logo" href="{{ brand.href }}"><img src="{{ meta.web_root }}/assets/images/pantry-logo-small.png" height="36"></a>
         {% else %}
-        <a class="navbar-brand" href="{{ brand.href }}">{{ brand.label }}</a>
+        <a class="navbar-brand navbar-brand-text" href="{{ brand.href }}">{{ app_name }}</a>
         {% endif %}
 
         {% if display.navigation %}

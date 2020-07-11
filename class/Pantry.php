@@ -1,6 +1,7 @@
 <?php
 
 require_once(dirname(dirname(__FILE__))."/class/PantryApp.php");
+require_once(dirname(dirname(__FILE__))."/class/PantryConfig.php");
 require_once(dirname(dirname(__FILE__))."/controller/PantryAPI.php");
 require_once(dirname(dirname(__FILE__))."/controller/PantryPage.php");
 require_once(dirname(dirname(__FILE__))."/controller/PantryAdminAPI.php");
@@ -12,6 +13,8 @@ class Pantry {
     public static $php_root;
     public static $web_root;
     public static $cookie_path;
+
+    /** @var PantryConfig $config */
     public static $config;
 
     /** @var PantryLogger $logger */
@@ -39,9 +42,11 @@ class Pantry {
         self::loadFiles();
         self::loadConfig();
         self::loadLogger();
+        self::loadDB();
+        self::checkInstalled();
+        self::loadConfigFromDB();
         self::loadParsedown();
         self::loadHTMLPurifier();
-        self::loadDB();
         self::loadSession();
         self::$initialized = true;
     }
@@ -59,6 +64,8 @@ class Pantry {
 
     private static function loadFiles() {
         $load_files = [
+            "/class/PantryConfig.php",
+            "/class/PantryExceptions.php",
             "/class/PantryLogger.php",
             "/class/PantrySession.php"
         ];
@@ -69,36 +76,17 @@ class Pantry {
     }
 
     private static function loadConfig() {
-        if (file_exists(self::$php_root."/config.php")) {
-            self::$config = require_once(self::$php_root."/config.php");
-        }
-        else {
-            header("Location: ".self::$web_root."/install");
-            die();
-        }
+        self::$config = new PantryConfig();
     }
 
     private static function loadLogger() {
         self::$logger = new PantryLogger();
     }
 
-    private static function loadParsedown() {
-        self::$parsedown = new Parsedown();
-        self::$parsedown->setSafeMode(true);
-    }
-
-    private static function loadHTMLPurifier() {
-        $config = HTMLPurifier_Config::createDefault();
-        $config->set('Cache.DefinitionImpl', null);
-        $config->set('Core.Encoding', "UTF-8");
-        $config->set('HTML.Allowed', "");
-        self::$html_purifier = new HTMLPurifier($config);
-    }
-
     private static function loadDB() {
-        $dsn = "mysql:host=".self::$config['db_host'].";dbname=".self::$config['db_database'].";charset=utf8";
-        $user = self::$config['db_username'];
-        $password = self::$config['db_password'];
+        $dsn = "mysql:host=".self::$config->get('db_host').";dbname=".self::$config->get('db_database').";charset=utf8";
+        $user = self::$config->get('db_username');
+        $password = self::$config->get('db_password');
 
         try {
             self::$db = new PDO($dsn, $user, $password);
@@ -110,6 +98,28 @@ class Pantry {
                 die("Connection to database failed.");
             }
         }
+    }
+
+    private static function checkInstalled() {
+        // TODO: check if Pantry needs installing
+        // throw exception and catch in api call
+    }
+
+    private static function loadConfigFromDB() {
+        self::$config->loadFromDB();
+    }
+
+    private static function loadParsedown() {
+        self::$parsedown = new Parsedown();
+        self::$parsedown->setSafeMode(true);
+    }
+
+    private static function loadHTMLPurifier() {
+        $htmlp_config = HTMLPurifier_Config::createDefault();
+        $htmlp_config->set('Cache.DefinitionImpl', null);
+        $htmlp_config->set('Core.Encoding', "UTF-8");
+        $htmlp_config->set('HTML.Allowed', "");
+        self::$html_purifier = new HTMLPurifier($htmlp_config);
     }
 
     private static function loadSession() {

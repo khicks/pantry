@@ -7,6 +7,8 @@ class PantryImage {
         'image/png' => "png"
     ];
 
+    private $image_dir;
+
     private $id;
     private $mime_type;
 
@@ -19,6 +21,7 @@ class PantryImage {
      * @throws PantryImageNotFoundException
      */
     public function __construct($image_id = null) {
+        $this->image_dir = Pantry::$config->get('image_dir');
         $this->setNull();
 
         if ($image_id) {
@@ -93,7 +96,7 @@ class PantryImage {
             throw new PantryFileNotFoundException($file_path);
         }
 
-        if (filesize($file_path) > Pantry::$config['max_file_size']) {
+        if (filesize($file_path) > Pantry::$config->get('image_max_size')) {
             throw new PantryImageFileSizeTooBigException($file_path);
         }
 
@@ -102,7 +105,6 @@ class PantryImage {
             throw new PantryImageTypeNotAllowedException($file_path);
         }
 
-        // TODO: file size restrictions
         $image_info = getimagesize($file_path);
         $this->width = $image_info[0];
         $this->height = $image_info[1];
@@ -146,13 +148,13 @@ class PantryImage {
      */
     public function getFilePath($size = null, $force = false) {
         if ($size && in_array($size, ['md', 'sm'], true)) {
-            $path = Pantry::$php_root . "/". Pantry::$config['upload_dir'] ."/{$this->id}_{$size}.{$this->getExtension()}";
+            $path = "{$this->image_dir}/{$this->id}_{$size}.{$this->getExtension()}";
             if (file_exists($path) || $force) {
                 return $path;
             }
         }
 
-        return Pantry::$php_root . "/". Pantry::$config['upload_dir'] ."/{$this->id}.{$this->getExtension()}";
+        return "{$this->image_dir}/{$this->id}.{$this->getExtension()}";
     }
 
     public function getWebPath($slug, $size = null) {

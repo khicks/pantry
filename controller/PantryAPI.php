@@ -306,8 +306,6 @@ class PantryAPI extends PantryApp {
     public static function getImage($img, $size = null) {
         $pantry = new self(false);
         $img_elements = explode(".", $img);
-        Pantry::$logger->emergency($img);
-        Pantry::$logger->emergency($size);
         try {
             $recipe = PantryRecipe::constructBySlug($img_elements[0]);
         }

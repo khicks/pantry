@@ -37,7 +37,7 @@ class PantryAdminPage extends PantryPage {
 
     private function getTemplateParams($params = []) {
         $init_params = [
-            'appname' => Pantry::$config['app_name'],
+            'appname' => Pantry::$config->get('app_name'),
             'meta' => [
                 'web_root' => Pantry::$web_root,
                 'csrf_token' => $this->current_session->getCSRF(),
@@ -73,12 +73,12 @@ class PantryAdminPage extends PantryPage {
                 'screen_size' => true
             ],
             'brand' => [
-                'label' => Pantry::$config['app_name']." {$this->language['ADMIN_BRAND']}",
+                'label' => Pantry::$config->get('app_name')." {$this->language['ADMIN_BRAND']}",
                 'href' => Pantry::$web_root."/admin"
             ],
             'navigation' => [
                 'back' => [
-                    'label' => "{$this->language['ADMIN_BACK']} ".Pantry::$config['app_name'],
+                    'label' => "{$this->language['ADMIN_BACK']} ".Pantry::$config->get('app_name'),
                     'href' => Pantry::$web_root."/"
                 ],
                 'sidebar' => [

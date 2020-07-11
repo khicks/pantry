@@ -6,6 +6,15 @@ class PantryException extends Exception {
     }
 }
 
+class PantryConfigurationException extends PantryException {
+    public function __construct($field, $bad_value, $message = null, $code = 0, Exception $previous = null) {
+        $message = $message ?? "Bad value for $field in configuration: $bad_value";
+        parent::__construct($message, $code, $previous);
+    }
+}
+
+class PantryNotInstalledException extends PantryException {}
+
 class PantryUserNotFoundException extends PantryException {}
 
 class PantrySessionsNotPurgedException extends PantryException {}
