@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div id="update-success" class="alert alert-success">
+    <b>{{ lang.UPDATE_SUCCESS }}</b><br/>
+    {{ lang.INSTALL_SUCCESS_DESC }}
+</div>
+
+<div id="update-card" class="card">
+    <div class="card-header">
+        <h1>{{ lang.UPDATE }}</h1>
+    </div>
+    <div class="card-body">
+        <p>{{ lang.UPDATE_WELCOME }}</p>
+        <p>{{ lang.UPDATE_WELCOME_DESC }}</p>
+        <div class="alert alert-warning">{{ lang.UPDATE_WARNING }}</div>
+
+        <div class="row">
+            <div class="col-12 mb-4">
+                <h2>{{ lang.INSTALL_KEY }} <small><i id="install-key-icon" class="fas field-feedback-icon"></i></small></h2>
+                <p>{{ lang.INSTALL_KEY_DESC }} <code>.../data/system/install_key</code>.</p>
+                <label for="install-key" class="d-none">{{ lang.INSTALL_KEY }}</label>
+                <input type="text" id="install-key" class="form-control field-select" placeholder="0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef">
+                <div id="install-key-feedback-text" class="invalid-feedback">
+                    <span id="install-key-feedback-message-api" class="field-feedback-message install-key-feedback-message"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div id="update-alert" class="alert alert-danger">
+                    <b>{{ lang.UPDATE_FAILED_ALERT }}</b><br/>
+                    <span id="update-error"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12 col-sm-9 col-md-8 col-lg-6 col-xl-4">
+                <table class="table table-borderless border-top">
+                    <tr>
+                        <td class="font-weight-bold">{{ lang.UPDATE_CURRENT_DB_VERSION }}</td>
+                        <td><i id="current-version-icon" class="fas fa-fw fa-spin fa-sync"></i><span id="current-version-text"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="font-weight-bold">{{ lang.UPDATE_NEW_DB_VERSION }}</td>
+                        <td><i id="new-version-icon" class="fas fa-fw fa-spin fa-sync"></i><span id="new-version-text"></span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <button type="button" id="update" class="btn btn-success btn-block btn-lg" disabled>
+                    <i id="update-icon" class="fas fa-fw fa-arrow-up"></i>
+                    {{ lang.UPDATE_BUTTON }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

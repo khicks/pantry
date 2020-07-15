@@ -1,26 +1,31 @@
 <?php
 
 class PantryApp {
-    /** @var PantryCurrentUser */
+    /** @var PantryCurrentUser $current_user */
     protected $current_user;
 
-    /** @var PantryCurrentUserSession */
+    /** @var PantryCurrentUserSession $current_session */
     protected $current_session;
 
+    /** @var PantryLanguage $language */
     protected $language;
 
     protected function __construct() {
         Pantry::initialize();
         $this->loadFiles();
         $this->loadLanguage();
-        $this->startSession();
 
-        Pantry::$logger->info("App loaded.");
+        if (Pantry::$installer->getIsInstalled()) {
+            $this->startSession();
+        }
+
+        Pantry::$logger->debug("App loaded.");
     }
 
     private function loadFiles() {
         $load_files = [
             "/class/PantryExceptions.php",
+            "/class/PantryLanguage.php",
             "/class/PantryClamp.php",
             "/class/PantryUser.php",
             "/class/PantryCurrentUser.php",
@@ -42,9 +47,14 @@ class PantryApp {
     }
 
     public function loadLanguage() {
-        $lang_code = Pantry::$config->get('app_language');
-        $lang_file = Pantry::$php_root . "/language/{$lang_code}.php";
-        $this->language = (file_exists($lang_file)) ? require_once($lang_file) : require_once(Pantry::$php_root."/language/en_us.php");
+        $lang_code = Pantry::$session->getTempLanguage() ?? Pantry::$config->get('app_language');
+        try {
+            $this->language = new PantryLanguage($lang_code);
+        }
+        catch (PantryLanguageNotFoundException $e) {
+            Pantry::$logger->critical("Language code $lang_code not found.");
+            die();
+        }
     }
 
     private function startSession() {
@@ -78,12 +88,6 @@ class PantryApp {
         }
 
         Pantry::$logger->debug("User is not logged in.");
-        try {
-            $this->current_user = new PantryCurrentUser(null);
-        }
-        catch (PantryUserNotFoundException $e) {
-            Pantry::$logger->emergency("User not found on null user (1).");
-            die();
-        }
+        $this->current_user = new PantryCurrentUser(null);
     }
 }

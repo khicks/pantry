@@ -3,7 +3,7 @@
 class PantryAdminPage extends PantryPage {
     public function __construct() {
         parent::__construct();
-        $this->current_session->trackPage();
+        Pantry::$session->trackPage();
         $this->requireAdmin();
         $this->loadTwig();
     }
@@ -40,8 +40,8 @@ class PantryAdminPage extends PantryPage {
             'appname' => Pantry::$config->get('app_name'),
             'meta' => [
                 'web_root' => Pantry::$web_root,
-                'csrf_token' => $this->current_session->getCSRF(),
-                'page_tracker' => $this->current_session->getPageTracker()
+                'csrf_token' => Pantry::$session->getCSRF(),
+                'page_tracker' => Pantry::$session->getPageTracker()
             ],
             'include' => [
                 'css' => [
@@ -67,18 +67,18 @@ class PantryAdminPage extends PantryPage {
                     ]
                 ]
             ],
-            'lang' => $this->language,
+            'lang' => $this->language->getAll(),
             'display' => [
                 'alert' => false,
                 'screen_size' => true
             ],
             'brand' => [
-                'label' => Pantry::$config->get('app_name')." {$this->language['ADMIN_BRAND']}",
+                'label' => Pantry::$config->get('app_name')." {$this->language->get('ADMIN_BRAND')}",
                 'href' => Pantry::$web_root."/admin"
             ],
             'navigation' => [
                 'back' => [
-                    'label' => "{$this->language['ADMIN_BACK']} ".Pantry::$config->get('app_name'),
+                    'label' => "{$this->language->get('ADMIN_BACK')} ".Pantry::$config->get('app_name'),
                     'href' => Pantry::$web_root."/"
                 ],
                 'sidebar' => [
@@ -86,28 +86,28 @@ class PantryAdminPage extends PantryPage {
                         'type' => "link",
                         'href' => Pantry::$web_root."/admin",
                         'icon' => "columns",
-                        'label' => $this->language['ADMIN_DASHBOARD_BUTTON'],
+                        'label' => $this->language->get('ADMIN_DASHBOARD_BUTTON'),
                         'active' => false
                     ],
                     'courses_cuisines' => [
                         'type' => "link",
                         'href' => Pantry::$web_root."/admin/courses-cuisines",
                         'icon' => "utensils",
-                        'label' => $this->language['ADMIN_COURSES_AND_CUISINES'],
+                        'label' => $this->language->get('ADMIN_COURSES_AND_CUISINES'),
                         'active' => false
                     ],
                     'users' => [
                         'type' => "link",
                         'href' => Pantry::$web_root."/admin/users",
                         'icon' => "users",
-                        'label' => $this->language['ADMIN_USERS_BUTTON'],
+                        'label' => $this->language->get('ADMIN_USERS_BUTTON'),
                         'active' => false
                     ]
                 ],
                 'breadcrumbs' => [
                     'admin' => [
                         'href' => Pantry::$web_root."/admin",
-                        'label' => $this->language['ADMIN_BREADCRUMBS_ADMIN']
+                        'label' => $this->language->get('ADMIN_BREADCRUMBS_ADMIN')
                     ]
                 ],
             ],
@@ -154,7 +154,7 @@ class PantryAdminPage extends PantryPage {
         $pantry = new self();
 
         $params = [
-            'title' => $pantry->language['ADMIN_DASHBOARD_TITLE'],
+            'title' => $pantry->language->get('ADMIN_DASHBOARD_TITLE'),
             'include' => [
                 'css' => [
                     'root' => [
@@ -176,7 +176,7 @@ class PantryAdminPage extends PantryPage {
                 'breadcrumbs' => [
                     'dashboard' => [
                         'href' => Pantry::$web_root."/admin",
-                        'label' => $pantry->language['ADMIN_DASHBOARD_BUTTON']
+                        'label' => $pantry->language->get('ADMIN_DASHBOARD_BUTTON')
                     ]
                 ]
             ]
@@ -189,7 +189,7 @@ class PantryAdminPage extends PantryPage {
         $pantry = new self();
 
         $params = [
-            'title' => $pantry->language['ADMIN_COURSES_AND_CUISINES'],
+            'title' => $pantry->language->get('ADMIN_COURSES_AND_CUISINES'),
             'include' => [
                 'css' => [
                     'root' => [
@@ -210,7 +210,7 @@ class PantryAdminPage extends PantryPage {
                 ],
                 'breadcrumbs' => [
                     'courses_cuisines' => [
-                        'label' => $pantry->language['ADMIN_COURSES_AND_CUISINES']
+                        'label' => $pantry->language->get('ADMIN_COURSES_AND_CUISINES')
                     ]
                 ]
             ]
@@ -223,7 +223,7 @@ class PantryAdminPage extends PantryPage {
         $pantry = new self();
 
         $params = [
-            'title' => $pantry->language['ADMIN_USERS_TITLE'],
+            'title' => $pantry->language->get('ADMIN_USERS_TITLE'),
             'include' => [
                 'css' => [
                     'root' => [
@@ -244,7 +244,7 @@ class PantryAdminPage extends PantryPage {
                 ],
                 'breadcrumbs' => [
                     'users' => [
-                        'label' => $pantry->language['ADMIN_USERS_BUTTON']
+                        'label' => $pantry->language->get('ADMIN_USERS_BUTTON')
                     ]
                 ]
             ]
@@ -257,7 +257,7 @@ class PantryAdminPage extends PantryPage {
         $pantry = new self();
 
         $params = [
-            'title' => $pantry->language['ADMIN_CREATE_USER_TITLE'],
+            'title' => $pantry->language->get('ADMIN_CREATE_USER_TITLE'),
             'include' => [
                 'css' => [
                     'root' => [
@@ -281,10 +281,10 @@ class PantryAdminPage extends PantryPage {
                 'breadcrumbs' => [
                     'users' => [
                         'href' => Pantry::$web_root."/admin/users",
-                        'label' => $pantry->language['ADMIN_USERS_BUTTON']
+                        'label' => $pantry->language->get('ADMIN_USERS_BUTTON')
                     ],
                     'users-create' => [
-                        'label' => $pantry->language['ADMIN_CREATE_USER_BREADCRUMBS']
+                        'label' => $pantry->language->get('ADMIN_CREATE_USER_BREADCRUMBS')
                     ]
                 ]
             ]
@@ -309,7 +309,7 @@ class PantryAdminPage extends PantryPage {
         }
 
         $params = [
-            'title' => $pantry->language['ADMIN_EDIT_USER_TITLE'],
+            'title' => $pantry->language->get('ADMIN_EDIT_USER_TITLE'),
             'meta' => [
                 'user_id' => $user->getId()
             ],
@@ -336,7 +336,7 @@ class PantryAdminPage extends PantryPage {
                 'breadcrumbs' => [
                     'users' => [
                         'href' => Pantry::$web_root."/admin/users",
-                        'label' => $pantry->language['ADMIN_USERS_BUTTON']
+                        'label' => $pantry->language->get('ADMIN_USERS_BUTTON')
                     ],
                     'users-create' => [
                         'label' => $user->getDisplayName()

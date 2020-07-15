@@ -4,7 +4,7 @@ class PantryAdminAPI extends PantryAPI {
     public function __construct() {
         parent::__construct(true);
         if (!$this->current_user->getIsAdmin()) {
-            $this->response = new PantryAPIError(401, "NOT_ADMIN", $this->language['NOT_ADMIN']);
+            $this->response = new PantryAPIError(401, "NOT_ADMIN", $this->language->get('NOT_ADMIN'));
             $this->response->respond();
         }
     }
@@ -34,7 +34,7 @@ class PantryAdminAPI extends PantryAPI {
             }
         }
 
-        $pantry->response = new PantryAPISuccess("LIST_USERS_SUCCESS", $pantry->language['LIST_USERS_SUCCESS'], [
+        $pantry->response = new PantryAPISuccess("LIST_USERS_SUCCESS", $pantry->language->get('LIST_USERS_SUCCESS'), [
             'users' => $users
         ]);
         $pantry->response->respond();
@@ -55,7 +55,7 @@ class PantryAdminAPI extends PantryAPI {
                 }
             }
             else {
-                $pantry->response = new PantryAPIError(422, "NO_USER_ID_USERNAME", $pantry->language['NO_USER_ID_USERNAME']);
+                $pantry->response = new PantryAPIError(422, "NO_USER_ID_USERNAME", $pantry->language->get('NO_USER_ID_USERNAME'));
                 $pantry->response->respond();
                 die();
             }
@@ -63,12 +63,12 @@ class PantryAdminAPI extends PantryAPI {
             $user = new PantryUser($user_id);
         }
         catch (PantryUserNotFoundException $e) {
-            $pantry->response = new PantryAPIError(422, "USER_NOT_FOUND", $pantry->language['USER_NOT_FOUND']);
+            $pantry->response = new PantryAPIError(422, "USER_NOT_FOUND", $pantry->language->get('USER_NOT_FOUND'));
             $pantry->response->respond();
             die();
         }
 
-        $pantry->response = new PantryAPISuccess("GET_USER_SUCCESS", $pantry->language['GET_USER_SUCCESS'], [
+        $pantry->response = new PantryAPISuccess("GET_USER_SUCCESS", $pantry->language->get('GET_USER_SUCCESS'), [
             'user' => [
                 'id' => $user->getID(),
                 'created' => $user->getCreated(),
@@ -92,16 +92,16 @@ class PantryAdminAPI extends PantryAPI {
 
         try {
             PantryUser::checkUsername($username);
-            $pantry->response = new PantryAPISuccess("CHECK_USERNAME_SUCCESS", $pantry->language['CHECK_USERNAME_SUCCESS'], [
+            $pantry->response = new PantryAPISuccess("CHECK_USERNAME_SUCCESS", $pantry->language->get('CHECK_USERNAME_SUCCESS'), [
                 'available' => true,
-                'message' => $pantry->language['ADMIN_USERS_USERNAME_AVAILABLE']
+                'message' => $pantry->language->get('ADMIN_USERS_USERNAME_AVAILABLE')
             ]);
         }
         catch (PantryUserValidationException $e) {
             $error_code = PantryUser::$error_map[get_class($e)];
-            $pantry->response = new PantryAPISuccess("CHECK_USERNAME_SUCCESS", $pantry->language['CHECK_USERNAME_SUCCESS'], [
+            $pantry->response = new PantryAPISuccess("CHECK_USERNAME_SUCCESS", $pantry->language->get('CHECK_USERNAME_SUCCESS'), [
                 'available' => false,
-                'message' => $pantry->language[$error_code]
+                'message' => $pantry->language->get($error_code)
             ]);
             $pantry->response->respond();
         }
@@ -122,7 +122,7 @@ class PantryAdminAPI extends PantryAPI {
         }
         catch (PantryUserValidationException $e) {
             $error_code = PantryUser::$error_map[get_class($e)];
-            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language[$error_code], [
+            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language->get($error_code), [
                 'issue' => "validation",
                 'field' => $e->getField()
             ]);
@@ -141,10 +141,10 @@ class PantryAdminAPI extends PantryAPI {
         $_SESSION['alert'] = [
             'type' => "success",
             'icon' => "check",
-            'message' => $pantry->language['CREATE_USER_SUCCESS']
+            'message' => $pantry->language->get('CREATE_USER_SUCCESS')
         ];
 
-        $pantry->response = new PantryAPISuccess("CREATE_USER_SUCCESS", $pantry->language['CREATE_USER_SUCCESS']);
+        $pantry->response = new PantryAPISuccess("CREATE_USER_SUCCESS", $pantry->language->get('CREATE_USER_SUCCESS'));
         $pantry->response->respond();
     }
 
@@ -153,7 +153,7 @@ class PantryAdminAPI extends PantryAPI {
 
         $user_id = $_POST['user_id'];
         if (empty($user_id)) {
-            $pantry->response = new PantryAPIError(422, "NO_USER_ID", $pantry->language['NO_USER_ID']);
+            $pantry->response = new PantryAPIError(422, "NO_USER_ID", $pantry->language->get('NO_USER_ID'));
             $pantry->response->respond();
         }
 
@@ -161,7 +161,7 @@ class PantryAdminAPI extends PantryAPI {
             $user = new PantryUser($user_id);
         }
         catch (PantryUserNotFoundException $e) {
-            $pantry->response = new PantryAPIError(422, "USER_NOT_FOUND", $pantry->language['USER_NOT_FOUND']);
+            $pantry->response = new PantryAPIError(422, "USER_NOT_FOUND", $pantry->language->get('USER_NOT_FOUND'));
             $pantry->response->respond();
             die();
         }
@@ -183,7 +183,7 @@ class PantryAdminAPI extends PantryAPI {
         }
         catch (PantryUserValidationException $e) {
             $error_code = PantryUser::$error_map[get_class($e)];
-            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language[$error_code], [
+            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language->get($error_code), [
                 'issue' => "validation",
                 'field' => $e->getField()
             ]);
@@ -208,10 +208,10 @@ class PantryAdminAPI extends PantryAPI {
         $_SESSION['alert'] = [
             'type' => "success",
             'icon' => "check",
-            'message' => $pantry->language['SAVE_USER_SUCCESS']
+            'message' => $pantry->language->get('SAVE_USER_SUCCESS')
         ];
 
-        $pantry->response = new PantryAPISuccess("SAVE_USER_SUCCESS", $pantry->language['SAVE_USER_SUCCESS']);
+        $pantry->response = new PantryAPISuccess("SAVE_USER_SUCCESS", $pantry->language->get('SAVE_USER_SUCCESS'));
         $pantry->response->respond();
     }
 
@@ -221,7 +221,7 @@ class PantryAdminAPI extends PantryAPI {
         $user_id = $_POST['user_id'];
 
         if (empty($user_id)) {
-            $pantry->response = new PantryAPIError(422, "NO_USER_ID", $pantry->language['NO_USER_ID']);
+            $pantry->response = new PantryAPIError(422, "NO_USER_ID", $pantry->language->get('NO_USER_ID'));
             $pantry->response->respond();
         }
 
@@ -229,13 +229,13 @@ class PantryAdminAPI extends PantryAPI {
             $user = new PantryUser($user_id);
         }
         catch (PantryUserNotFoundException $e) {
-            $pantry->response = new PantryAPIError(422, "USER_NOT_FOUND", $pantry->language['USER_NOT_FOUND']);
+            $pantry->response = new PantryAPIError(422, "USER_NOT_FOUND", $pantry->language->get('USER_NOT_FOUND'));
             $pantry->response->respond();
             die();
         }
 
         if ($user->getID() === $pantry->current_user->getID()) {
-            $pantry->response = new PantryAPIError(422, "DELETE_OWN_USER", $pantry->language['DELETE_OWN_USER']);
+            $pantry->response = new PantryAPIError(422, "DELETE_OWN_USER", $pantry->language->get('DELETE_OWN_USER'));
             $pantry->response->respond();
         }
 
@@ -249,10 +249,10 @@ class PantryAdminAPI extends PantryAPI {
         $_SESSION['alert'] = [
             'type' => "success",
             'icon' => "check",
-            'message' => $pantry->language['DELETE_USER_SUCCESS']
+            'message' => $pantry->language->get('DELETE_USER_SUCCESS')
         ];
 
-        $pantry->response = new PantryAPISuccess("DELETE_USER_SUCCESS", $pantry->language['DELETE_USER_SUCCESS']);
+        $pantry->response = new PantryAPISuccess("DELETE_USER_SUCCESS", $pantry->language->get('DELETE_USER_SUCCESS'));
         $pantry->response->respond();
     }
 
@@ -268,18 +268,18 @@ class PantryAdminAPI extends PantryAPI {
         }
         catch (PantryCourseValidationException $e) {
             $error_code = PantryCourse::$error_map[get_class($e)];
-            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language[$error_code], [
+            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language->get($error_code), [
                 'issue' => "validation",
                 'field' => $e->getField()
             ]);
             $pantry->response->respond();
         }
         catch (PantryCourseNotSavedException $e) {
-            $pantry->response = new PantryAPIError(500, "COURSE_NOT_SAVED", $pantry->language['COURSE_NOT_SAVED']);
+            $pantry->response = new PantryAPIError(500, "COURSE_NOT_SAVED", $pantry->language->get('COURSE_NOT_SAVED'));
             $pantry->response->respond();
         }
 
-        $pantry->response = new PantryAPISuccess("CREATE_COURSE_SUCCESS", $pantry->language['CREATE_COURSE_SUCCESS'], [
+        $pantry->response = new PantryAPISuccess("CREATE_COURSE_SUCCESS", $pantry->language->get('CREATE_COURSE_SUCCESS'), [
             'id' => $course->getID(),
             'slug' => $course->getSlug(),
         ]);
@@ -296,19 +296,19 @@ class PantryAdminAPI extends PantryAPI {
             $course->save();
         }
         catch (PantryCourseNotFoundException $e) {
-            $pantry->response = new PantryAPIError(404, "COURSE_NOT_FOUND", $pantry->language['COURSE_NOT_FOUND']);
+            $pantry->response = new PantryAPIError(404, "COURSE_NOT_FOUND", $pantry->language->get('COURSE_NOT_FOUND'));
             $pantry->response->respond();
         }
         catch (PantryCourseValidationException $e) {
             $error_code = PantryCourse::$error_map[get_class($e)];
-            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language[$error_code], [
+            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language->get($error_code), [
                 'issue' => "validation",
                 'field' => $e->getField()
             ]);
             $pantry->response->respond();
         }
         catch (PantryCourseNotSavedException $e) {
-            $pantry->response = new PantryAPIError(500, "COURSE_NOT_SAVED", $pantry->language['COURSE_NOT_SAVED']);
+            $pantry->response = new PantryAPIError(500, "COURSE_NOT_SAVED", $pantry->language->get('COURSE_NOT_SAVED'));
             $pantry->response->respond();
         }
 
@@ -324,15 +324,15 @@ class PantryAdminAPI extends PantryAPI {
             $course->delete($_POST['replace_id']);
         }
         catch (PantryCourseNotFoundException $e) {
-            $pantry->response = new PantryAPIError(404, "COURSE_NOT_FOUND", $pantry->language['COURSE_NOT_FOUND']);
+            $pantry->response = new PantryAPIError(404, "COURSE_NOT_FOUND", $pantry->language->get('COURSE_NOT_FOUND'));
             $pantry->response->respond();
         }
         catch (PantryCourseDeleteReplacementIsSameException $e) {
-            $pantry->response = new PantryAPIError(422, "COURSE_DELETE_REPLACE_IS_SAME", $pantry->language['COURSE_DELETE_REPLACE_IS_SAME']);
+            $pantry->response = new PantryAPIError(422, "COURSE_DELETE_REPLACE_IS_SAME", $pantry->language->get('COURSE_DELETE_REPLACE_IS_SAME'));
             $pantry->response->respond();
         }
         catch (PantryCourseNotDeletedException $e) {
-            $pantry->response = new PantryAPIError(500, "COURSE_NOT_DELETED", $pantry->language['COURSE_NOT_DELETED']);
+            $pantry->response = new PantryAPIError(500, "COURSE_NOT_DELETED", $pantry->language->get('COURSE_NOT_DELETED'));
             $pantry->response->respond();
         }
 
@@ -352,18 +352,18 @@ class PantryAdminAPI extends PantryAPI {
         }
         catch (PantryCuisineValidationException $e) {
             $error_code = PantryCuisine::$error_map[get_class($e)];
-            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language[$error_code], [
+            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language->get($error_code), [
                 'issue' => "validation",
                 'field' => $e->getField()
             ]);
             $pantry->response->respond();
         }
         catch (PantryCuisineNotSavedException $e) {
-            $pantry->response = new PantryAPIError(500, "CUISINE_NOT_SAVED", $pantry->language['CUISINE_NOT_SAVED']);
+            $pantry->response = new PantryAPIError(500, "CUISINE_NOT_SAVED", $pantry->language->get('CUISINE_NOT_SAVED'));
             $pantry->response->respond();
         }
 
-        $pantry->response = new PantryAPISuccess("CREATE_CUISINE_SUCCESS", $pantry->language['CREATE_CUISINE_SUCCESS'], [
+        $pantry->response = new PantryAPISuccess("CREATE_CUISINE_SUCCESS", $pantry->language->get('CREATE_CUISINE_SUCCESS'), [
             'id' => $cuisine->getID(),
             'slug' => $cuisine->getSlug(),
         ]);
@@ -380,19 +380,19 @@ class PantryAdminAPI extends PantryAPI {
             $cuisine->save();
         }
         catch (PantryCuisineNotFoundException $e) {
-            $pantry->response = new PantryAPIError(404, "CUISINE_NOT_FOUND", $pantry->language['CUISINE_NOT_FOUND']);
+            $pantry->response = new PantryAPIError(404, "CUISINE_NOT_FOUND", $pantry->language->get('CUISINE_NOT_FOUND'));
             $pantry->response->respond();
         }
         catch (PantryCuisineValidationException $e) {
             $error_code = PantryCuisine::$error_map[get_class($e)];
-            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language[$error_code], [
+            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language->get($error_code), [
                 'issue' => "validation",
                 'field' => $e->getField()
             ]);
             $pantry->response->respond();
         }
         catch (PantryCuisineNotSavedException $e) {
-            $pantry->response = new PantryAPIError(500, "CUISINE_NOT_SAVED", $pantry->language['CUISINE_NOT_SAVED']);
+            $pantry->response = new PantryAPIError(500, "CUISINE_NOT_SAVED", $pantry->language->get('CUISINE_NOT_SAVED'));
             $pantry->response->respond();
         }
 
@@ -408,15 +408,15 @@ class PantryAdminAPI extends PantryAPI {
             $cuisine->delete($_POST['replace_id']);
         }
         catch (PantryCuisineNotFoundException $e) {
-            $pantry->response = new PantryAPIError(404, "CUISINE_NOT_FOUND", $pantry->language['CUISINE_NOT_FOUND']);
+            $pantry->response = new PantryAPIError(404, "CUISINE_NOT_FOUND", $pantry->language->get('CUISINE_NOT_FOUND'));
             $pantry->response->respond();
         }
         catch (PantryCuisineDeleteReplacementIsSameException $e) {
-            $pantry->response = new PantryAPIError(422, "CUISINE_DELETE_REPLACE_IS_SAME", $pantry->language['CUISINE_DELETE_REPLACE_IS_SAME']);
+            $pantry->response = new PantryAPIError(422, "CUISINE_DELETE_REPLACE_IS_SAME", $pantry->language->get('CUISINE_DELETE_REPLACE_IS_SAME'));
             $pantry->response->respond();
         }
         catch (PantryCuisineNotDeletedException $e) {
-            $pantry->response = new PantryAPIError(500, "CUISINE_NOT_DELETED", $pantry->language['CUISINE_NOT_DELETED']);
+            $pantry->response = new PantryAPIError(500, "CUISINE_NOT_DELETED", $pantry->language->get('CUISINE_NOT_DELETED'));
             $pantry->response->respond();
         }
 

@@ -17,6 +17,9 @@ $router->addMatchTypes([
 
 try {
     // Pages
+    $router->map('GET', '/install', 'PantryPage::install');
+    $router->map('GET', '/update', 'PantryPage::update');
+
     $router->map('GET', '/', 'PantryPage::home');
     $router->map('GET', '/login', 'PantryPage::login');
     $router->map('GET', '/account', 'PantryPage::account');
@@ -35,8 +38,15 @@ try {
     $router->map('GET', '/admin/user/[un:username]', 'PantryAdminPage::editUser');
 
     // API
+    $router->map('POST', '/api/v1/install', 'PantryAPI::install');
+    $router->map('POST', '/api/v1/install/check_key', 'PantryAPI::checkInstallKey');
+    $router->map('POST', '/api/v1/install/language', 'PantryAPI::setInstallLanguage');
+    $router->map('POST', '/api/v1/update', 'PantryAPI::update');
+    $router->map('GET', '/api/v1/update/version', 'PantryAPI::getUpdateVersion');
+
     $router->map('GET', '/api/v1/me', 'PantryAPI::me');
     $router->map('GET', '/api/v1/language', 'PantryAPI::language');
+    $router->map('GET', '/api/v1/languages', 'PantryAPI::listLanguages');
     $router->map('POST', '/api/v1/login', 'PantryAPI::login');
     $router->map('POST', '/api/v1/logout', 'PantryAPI::logout');
     $router->map('POST', '/api/v1/account', 'PantryAPI::account');

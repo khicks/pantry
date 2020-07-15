@@ -14,6 +14,9 @@ class Pantry {
     public static $web_root;
     public static $cookie_path;
 
+    /** @var PantryAppMetadata $app_metadata */
+    public static $app_metadata;
+
     /** @var PantryConfig $config */
     public static $config;
 
@@ -26,8 +29,17 @@ class Pantry {
     /** @var HTMLPurifier $html_purifier */
     public static $html_purifier;
 
+    /** @var PantryInstaller $installer */
+    public static $installer;
+
     /** @var PDO $db */
     public static $db;
+
+    /** @var PantryDBMetadata $db_metadata */
+    public static $db_metadata;
+
+    /** @var PantryUpdater $updater */
+    public static $updater;
 
     /** @var PantrySession $session */
     public static $session;
@@ -40,13 +52,20 @@ class Pantry {
 
         self::loadDirectories();
         self::loadFiles();
+        self::loadAppMetadata();
         self::loadConfig();
         self::loadLogger();
-        self::loadDB();
-        self::checkInstalled();
-        self::loadConfigFromDB();
         self::loadParsedown();
         self::loadHTMLPurifier();
+        self::loadInstaller();
+
+        if (self::$installer->getIsInstalled()) {
+            self::loadDB();
+            self::loadConfigFromDB();
+            self::loadDBMetadata();
+            self::loadUpdater();
+        }
+
         self::loadSession();
         self::$initialized = true;
     }
@@ -64,15 +83,23 @@ class Pantry {
 
     private static function loadFiles() {
         $load_files = [
+            "/class/PantryAppMetadata.php",
             "/class/PantryConfig.php",
+            "/class/PantryDBMetadata.php",
             "/class/PantryExceptions.php",
+            "/class/PantryInstaller.php",
             "/class/PantryLogger.php",
-            "/class/PantrySession.php"
+            "/class/PantrySession.php",
+            "/class/PantryUpdater.php"
         ];
 
         foreach ($load_files as $load_file) {
             require_once(self::$php_root.$load_file);
         }
+    }
+
+    private static function loadAppMetadata() {
+        self::$app_metadata = new PantryAppMetadata();
     }
 
     private static function loadConfig() {
@@ -81,32 +108,6 @@ class Pantry {
 
     private static function loadLogger() {
         self::$logger = new PantryLogger();
-    }
-
-    private static function loadDB() {
-        $dsn = "mysql:host=".self::$config->get('db_host').";dbname=".self::$config->get('db_database').";charset=utf8";
-        $user = self::$config->get('db_username');
-        $password = self::$config->get('db_password');
-
-        try {
-            self::$db = new PDO($dsn, $user, $password);
-        } catch (PDOException $e) {
-            if (self::$config['debug']) {
-                die("Connection to database failed: ".$e->getMessage());
-            }
-            else {
-                die("Connection to database failed.");
-            }
-        }
-    }
-
-    private static function checkInstalled() {
-        // TODO: check if Pantry needs installing
-        // throw exception and catch in api call
-    }
-
-    private static function loadConfigFromDB() {
-        self::$config->loadFromDB();
     }
 
     private static function loadParsedown() {
@@ -120,6 +121,43 @@ class Pantry {
         $htmlp_config->set('Core.Encoding', "UTF-8");
         $htmlp_config->set('HTML.Allowed', "");
         self::$html_purifier = new HTMLPurifier($htmlp_config);
+    }
+
+    private static function loadInstaller() {
+        self::$installer = new PantryInstaller();
+    }
+
+    private static function loadDB() {
+        $dsn = "mysql:"  .
+               "host="   . self::$config->get('db_host')     . ";" .
+               "port="   . self::$config->get('db_port')     . ";" .
+               "dbname=" . self::$config->get('db_database') . ";" .
+               "charset=utf8";
+        $user = self::$config->get('db_username');
+        $password = self::$config->get('db_password');
+
+        try {
+            self::$db = new PDO($dsn, $user, $password);
+        } catch (PDOException $e) {
+            if (self::$config->get('debug')) {
+                die("Connection to database failed: ".$e->getMessage());
+            }
+            else {
+                die("Connection to database failed.");
+            }
+        }
+    }
+
+    private static function loadConfigFromDB() {
+        self::$config->loadFromDB();
+    }
+
+    private static function loadDBMetadata() {
+        self::$db_metadata = new PantryDBMetadata();
+    }
+
+    private static function loadUpdater() {
+        self::$updater = new PantryUpdater();
     }
 
     private static function loadSession() {

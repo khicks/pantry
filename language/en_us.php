@@ -1,14 +1,17 @@
 <?php
 
 return [
-    'LANGUAGE' => "en_us",
+    'LANGUAGE_CODE' => "en_us",
+    'LANGUAGE_DESC' => "English (US)",
 
     // base
+    'LANGUAGE' => "Language",
     'COPYRIGHT' => "Copyright",
     'CANCEL' => "Cancel",
     'SAVE' => "Save",
     'NONE' => "none",
     'NEW' => "New",
+    'CREATE' => "Create",
     'COURSE' => "Course",
     'COURSES' => "Courses",
     'CUISINE' => "Cuisine",
@@ -16,9 +19,53 @@ return [
 
     // navbar
     'HOME_MENU_BUTTON' => "Home",
+    'RECIPES' => "Recipes",
     'LOGIN_BUTTON' => "Log in",
     'LOGOUT_BUTTON' => "Log out",
     'ADMIN_MENU_BUTTON' => "Admin",
+
+    // install
+    'INSTALL' => "Install",
+    'INSTALL_WELCOME' => "Welcome to the Pantry installer!",
+    'INSTALL_KEY' => "Install Key",
+    'INSTALL_KEY_DESC' => "Please enter your install key. It can be found in your Pantry directory at this location:",
+    'INSTALL_DATABASE_CONNECTION' => "Database Connection",
+    'INSTALL_DATABASE_PORT' => "Port",
+    'INSTALL_DATABASE_HOST' => "Host",
+    'INSTALL_DATABASE_DATABASE' => "Database",
+    'INSTALL_FIRST_USER' => "First User",
+    'INSTALL_BUTTON' => "Install Pantry",
+    'INSTALL_SUCCESS' => "Installation successful!",
+    'INSTALL_SUCCESS_DESC' => "Redirecting you to the Pantry home page...",
+    'INSTALL_FAILED_ALERT' => "Installation could not complete due to the following error:",
+
+    'INSTALL_KEY_CHECK_SUCCESS' => "Install key is correct.",
+    'INSTALL_KEY_CHECK_ERROR' => "Install key is incorrect.",
+    'INSTALL_ERROR_LANGUAGE' => "Language is invalid.",
+    'INSTALL_ERROR_DB_HOST_INVALID' => "Database host is invalid or does not resolve.",
+    'INSTALL_ERROR_DB_PORT_INVALID' => "Database port is invalid.",
+    'INSTALL_ERROR_DB_NOT_CONNECTED' => "Database connection could not be established.",
+    'INSTALL_ERROR_DIRS_NOT_CREATED' => "Data directories could not be created.",
+    'INSTALL_ERROR_CONFIG_FILE_NOT_CREATED' => "Config file could not be created.",
+    'INSTALL_ERROR_SQL_FAILED' => "Could not create database tables.",
+    'INSTALL_ERROR_METADATA_FAILED' => "Could not set DB metadata.",
+    'INSTALL_ERROR_DB_CONFIG_FAILED' => "The configuration could not be written to the database.",
+
+    // update
+    'UPDATE' => "Update",
+    'UPDATE_WELCOME' => "Welcome to the Pantry updater!",
+    'UPDATE_WELCOME_DESC' => "You are seeing this page because the Pantry database requires an update.",
+    'UPDATE_WARNING' => "Please back up your database before proceeding!",
+    'UPDATE_CURRENT_DB_VERSION' => "Current database version:",
+    'UPDATE_NEW_DB_VERSION' => "New database version:",
+    'UPDATE_BUTTON' => "Update Pantry",
+    'UPDATE_SUCCESS' => "Update complete!",
+    'UPDATE_FAILED_ALERT' => "Update could not complete due to the following error:",
+
+    'PANTRY_NOT_UPDATED' => "An update is pending.",
+    'PANTRY_ALREADY_UPDATED' => "Pantry is up to date.",
+
+    'UPDATE_ERROR_NO_DETERMINE_DB_VERSION' => "Could not determine database versions.",
 
     // login page
     'LOGIN_TITLE' => "Log in",
@@ -146,6 +193,7 @@ return [
     // API success
     'ME_SUCCESS' => "Here are your user details.",
     'LANGUAGE_SUCCESS' => "Here is your language config.",
+    'LANGUAGES_SUCCESS' => "Here is the list of languages.",
     'LOGIN_SUCCESS' => "You are now logged in.",
     'LOGOUT_SUCCESS' => "You have been logged out.",
     'LIST_USERS_SUCCESS' => "Here is the list of users.",
@@ -158,9 +206,12 @@ return [
     'LIST_COURSES_SUCCESS' => "Here are the courses.",
     'LIST_CUISINES_SUCCESS' => "Here are the cuisines.",
     'LIST_COURSES_CUISINES_SUCCESS' => "Here are the courses and cuisines.",
+    'CREATE_RECIPE_SUCCESS' => "Recipe created.",
 
     // API error
     'INTERNAL_ERROR' => "Something went wrong on the server. Please contact your administrator or try again later.",
+    'PANTRY_NOT_INSTALLED' => "Pantry is not installed.",
+    'PANTRY_ALREADY_INSTALLED' => "Pantry is already installed.",
     'CSRF_FAILED' => "A CSRF token was not provided or did not match.",
     'NOT_LOGGED_IN' => "This resource requires authentication.",
     'NOT_LOGGED_OUT' => "This resource requires the user to be logged out.",

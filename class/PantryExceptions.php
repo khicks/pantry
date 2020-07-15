@@ -6,6 +6,12 @@ class PantryException extends Exception {
     }
 }
 
+class PantryDBMetadataException extends PantryException {}
+
+class PantryDBMetadataNameEmptyException extends PantryDBMetadataException {}
+
+class PantryDBMetadataNameNotFoundException extends PantryDBMetadataException {}
+
 class PantryConfigurationException extends PantryException {
     public function __construct($field, $bad_value, $message = null, $code = 0, Exception $previous = null) {
         $message = $message ?? "Bad value for $field in configuration: $bad_value";
@@ -13,7 +19,32 @@ class PantryConfigurationException extends PantryException {
     }
 }
 
-class PantryNotInstalledException extends PantryException {}
+class PantryInstallationException extends PantryException {
+    private $response_code;
+
+    public function __construct($error_code, $response_code, $code = 0, Exception $previous = null) {
+        $this->response_code = $response_code;
+        parent::__construct($error_code, $code, $previous);
+    }
+
+    public function getResponseCode() {
+        return $this->response_code;
+    }
+}
+
+class PantryInstallationClientException extends PantryInstallationException {
+    public function __construct($message, $response_code = 422, $code = 0, Exception $previous = null) {
+        parent::__construct($message, $response_code, $code, $previous);
+    }
+}
+
+class PantryInstallationServerException extends PantryInstallationException {
+    public function __construct($message, $response_code = 500, $code = 0, Exception $previous = null) {
+        parent::__construct($message, $response_code, $code, $previous);
+    }
+}
+
+class PantryLanguageNotFoundException extends PantryException {}
 
 class PantryUserNotFoundException extends PantryException {}
 

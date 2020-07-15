@@ -4,8 +4,17 @@ class PantryPage extends PantryApp {
     /** @var Twig_Environment $twig */
     protected $twig;
 
-    public function __construct() {
+    public function __construct($install_required = true, $update_required = true) {
         parent::__construct();
+
+        if ($install_required && !Pantry::$installer->getIsInstalled()) {
+            $this->redirect("/install");
+        }
+
+        if ($install_required && $update_required && !Pantry::$updater->getIsUpdated()) {
+            $this->redirect("/update");
+        }
+
         $this->loadTwig();
     }
 
@@ -41,8 +50,8 @@ class PantryPage extends PantryApp {
             'app_name' => Pantry::$config->get('app_name'),
             'meta' => [
                 'web_root' => Pantry::$web_root,
-                'csrf_token' => $this->current_session->getCSRF(),
-                'page_tracker' => $this->current_session->getPageTracker()
+                'csrf_token' => Pantry::$session->getCSRF(),
+                'page_tracker' => Pantry::$session->getPageTracker()
             ],
             'include' => [
                 'css' => [
@@ -66,14 +75,14 @@ class PantryPage extends PantryApp {
                     'root' => []
                 ]
             ],
-            'lang' => $this->language,
+            'lang' => $this->language->getAll(),
             'display' => [
                 'navbar' => true,
                 'navigation' => true,
                 'title' => true,
                 'footer' => true,
                 'user_menu' => true,
-                'logged_in' => $this->current_session->isLoggedIn(),
+                'logged_in' => false,
             ],
             'brand' => [
                 'href' => Pantry::$web_root . "/",
@@ -85,31 +94,33 @@ class PantryPage extends PantryApp {
                         'type' => "link",
                         'href' => Pantry::$web_root . "/",
                         'icon' => "fas fa-home",
-                        'label' => $this->language['HOME_MENU_BUTTON'],
+                        'label' => $this->language->get('HOME_MENU_BUTTON'),
                         'active' => false
                     ],
                     'recipes' => [
                         'type' => "link",
                         'href' => Pantry::$web_root . "/recipes",
                         'icon' => "fab fa-readme",
-                        'label' => "Recipes",
+                        'label' => $this->language->get('RECIPES'),
                         'active' => false
                     ]
                 ],
                 'right' => []
             ],
+            'content' => [],
             'footer' => [
                 'year' => date("Y"),
                 'name' => "Pantry"
             ]
         ];
 
-        if ($this->current_session->isLoggedIn()) {
+        if (!is_null($this->current_session) && $this->current_session->isLoggedIn()) {
+            $init_params['display']['logged_in'] = true;
             $init_params['navigation']['left']['create'] = [
                 'type' => "link",
                 'href' => Pantry::$web_root . "/recipes/create",
                 'icon' => "fas fa-plus",
-                'label' => "Create",
+                'label' => $this->language->get('CREATE'),
                 'active' => false
             ];
 
@@ -132,7 +143,7 @@ class PantryPage extends PantryApp {
                                 'type' => "link",
                                 'href' => Pantry::$web_root . "/admin",
                                 'icon' => "fas fa-cogs",
-                                'label' => $this->language['ADMIN_MENU_BUTTON'],
+                                'label' => $this->language->get('ADMIN_MENU_BUTTON'),
                                 'active' => false
                             ]
                         ]
@@ -147,7 +158,7 @@ class PantryPage extends PantryApp {
                     'type' => "link",
                     'href' => Pantry::$web_root . "/login",
                     'icon' => "fas fa-sign-in-alt",
-                    'label' => $this->language['LOGIN_BUTTON'],
+                    'label' => $this->language->get('LOGIN_BUTTON'),
                     'active' => false
                 ]
             ];
@@ -211,15 +222,81 @@ class PantryPage extends PantryApp {
         }
     }
 
+    protected function requireNotInstalled() {
+        if (Pantry::$installer->getIsInstalled()) {
+            $this->redirect("/");
+        }
+    }
+
+    protected function requireNotUpdated() {
+        if (Pantry::$updater->getIsUpdated()) {
+            $this->redirect("/");
+        }
+    }
+
     // ========================================
     // Entry points
     // ========================================
-    public static function home() {
-        $pantry = new self();
-        $pantry->current_session->trackPage();
+    public static function install() {
+        $pantry = new self(false);
+        $pantry->requireNotInstalled();
 
         $params = [
-            'title' => $pantry->language['HOME_PAGE_TITLE'],
+            'title' => $pantry->language->get('INSTALL'),
+            'include' => [
+                'css' => [
+                    'root' => [
+                        "install.css"
+                    ]
+                ],
+                'js' => [
+                    'root' => [
+                        "install.js"
+                    ]
+                ]
+            ],
+            'display' => [
+                'navigation' => false,
+                'title' => false
+            ]
+        ];
+
+        $pantry->displayTemplate("install.html", $params);
+    }
+
+    public static function update() {
+        $pantry = new self(true, false);
+        $pantry->requireNotUpdated();
+
+        $params = [
+            'title' => $pantry->language->get('UPDATE'),
+            'include' => [
+                'css' => [
+                    'root' => [
+                        "update.css"
+                    ]
+                ],
+                'js' => [
+                    'root' => [
+                        "update.js"
+                    ]
+                ]
+            ],
+            'display' => [
+                'navigation' => false,
+                'title' => false
+            ]
+        ];
+
+        $pantry->displayTemplate("update.html", $params);
+    }
+
+    public static function home() {
+        $pantry = new self();
+        Pantry::$session->trackPage();
+
+        $params = [
+            'title' => $pantry->language->get('HOME_PAGE_TITLE'),
             'include' => [
                 'css' => [
                     'root' => [
@@ -252,7 +329,7 @@ class PantryPage extends PantryApp {
         $pantry->requireLogout();
 
         $params = [
-            'title' => $pantry->language['LOGIN_TITLE'],
+            'title' => $pantry->language->get('LOGIN_TITLE'),
             'include' => [
                 'css' => [
                     'root' => [
@@ -276,11 +353,11 @@ class PantryPage extends PantryApp {
 
     public static function account() {
         $pantry = new self();
-        $pantry->current_session->trackPage();
+        Pantry::$session->trackPage();
         $pantry->requireLogin();
 
         $params = [
-            'title' => $pantry->language['MY_ACCOUNT_TITLE'],
+            'title' => $pantry->language->get('MY_ACCOUNT_TITLE'),
             'include' => [
                 'css' => [
                     'root' => [
@@ -307,7 +384,7 @@ class PantryPage extends PantryApp {
 
     public static function browseRecipes() {
         $pantry = new self();
-        $pantry->current_session->trackPage();
+        Pantry::$session->trackPage();
 
         $params = [
             'title' => "Browse Recipes",
@@ -337,11 +414,11 @@ class PantryPage extends PantryApp {
 
     public static function createRecipe() {
         $pantry = new self();
-        $pantry->current_session->trackPage();
+        Pantry::$session->trackPage();
         $pantry->requireLogin();
 
         $params = [
-            'title' => $pantry->language['CREATE_RECIPE_TITLE'],
+            'title' => $pantry->language->get('CREATE_RECIPE_TITLE'),
             'include' => [
                 'css' => [
                     'root' => [
@@ -371,10 +448,10 @@ class PantryPage extends PantryApp {
 
     public static function viewRecipe($slug) {
         $pantry = new self();
-        $pantry->current_session->trackPage();
+        Pantry::$session->trackPage();
 
         $params = [
-            'title' => $pantry->language['VIEW_RECIPE_TITLE'],
+            'title' => $pantry->language->get('VIEW_RECIPE_TITLE'),
             'meta' => [
                 'recipe_slug' => $slug,
             ],
@@ -407,10 +484,10 @@ class PantryPage extends PantryApp {
 
     public static function editRecipe($slug) {
         $pantry = new self();
-        $pantry->current_session->trackPage();
+        Pantry::$session->trackPage();
 
         $params = [
-            'title' => $pantry->language['EDIT_RECIPE_TITLE'],
+            'title' => $pantry->language->get('EDIT_RECIPE_TITLE'),
             'meta' => [
                 'recipe_slug' => $slug,
             ],

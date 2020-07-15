@@ -6,6 +6,7 @@ class PantryConfig {
         'app_language'     => "en_us",
         'app_brand_format' => "logo",
         'db_host'          => null,
+        'db_port'          => 3306,
         'db_username'      => null,
         'db_password'      => null,
         'db_database'      => null,
@@ -15,8 +16,16 @@ class PantryConfig {
         'log_level'        => "WARNING",
         'log_max_size'     => "50KB",
         'log_max_files'    => 10,
-        'session_timeout'  => 259200,
+        'session_timeout'  => "3d",
         'csrf_required'    => true,
+    ];
+
+    private const ACCEPTABLE_DB_VARS = [
+        "app_name",
+        "app_language",
+        "app_brand_format",
+        "session_timeout",
+        "csrf_required"
     ];
 
     private $config_file = null;
@@ -28,7 +37,8 @@ class PantryConfig {
      */
     public function __construct() {
         // load config file
-        if ($config_file = include(Pantry::$php_root."/data/config.php")) {
+        $config_file_path = Pantry::$php_root . "/data/config.php";
+        if (file_exists($config_file_path) && $config_file = include($config_file_path)) {
             if (is_array($config_file)) {
                 $this->config_file = $config_file;
             }
@@ -36,7 +46,7 @@ class PantryConfig {
 
         foreach ($this->config as $key => $value) {
             // set from config file
-            if (!is_null($config_file) && array_key_exists($key, $config_file) && !is_null($config_file[$key])) {
+            if (!is_null($this->config_file) && array_key_exists($key, $this->config_file) && !is_null($this->config_file[$key])) {
                 $this->config[$key] = $this->config_file[$key];
             }
 
@@ -62,6 +72,12 @@ class PantryConfig {
         // app_brand_format (default)
         if (!in_array($this->config['app_brand_format'], ["logo", "text", true])) {
             $this->config['app_brand_format'] = self::DEFAULTS['app_brand_format'];
+        }
+
+        // db port (default)
+        $this->config['db_port'] = (int)$this->config['db_port'];
+        if ($this->config['db_port'] < 1) {
+            $this->config['db_port'] = self::DEFAULTS['db_port'];
         }
 
         // log_dir (fail)
@@ -92,7 +108,7 @@ class PantryConfig {
         // log_max_files (default)
         $this->config['log_max_files'] = (int)$this->config['log_max_files'];
         if ($this->config['log_max_files'] < 1) {
-            $this->config['log_max_files'] = 10;
+            $this->config['log_max_files'] = self::DEFAULTS['log_max_files'];
         }
 
         // image_dir (fail)
@@ -135,7 +151,7 @@ class PantryConfig {
             return $size;
         }
 
-        if (preg_match('/^\s*([0-9]+\.[0-9]+|\.?[0-9]+)\s*(k|m|g|b)(b?ytes)?/i', $size, $match)) {
+        if (preg_match('/^\s*([0-9]+\.[0-9]+|\.?[0-9]+)\s*([bkmg])(b?ytes)?/i', $size, $match)) {
             return (int)$match[1] * $units[strtolower($match[2])];
         }
 
@@ -154,7 +170,7 @@ class PantryConfig {
             return (int)$time;
         }
 
-        if (preg_match('/^\s*([0-9]+\.[0-9]+|\.?[0-9]+)\s*(s|m|h|d)/i', $time, $match)) {
+        if (preg_match('/^\s*([0-9]+\.[0-9]+|\.?[0-9]+)\s*([smhd])/i', $time, $match)) {
             return (int)$match[1] * $units[strtolower($match[2])];
         }
 
@@ -162,17 +178,9 @@ class PantryConfig {
     }
 
     public function loadFromDB() {
-        $acceptable_vars = [
-            "app_name",
-            "app_language",
-            "app_brand_format",
-            "session_timeout",
-            "csrf_required"
-        ];
-
         $sql_get_config = Pantry::$db->query("SELECT name, data FROM app_config", PDO::FETCH_ASSOC);
         foreach ($sql_get_config as $row) {
-            if (array_key_exists($row['name'], $this->config) && in_array($row['name'], $acceptable_vars, true)) {
+            if (array_key_exists($row['name'], $this->config) && in_array($row['name'], self::ACCEPTABLE_DB_VARS, true)) {
                 $this->config[$row['name']] = $row['data'];
             }
         }
@@ -182,5 +190,21 @@ class PantryConfig {
 
     public function get($param) {
         return $this->config[$param];
+    }
+
+    /**
+     * @param string $name
+     * @param string $data
+     * @throws PantryConfigurationException
+     */
+    public function setDBConfig(string $name, string $data) {
+        if (!in_array($name, self::ACCEPTABLE_DB_VARS, true)) {
+            throw new PantryConfigurationException("Set DB config with name '$name' is not acceptable.");
+        }
+
+        $sql_set_metadata = Pantry::$db->prepare("REPLACE INTO app_config (name, data) VALUES (:name, :data)");
+        $sql_set_metadata->bindValue(':name', $name, PDO::PARAM_STR);
+        $sql_set_metadata->bindValue(':data', $data, PDO::PARAM_STR);
+        $sql_set_metadata->execute();
     }
 }

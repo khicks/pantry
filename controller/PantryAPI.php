@@ -4,13 +4,24 @@ class PantryAPI extends PantryApp {
     /** @var PantryAPISuccess|PantryAPIError $response */
     public $response;
 
-    public function __construct($csrf_required = true) {
+    public function __construct($csrf_required = true, $install_required = true, $update_required = true) {
         parent::__construct();
-
         $this->loadFiles();
 
-        if ($csrf_required && !$this->current_session->checkCSRF()) {
-            $this->response = new PantryAPIError(401, "CSRF_FAILED", $this->language['CSRF_FAILED']);
+        if ($install_required && !Pantry::$installer->getIsInstalled()) {
+            Pantry::$logger->warning("API call attempted before installation.");
+            $this->response = new PantryAPIError(403, "PANTRY_NOT_INSTALLED", $this->language->get('PANTRY_NOT_INSTALLED'));
+            $this->response->respond();
+        }
+
+        if ($install_required && $update_required && !Pantry::$updater->getIsUpdated()) {
+            Pantry::$logger->warning("API call attempted before update.");
+            $this->response = new PantryAPIError(403, "PANTRY_NOT_UPDATED", $this->language->get('PANTRY_NOT_UPDATED'));
+            $this->response->respond();
+        }
+
+        if ($csrf_required && !Pantry::$session->checkCSRF()) {
+            $this->response = new PantryAPIError(401, "CSRF_FAILED", $this->language->get('CSRF_FAILED'));
             $this->response->respond();
         }
     }
@@ -29,26 +40,131 @@ class PantryAPI extends PantryApp {
 
     private function requireLogin() {
         if (!$this->current_session->isLoggedIn()) {
-            $this->response = new PantryAPIError(401, "NOT_LOGGED_IN", $this->language['NOT_LOGGED_IN']);
+            $this->response = new PantryAPIError(401, "NOT_LOGGED_IN", $this->language->get('NOT_LOGGED_IN'));
             $this->response->respond();
         }
     }
 
     private function requireLogout() {
         if ($this->current_session->isLoggedIn()) {
-            $this->response = new PantryAPIError(401, "NOT_LOGGED_OUT", $this->language['NOT_LOGGED_OUT']);
+            $this->response = new PantryAPIError(401, "NOT_LOGGED_OUT", $this->language->get('NOT_LOGGED_OUT'));
+            $this->response->respond();
+        }
+    }
+
+    private function requireNotInstalled() {
+        if (Pantry::$installer->getIsInstalled()) {
+            $this->response = new PantryAPIError(403, "PANTRY_ALREADY_INSTALLED", $this->language->get('PANTRY_ALREADY_INSTALLED'));
+            $this->response->respond();
+        }
+    }
+
+    private function requireNotUpdated() {
+        if (Pantry::$updater->getIsUpdated()) {
+            $this->response = new PantryAPIError(403, "PANTRY_ALREADY_UPDATED", $this->language->get('PANTRY_ALREADY_UPDATED'));
             $this->response->respond();
         }
     }
 
     // ========================================
-    // Entry points
+    // Entry points - installation
+    // ========================================
+    public static function install() {
+        $pantry = new self(true, false);
+        $pantry->requireNotInstalled();
+
+        try {
+            Pantry::$installer->install();
+        }
+        catch (PantryInstallationException $e) {
+            $pantry->response = new PantryAPIError($e->getResponseCode(), $e->getMessage(), $pantry->language->get($e->getMessage()));
+            $pantry->response->respond();
+        }
+
+        $pantry->response = new PantryAPISuccess("INSTALL_SUCCESS", $pantry->language->get('INSTALL_SUCCESS'));
+        $pantry->response->respond();
+    }
+
+    public static function checkInstallKey() {
+        $pantry = new self(true, false);
+
+        try {
+            Pantry::$installer->checkInstallKey($_POST['key']);
+        }
+        catch (PantryInstallationClientException $e) {
+            $pantry->response = new PantryAPIError($e->getResponseCode(), $e->getMessage(), $pantry->language->get($e->getMessage()));
+            $pantry->response->respond();
+        }
+
+        $pantry->response = new PantryAPISuccess("INSTALL_KEY_CHECK_SUCCESS", $pantry->language->get('INSTALL_KEY_CHECK_SUCCESS'));
+        $pantry->response->respond();
+    }
+
+    public static function setInstallLanguage() {
+        $pantry = new self(true, false);
+        $pantry->requireNotInstalled();
+
+        try {
+            new PantryLanguage($_POST['lang_code']);
+        }
+        catch (PantryLanguageNotFoundException $e) {
+            $pantry->response = new PantryAPIError(422, "LANGUAGE_NOT_FOUND");
+            $pantry->response->respond();
+        }
+
+        Pantry::$session->setTempLanguage($_POST['lang_code']);
+    }
+
+    public static function update() {
+        $pantry = new self(true, true, false);
+        $pantry->requireNotUpdated();
+
+        try {
+            Pantry::$updater->update();
+        }
+        catch (PantryInstallationException $e) {
+            $pantry->response = new PantryAPIError($e->getResponseCode(), $e->getMessage(), $pantry->language->get($e->getMessage()));
+            $pantry->response->respond();
+        }
+
+        $pantry->response = new PantryAPISuccess("UPDATE_SUCCESS", $pantry->language->get('UPDATE_SUCCESS'));
+        $pantry->response->respond();
+    }
+
+    public static function getUpdateVersion() {
+        $pantry = new self(false, true, false);
+        $pantry->requireNotUpdated();
+
+        $versions = [];
+        try {
+            $versions = [
+                'app' => [
+                    'current_version' => Pantry::$app_metadata->get('app_version')
+                ],
+                'db' => [
+                    'current_version' => Pantry::$db_metadata->get('db_version'),
+                    'new_version' => Pantry::$app_metadata->get('db_version')
+                ]
+            ];
+        }
+        catch (PantryDBMetadataException $e) {
+            Pantry::$logger->critical("Could not determine db_version from database.");
+            $pantry->response = new PantryAPIError(500, "UPDATE_GET_VERSION_ERROR");
+            $pantry->response->respond();
+        }
+
+        $pantry->response = new PantryAPISuccess("UPDATE_GET_VERSION_SUCCESS", "", $versions);
+        $pantry->response->respond();
+    }
+
+    // ========================================
+    // Entry points - application
     // ========================================
     public static function me() {
         $pantry = new self(false);
-        $pantry->response = new PantryAPISuccess("ME_SUCCESS", $pantry->language['ME_SUCCESS'], [
+        $pantry->response = new PantryAPISuccess("ME_SUCCESS", $pantry->language->get('ME_SUCCESS'), [
+            'csrf_token' => Pantry::$session->getCSRF(),
             'logged_in' => $pantry->current_session->isLoggedIn(),
-            'csrf_token' => $pantry->current_session->getCSRF(),
             'user_id' => $pantry->current_user->getID(),
             'username' => $pantry->current_user->getUsername(),
             'is_admin' => $pantry->current_user->getIsAdmin(),
@@ -59,8 +175,20 @@ class PantryAPI extends PantryApp {
     }
 
     public static function language() {
-        $pantry = new self(false);
-        $pantry->response = new PantryAPISuccess("LANGUAGE_SUCCESS", $pantry->language['LANGUAGE_SUCCESS'], $pantry->language);
+        $pantry = new self(false, false);
+        $pantry->response = new PantryAPISuccess("LANGUAGE_SUCCESS", $pantry->language->get('LANGUAGE_SUCCESS'), $pantry->language->getAll());
+        $pantry->response->respond();
+    }
+
+    public static function listLanguages() {
+        $pantry = new self(false, false);
+        $pantry->response = new PantryAPISuccess("LANGUAGES_SUCCESS", $pantry->language->get('LANGUAGES_SUCCESS'), [
+            'current' => [
+                'code' => $pantry->language->getCode(),
+                'description' => $pantry->language->get('LANGUAGE_DESC')
+            ],
+            'list' => PantryLanguage::list()
+        ]);
         $pantry->response->respond();
     }
 
@@ -75,14 +203,14 @@ class PantryAPI extends PantryApp {
         $two_factor_session_secret = (isset($_POST['two_factor_session_secret'])) ? $_POST['two_factor_session_secret'] : null;
 
         if (!$username || !$password) {
-            $pantry->response = new PantryAPIError(422, "MISSING_USERNAME_PASSWORD", $pantry->language['MISSING_USERNAME_PASSWORD']);
+            $pantry->response = new PantryAPIError(422, "MISSING_USERNAME_PASSWORD", $pantry->language->get('MISSING_USERNAME_PASSWORD'));
             $pantry->response->respond();
         }
 
         $clamp = new PantryClamp();
 
         if ($pantry->current_session->isLoggedIn()) {
-            $pantry->response = new PantryAPIError(401, "NOT_LOGGED_OUT", $pantry->language['NOT_LOGGED_OUT']);
+            $pantry->response = new PantryAPIError(401, "NOT_LOGGED_OUT", $pantry->language->get('NOT_LOGGED_OUT'));
             $clamp->wait(500);
             $pantry->response->respond();
         }
@@ -90,16 +218,16 @@ class PantryAPI extends PantryApp {
         $check_login = PantryUser::checkLogin($username, $password, $verification, $two_factor_session_secret);
 
         if ($check_login === "fail") {
-            $pantry->response = new PantryAPIError(401, "BAD_USERNAME_PASSWORD", $pantry->language['BAD_USERNAME_PASSWORD']);
+            $pantry->response = new PantryAPIError(401, "BAD_USERNAME_PASSWORD", $pantry->language->get('BAD_USERNAME_PASSWORD'));
         }
         elseif ($check_login === "disabled") {
-            $pantry->response = new PantryAPIError(401, "USER_DISABLED", $pantry->language['USER_DISABLED']);
+            $pantry->response = new PantryAPIError(401, "USER_DISABLED", $pantry->language->get('USER_DISABLED'));
         }
         elseif ($check_login === "two_factor_required") {
-            $pantry->response = new PantryAPIError(401, "TWO_FACTOR_REQUIRED", $pantry->language['TWO_FACTOR_REQUIRED']);
+            $pantry->response = new PantryAPIError(401, "TWO_FACTOR_REQUIRED", $pantry->language->get('TWO_FACTOR_REQUIRED'));
         }
         elseif ($check_login === "two_factor_incorrect") {
-            $pantry->response = new PantryAPIError(401, "TWO_FACTOR_INCORRECT", $pantry->language['TWO_FACTOR_INCORRECT']);
+            $pantry->response = new PantryAPIError(401, "TWO_FACTOR_INCORRECT", $pantry->language->get('TWO_FACTOR_INCORRECT'));
         }
         elseif ($check_login === "success") {
             $user_id = PantryUser::lookupUsername($username);
@@ -109,8 +237,8 @@ class PantryAPI extends PantryApp {
                 $pantry->current_user = new PantryCurrentUser($user_id);
             }
             catch (PantryUserNotFoundException $e) {
-                Pantry::$logger->emergency($e->getMessage());
-                $pantry->response = new PantryAPIError(500, "INTERNAL_ERROR", $pantry->language['API_INTERNAL_ERROR']);
+                Pantry::$logger->alert($e->getMessage());
+                $pantry->response = new PantryAPIError(500, "INTERNAL_ERROR", $pantry->language->get('API_INTERNAL_ERROR'));
                 $clamp->wait(500);
                 $pantry->response->respond();
             }
@@ -127,9 +255,9 @@ class PantryAPI extends PantryApp {
             $pantry->current_user->setLastLogin();
             $pantry->current_user->save();
 
-            $pantry->response = new PantryAPISuccess("LOGIN_SUCCESS", $pantry->language['LOGIN_SUCCESS'], [
+            $pantry->response = new PantryAPISuccess("LOGIN_SUCCESS", $pantry->language->get('LOGIN_SUCCESS'), [
+                'csrf_token' => Pantry::$session->getCSRF(),
                 'logged_in' => $pantry->current_session->isLoggedIn(),
-                'csrf_token' => $pantry->current_session->getCSRF(),
                 'user_id' => $pantry->current_user->getID(),
                 'username' => $pantry->current_user->getUsername(),
                 'is_admin' => $pantry->current_user->getIsAdmin(),
@@ -138,7 +266,7 @@ class PantryAPI extends PantryApp {
         }
         else {
             Pantry::$logger->critical("Could not log in user.");
-            $pantry->response = new PantryAPIError(500, "INTERNAL_ERROR", $pantry->language['API_INTERNAL_ERROR']);
+            $pantry->response = new PantryAPIError(500, "INTERNAL_ERROR", $pantry->language->get('API_INTERNAL_ERROR'));
         }
 
         $clamp->wait(500);
@@ -151,7 +279,7 @@ class PantryAPI extends PantryApp {
 
         $pantry->current_session->destroy();
 
-        $pantry->response = new PantryAPISuccess("LOGOUT_SUCCESS", $pantry->language['LOGOUT_SUCCESS']);
+        $pantry->response = new PantryAPISuccess("LOGOUT_SUCCESS", $pantry->language->get('LOGOUT_SUCCESS'));
         $pantry->response->respond();
     }
 
@@ -174,7 +302,7 @@ class PantryAPI extends PantryApp {
         }
         catch (PantryUserValidationException $e) {
             $error_code = PantryUser::$error_map[get_class($e)];
-            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language[$error_code], [
+            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language->get($error_code), [
                 'issue' => "validation",
                 'field' => $e->getField()
             ]);
@@ -195,9 +323,9 @@ class PantryAPI extends PantryApp {
         $pantry->response = new PantryAPISuccess("FEATURED_RECIPES_SUCCESS", "", [
             'recipes' => $featured,
             'lang' => [
-                'days_short' => $pantry->language['DAYS_SHORT'],
-                'hours_short' => $pantry->language['HOURS_SHORT'],
-                'minutes_short' => $pantry->language['MINUTES_SHORT'],
+                'days_short' => $pantry->language->get('DAYS_SHORT'),
+                'hours_short' => $pantry->language->get('HOURS_SHORT'),
+                'minutes_short' => $pantry->language->get('MINUTES_SHORT'),
             ]
         ]);
         $pantry->response->respond();
@@ -210,9 +338,9 @@ class PantryAPI extends PantryApp {
         $pantry->response = new PantryAPISuccess("LIST_NEW_RECIPES_SUCCESS", "", [
             'recipes' => $featured,
             'lang' => [
-                'days_short' => $pantry->language['DAYS_SHORT'],
-                'hours_short' => $pantry->language['HOURS_SHORT'],
-                'minutes_short' => $pantry->language['MINUTES_SHORT'],
+                'days_short' => $pantry->language->get('DAYS_SHORT'),
+                'hours_short' => $pantry->language->get('HOURS_SHORT'),
+                'minutes_short' => $pantry->language->get('MINUTES_SHORT'),
             ]
         ]);
         $pantry->response->respond();
@@ -225,9 +353,9 @@ class PantryAPI extends PantryApp {
         $pantry->response = new PantryAPISuccess("LIST_ALL_RECIPES_SUCCESS", "", [
             'recipes' => $all_recipes,
             'lang' => [
-                'days_short' => $pantry->language['DAYS_SHORT'],
-                'hours_short' => $pantry->language['HOURS_SHORT'],
-                'minutes_short' => $pantry->language['MINUTES_SHORT'],
+                'days_short' => $pantry->language->get('DAYS_SHORT'),
+                'hours_short' => $pantry->language->get('HOURS_SHORT'),
+                'minutes_short' => $pantry->language->get('MINUTES_SHORT'),
             ]
         ]);
         $pantry->response->respond();
@@ -243,12 +371,12 @@ class PantryAPI extends PantryApp {
             }
         }
         catch (PantryRecipeNotFoundException $e) {
-            $pantry->response = new PantryAPIError(404, "RECIPE_NOT_FOUND", $pantry->language['RECIPE_NOT_FOUND']);
+            $pantry->response = new PantryAPIError(404, "RECIPE_NOT_FOUND", $pantry->language->get('RECIPE_NOT_FOUND'));
             $pantry->response->respond();
             die();
         }
 
-        $pantry->response = new PantryAPISuccess("RECIPE_SUCCESS", $pantry->language['RECIPE_SUCCESS'], [
+        $pantry->response = new PantryAPISuccess("RECIPE_SUCCESS", $pantry->language->get('RECIPE_SUCCESS'), [
             'id' => $recipe->getID(),
             'created' => $recipe->getCreated(),
             'updated' => $recipe->getUpdated(),
@@ -292,12 +420,12 @@ class PantryAPI extends PantryApp {
             //'permission_level' => $recipe_permission->getLevel(),
             'effective_permission_level' => PantryRecipePermission::getEffectivePermissionLevel($recipe, $pantry->current_user),
             'lang' => [
-                'day' => $pantry->language['DAY'],
-                'days' => $pantry->language['DAYS'],
-                'hour' => $pantry->language['HOUR'],
-                'hours' => $pantry->language['HOURS'],
-                'minute' => $pantry->language['MINUTE'],
-                'minutes' => $pantry->language['MINUTES'],
+                'day' => $pantry->language->get('DAY'),
+                'days' => $pantry->language->get('DAYS'),
+                'hour' => $pantry->language->get('HOUR'),
+                'hours' => $pantry->language->get('HOURS'),
+                'minute' => $pantry->language->get('MINUTE'),
+                'minutes' => $pantry->language->get('MINUTES'),
             ]
         ]);
         $pantry->response->respond();
@@ -310,7 +438,7 @@ class PantryAPI extends PantryApp {
             $recipe = PantryRecipe::constructBySlug($img_elements[0]);
         }
         catch (PantryRecipeNotFoundException $e) {
-            $pantry->response = new PantryAPIError(404, "RECIPE_NOT_FOUND", $pantry->language['RECIPE_NOT_FOUND']);
+            $pantry->response = new PantryAPIError(404, "RECIPE_NOT_FOUND", $pantry->language->get('RECIPE_NOT_FOUND'));
             $pantry->response->respond();
             die();
         }
@@ -318,13 +446,13 @@ class PantryAPI extends PantryApp {
         $image = $recipe->getImage();
 
         if (!is_a($image, "PantryImage")) {
-            $pantry->response = new PantryAPIError(404, "IMAGE_NOT_FOUND", $pantry->language['IMAGE_NOT_FOUND']);
+            $pantry->response = new PantryAPIError(404, "IMAGE_NOT_FOUND", $pantry->language->get('IMAGE_NOT_FOUND'));
             $pantry->response->respond();
             die();
         }
 
         if ($image->getExtension() !== $img_elements[1]) {
-            $pantry->response = new PantryAPIError(404, "IMAGE_EXTENSION_INVALID", $pantry->language['IMAGE_EXTENSION_INVALID']);
+            $pantry->response = new PantryAPIError(404, "IMAGE_EXTENSION_INVALID", $pantry->language->get('IMAGE_EXTENSION_INVALID'));
             $pantry->response->respond();
             die();
         }
@@ -346,7 +474,7 @@ class PantryAPI extends PantryApp {
 
         $courses = PantryCourse::getCourses();
 
-        $pantry->response = new PantryAPISuccess("LIST_COURSES_SUCCESS", $pantry->language['LIST_COURSES_SUCCESS'], [
+        $pantry->response = new PantryAPISuccess("LIST_COURSES_SUCCESS", $pantry->language->get('LIST_COURSES_SUCCESS'), [
             'courses' => $courses
         ]);
         $pantry->response->respond();
@@ -357,7 +485,7 @@ class PantryAPI extends PantryApp {
 
         $cuisines = PantryCuisine::getCuisines();
 
-        $pantry->response = new PantryAPISuccess("LIST_CUISINES_SUCCESS", $pantry->language['LIST_CUISINES_SUCCESS'], [
+        $pantry->response = new PantryAPISuccess("LIST_CUISINES_SUCCESS", $pantry->language->get('LIST_CUISINES_SUCCESS'), [
             'cuisines' => $cuisines
         ]);
         $pantry->response->respond();
@@ -369,7 +497,7 @@ class PantryAPI extends PantryApp {
         $courses = PantryCourse::getCourses();
         $cuisines = PantryCuisine::getCuisines();
 
-        $pantry->response = new PantryAPISuccess("LIST_COURSES_CUISINES_SUCCESS", $pantry->language['LIST_COURSES_CUISINES_SUCCESS'], [
+        $pantry->response = new PantryAPISuccess("LIST_COURSES_CUISINES_SUCCESS", $pantry->language->get('LIST_COURSES_CUISINES_SUCCESS'), [
             'courses' => $courses,
             'cuisines' => $cuisines
         ]);
@@ -394,7 +522,7 @@ class PantryAPI extends PantryApp {
         }
         catch (PantryRecipeValidationException $e) {
             $error_code = PantryRecipe::$error_map[get_class($e)];
-            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language[$error_code], [
+            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language->get($error_code), [
                 'issue' => "validation",
                 'field' => $e->getField()
             ]);
@@ -423,14 +551,14 @@ class PantryAPI extends PantryApp {
                 $recipe->setImage($image);
             }
             catch (PantryImageTypeNotAllowedException $e) {
-                $pantry->response = new PantryAPIError(415, "RECIPE_IMAGE_NOT_ALLOWED", $pantry->language['IMAGE_NOT_ALLOWED'], [
+                $pantry->response = new PantryAPIError(415, "RECIPE_IMAGE_NOT_ALLOWED", $pantry->language->get('IMAGE_NOT_ALLOWED'), [
                     'issue' => "validation",
                     'field' => "image"
                 ]);
                 $pantry->response->respond();
             }
             catch (PantryFileNotFoundException $e) {
-                $pantry->response = new PantryAPIError(500, "INTERNAL_IMAGE_UPLOAD_FAILED", $pantry->language['IMAGE_UPLOAD_FAILED'], [
+                $pantry->response = new PantryAPIError(500, "INTERNAL_IMAGE_UPLOAD_FAILED", $pantry->language->get('IMAGE_UPLOAD_FAILED'), [
                     'issue' => "validation",
                     'field' => "image"
                 ]);
@@ -442,7 +570,7 @@ class PantryAPI extends PantryApp {
             $recipe->setCourse(new PantryCourse($_POST['course_id']));
         }
         catch (PantryCourseNotFoundException $e) {
-            $pantry->response = new PantryAPIError(422, "RECIPE_COURSE_NOT_FOUND", $pantry->language['COURSE_NOT_FOUND'], ['field' => "course"]);
+            $pantry->response = new PantryAPIError(422, "RECIPE_COURSE_NOT_FOUND", $pantry->language->get('COURSE_NOT_FOUND'), ['field' => "course"]);
             $pantry->response->respond();
         }
 
@@ -450,7 +578,7 @@ class PantryAPI extends PantryApp {
             $recipe->setCuisine(new PantryCuisine($_POST['cuisine_id']));
         }
         catch (PantryCuisineNotFoundException $e) {
-            $pantry->response = new PantryAPIError(422, "RECIPE_CUISINE_NOT_FOUND", $pantry->language['CUISINE_NOT_FOUND'], ['field' => "cuisine"]);
+            $pantry->response = new PantryAPIError(422, "RECIPE_CUISINE_NOT_FOUND", $pantry->language->get('CUISINE_NOT_FOUND'), ['field' => "cuisine"]);
             $pantry->response->respond();
         }
 
@@ -458,11 +586,11 @@ class PantryAPI extends PantryApp {
             $recipe->save();
         }
         catch (PantryRecipeNotSavedException $e) {
-            $pantry->response = new PantryAPIError(500, "RECIPE_NOT_SAVED", $pantry->language['RECIPE_NOT_SAVED']);
+            $pantry->response = new PantryAPIError(500, "RECIPE_NOT_SAVED", $pantry->language->get('RECIPE_NOT_SAVED'));
             $pantry->response->respond();
         }
 
-        $pantry->response = new PantryAPISuccess("CREATE_RECIPE_SUCCESS", $pantry->language['CREATE_RECIPE_SUCCESS'], [
+        $pantry->response = new PantryAPISuccess("CREATE_RECIPE_SUCCESS", $pantry->language->get('CREATE_RECIPE_SUCCESS'), [
             'id' => $recipe->getID(),
             'slug' => $recipe->getSlug()
         ]);
@@ -486,11 +614,11 @@ class PantryAPI extends PantryApp {
             }
         }
         catch (PantryRecipeNotFoundException $e) {
-            $pantry->response = new PantryAPIError(404, "RECIPE_NOT_FOUND", $pantry->language['RECIPE_NOT_FOUND']);
+            $pantry->response = new PantryAPIError(404, "RECIPE_NOT_FOUND", $pantry->language->get('RECIPE_NOT_FOUND'));
             $pantry->response->respond();
         }
         catch (PantryRecipePermissionDeniedException $e) {
-            $pantry->response = new PantryAPIError(403, "ACCESS_DENIED", $pantry->language['ACCESS_DENIED']);
+            $pantry->response = new PantryAPIError(403, "ACCESS_DENIED", $pantry->language->get('ACCESS_DENIED'));
             $pantry->response->respond();
         }
 
@@ -508,7 +636,7 @@ class PantryAPI extends PantryApp {
         }
         catch (PantryRecipeValidationException $e) {
             $error_code = PantryRecipe::$error_map[get_class($e)];
-            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language[$error_code], [
+            $pantry->response = new PantryAPIError(422, $error_code, $pantry->language->get($error_code), [
                 'issue' => "validation",
                 'field' => $e->getField()
             ]);
@@ -542,21 +670,21 @@ class PantryAPI extends PantryApp {
                 $recipe->setImage($image);
             }
             catch (PantryImageTypeNotAllowedException $e) {
-                $pantry->response = new PantryAPIError(415, "RECIPE_IMAGE_NOT_ALLOWED", $pantry->language['IMAGE_NOT_ALLOWED'], [
+                $pantry->response = new PantryAPIError(415, "RECIPE_IMAGE_NOT_ALLOWED", $pantry->language->get('IMAGE_NOT_ALLOWED'), [
                     'issue' => "validation",
                     'field' => "image"
                 ]);
                 $pantry->response->respond();
             }
             catch (PantryImageFileSizeTooBigException $e) {
-                $pantry->response = new PantryAPIError(413, "RECIPE_IMAGE_FILE_SIZE_TOO_BIG", $pantry->language['IMAGE_FILE_SIZE_TOO_BIG'], [
+                $pantry->response = new PantryAPIError(413, "RECIPE_IMAGE_FILE_SIZE_TOO_BIG", $pantry->language->get('IMAGE_FILE_SIZE_TOO_BIG'), [
                     'issue' => "validation",
                     'field' => "image"
                 ]);
                 $pantry->response->respond();
             }
             catch (PantryFileNotFoundException $e) {
-                $pantry->response = new PantryAPIError(500, "INTERNAL_IMAGE_UPLOAD_FAILED", $pantry->language['IMAGE_UPLOAD_FAILED'], [
+                $pantry->response = new PantryAPIError(500, "INTERNAL_IMAGE_UPLOAD_FAILED", $pantry->language->get('IMAGE_UPLOAD_FAILED'), [
                     'issue' => "validation",
                     'field' => "image"
                 ]);
@@ -578,7 +706,7 @@ class PantryAPI extends PantryApp {
             $recipe->setCourse(new PantryCourse($_POST['course_id']));
         }
         catch (PantryCourseNotFoundException $e) {
-            $pantry->response = new PantryAPIError(422, "RECIPE_COURSE_NOT_FOUND", $pantry->language['COURSE_NOT_FOUND'], [
+            $pantry->response = new PantryAPIError(422, "RECIPE_COURSE_NOT_FOUND", $pantry->language->get('COURSE_NOT_FOUND'), [
                 'issue' => "validation",
                 'field' => "course"
             ]);
@@ -589,7 +717,7 @@ class PantryAPI extends PantryApp {
             $recipe->setCuisine(new PantryCuisine($_POST['cuisine_id']));
         }
         catch (PantryCuisineNotFoundException $e) {
-            $pantry->response = new PantryAPIError(422, "RECIPE_CUISINE_NOT_FOUND", $pantry->language['CUISINE_NOT_FOUND'], [
+            $pantry->response = new PantryAPIError(422, "RECIPE_CUISINE_NOT_FOUND", $pantry->language->get('CUISINE_NOT_FOUND'), [
                 'issue' => "validation",
                 'field' => "cuisine"
             ]);
@@ -601,7 +729,7 @@ class PantryAPI extends PantryApp {
             $recipe->save();
         }
         catch (PantryRecipeNotSavedException $e) {
-            $pantry->response = new PantryAPIError(500, "RECIPE_NOT_SAVED", $pantry->language['RECIPE_NOT_SAVED']);
+            $pantry->response = new PantryAPIError(500, "RECIPE_NOT_SAVED", $pantry->language->get('RECIPE_NOT_SAVED'));
             $pantry->response->respond();
         }
 
@@ -633,15 +761,15 @@ class PantryAPI extends PantryApp {
             $recipe->delete();
         }
         catch (PantryRecipeNotFoundException $e) {
-            $pantry->response = new PantryAPIError(404, "RECIPE_NOT_FOUND", $pantry->language['RECIPE_NOT_FOUND']);
+            $pantry->response = new PantryAPIError(404, "RECIPE_NOT_FOUND", $pantry->language->get('RECIPE_NOT_FOUND'));
             $pantry->response->respond();
         }
         catch (PantryRecipePermissionDeniedException $e) {
-            $pantry->response = new PantryAPIError(403, "ACCESS_DENIED", $pantry->language['ACCESS_DENIED']);
+            $pantry->response = new PantryAPIError(403, "ACCESS_DENIED", $pantry->language->get('ACCESS_DENIED'));
             $pantry->response->respond();
         }
         catch (PantryRecipeNotDeletedException $e) {
-            $pantry->response = new PantryAPIError(500, "RECIPE_NOT_DELETED", $pantry->language['RECIPE_NOT_DELETED']);
+            $pantry->response = new PantryAPIError(500, "RECIPE_NOT_DELETED", $pantry->language->get('RECIPE_NOT_DELETED'));
             $pantry->response->respond();
         }
 

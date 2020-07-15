@@ -130,7 +130,7 @@ class PantryUser {
 
     /**
      * @param string $password
-     * @throws PantryUserPasswordValidationException
+     * @throws PantryUserPasswordEmptyException
      */
     public function setPassword(string $password) {
         if (empty($password)) {
@@ -231,7 +231,7 @@ class PantryUser {
             }
         }
         catch (PantryUserNotSavedException $e) {
-            Pantry::$logger->emergency($e->getMessage());
+            Pantry::$logger->critical($e->getMessage());
             die();
         }
     }
@@ -247,7 +247,7 @@ class PantryUser {
             }
         }
         catch (PantryUserNotDeletedException $e) {
-            Pantry::$logger->emergency($e->getMessage());
+            Pantry::$logger->critical($e->getMessage());
             die();
         }
 
@@ -304,7 +304,6 @@ class PantryUser {
     /**
      * @param $username
      * @param PantryUser|null $user
-     * @return string
      * @throws PantryUsernameValidationException
      */
     public static function checkUsername($username, PantryUser $user = null) {
@@ -321,9 +320,11 @@ class PantryUser {
             throw new PantryUsernameInvalidException($username);
         }
 
-        $user_id = self::lookupUsername($username);
-        if ($user_id !== false && (!$user || $user_id !== $user->getID())) {
-            throw new PantryUsernameNotAvailableException($username);
+        if (Pantry::$db) {
+            $user_id = self::lookupUsername($username);
+            if ($user_id !== false && (!$user || $user_id !== $user->getID())) {
+                throw new PantryUsernameNotAvailableException($username);
+            }
         }
     }
 
