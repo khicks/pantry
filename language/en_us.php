@@ -24,6 +24,10 @@ return [
     'LOGOUT_BUTTON' => "Log out",
     'ADMIN_MENU_BUTTON' => "Admin",
 
+    // 404
+    'ERROR_404_PAGE_NOT_FOUND' => "Page Not Found",
+    'ERROR_404_DESCRIPTION' => "The page you are looking for does not exist. You may go back to the previous page or use the navigation bar.",
+
     // install
     'INSTALL' => "Install",
     'INSTALL_WELCOME' => "Welcome to the Pantry installer!",

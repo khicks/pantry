@@ -237,6 +237,20 @@ class PantryPage extends PantryApp {
     // ========================================
     // Entry points
     // ========================================
+    public static function error404() {
+        http_response_code(404);
+        $pantry = new self(false);
+
+        $params = [
+            'title' => $pantry->language->get('ERROR_404_PAGE_NOT_FOUND'),
+            'display' => [
+                'title' => false
+            ]
+        ];
+
+        $pantry->displayTemplate("404.html", $params);
+    }
+
     public static function install() {
         $pantry = new self(false);
         $pantry->requireNotInstalled();
