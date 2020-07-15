@@ -199,7 +199,7 @@ class PantryConfig {
      */
     public function setDBConfig(string $name, string $data) {
         if (!in_array($name, self::ACCEPTABLE_DB_VARS, true)) {
-            throw new PantryConfigurationException("Set DB config with name '$name' is not acceptable.");
+            throw new PantryConfigurationException('name', $name);
         }
 
         $sql_set_metadata = Pantry::$db->prepare("REPLACE INTO app_config (name, data) VALUES (:name, :data)");
