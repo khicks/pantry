@@ -4,43 +4,42 @@ class PantryDBMetadata {
     public function __construct() {}
 
     /**
-     * @param string $name
+     * @param string $key
      * @param string|null $default
      * @return string
-     * @throws PantryDBMetadataNameEmptyException
-     * @throws PantryDBMetadataNameNotFoundException
+     * @throws PantryDBMetadataKeyEmptyException
+     * @throws PantryDBMetadataKeyNotFoundException
      */
-    public function get(string $name, string $default = null) {
-        if (!$name) {
-            throw new PantryDBMetadataNameEmptyException("Value for metadata name is empty.");
+    public function get(string $key, string $default = null) {
+        if (!$key) {
+            throw new PantryDBMetadataKeyEmptyException("Value for metadata key is empty.");
         }
 
-        $sql_get_metadata = Pantry::$db->prepare("SELECT data FROM app_metadata WHERE name=:name");
-        $sql_get_metadata->bindValue(':name', $name, PDO::PARAM_STR);
+        $sql_get_metadata = Pantry::$db->prepare("SELECT kv_value FROM app_metadata WHERE kv_key = :kv_key");
+        $sql_get_metadata->bindValue(':kv_key', $key, PDO::PARAM_STR);
         $sql_get_metadata->execute();
 
-        if ($sql_get_metadata->rowCount() === 0) {
-            throw new PantryDBMetadataNameNotFoundException("Name '$name' not found in DB metadata.");
+        if ($row = $sql_get_metadata->fetch(PDO::FETCH_ASSOC)) {
+            return $row['kv_value'];
         }
 
-        $row = $sql_get_metadata->fetch(PDO::FETCH_ASSOC);
-        return $row['data'];
+        throw new PantryDBMetadataKeyNotFoundException("Key '$key' not found in DB metadata.");
     }
 
     /**
-     * @param $name
-     * @param $data
-     * @throws PantryDBMetadataNameEmptyException
+     * @param $key
+     * @param $value
+     * @throws PantryDBMetadataKeyEmptyException
      */
-    public function set(string $name, string $data) {
-        if (!$name) {
-            throw new PantryDBMetadataNameEmptyException("Value for metadata name is empty.");
+    public function set(string $key, string $value) {
+        if (!$key) {
+            throw new PantryDBMetadataKeyEmptyException("Value for metadata key is empty.");
         }
 
-        Pantry::$logger->debug("Setting DB metadata '$name' to '$data'.");
-        $sql_set_metadata = Pantry::$db->prepare("REPLACE INTO app_metadata (name, data) VALUES (:name, :data)");
-        $sql_set_metadata->bindValue(':name', $name, PDO::PARAM_STR);
-        $sql_set_metadata->bindValue(':data', $data, PDO::PARAM_STR);
+        Pantry::$logger->debug("Setting DB metadata '$key' to '$value'.");
+        $sql_set_metadata = Pantry::$db->prepare("REPLACE INTO app_metadata (kv_key, kv_value) VALUES (:kv_key, :kv_value)");
+        $sql_set_metadata->bindValue(':kv_key', $key, PDO::PARAM_STR);
+        $sql_set_metadata->bindValue(':kv_value', $value, PDO::PARAM_STR);
         $sql_set_metadata->execute();
         $sql_set_metadata->closeCursor();
     }

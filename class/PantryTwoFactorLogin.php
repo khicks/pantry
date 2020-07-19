@@ -5,7 +5,8 @@ class PantryTwoFactorLogin {
 
     private static function purgeTwoFactorLogins() {
         try {
-            $sql_purge_two_factor_sessions = Pantry::$db->prepare("DELETE FROM two_factor_logins WHERE created<=NOW() - INTERVAL 5 MINUTE");
+            $sql_purge_two_factor_sessions = Pantry::$db->prepare("DELETE FROM two_factor_logins WHERE created <= :expires");
+            $sql_purge_two_factor_sessions->bindValue(':expires', Pantry::getNow(-300), PDO::PARAM_STR);
             if (!$sql_purge_two_factor_sessions->execute()) {
                 throw new PantryTwoFactorLoginsNotPurgedException("Two factor logins could not be purged.");
             }

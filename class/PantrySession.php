@@ -125,7 +125,6 @@ class PantrySession {
         $sql_destroy_session->bindValue(':id', $session_id, PDO::PARAM_STR);
 
         if ($sql_destroy_session->execute()) {
-            Pantry::$logger->info("Session destroyed: {$sql_destroy_session->rowCount()}");
             setcookie("pantry_session", null, -1, Pantry::$cookie_path, null, true, true);
             return true;
         }
@@ -136,8 +135,8 @@ class PantrySession {
 
     public function gc($max_lifetime) {
         Pantry::$logger->debug("Garbage collecting sessions.");
-        $sql_gc_sessions = Pantry::$db->prepare("DELETE FROM sessions WHERE updated <= NOW() - INTERVAL :seconds SECOND");
-        $sql_gc_sessions->bindValue(':seconds', $max_lifetime, PDO::PARAM_INT);
+        $sql_gc_sessions = Pantry::$db->prepare("DELETE FROM sessions WHERE updated <= :expires");
+        $sql_gc_sessions->bindValue(':expires', Pantry::getNow(-$max_lifetime), PDO::PARAM_INT);
 
         if ($sql_gc_sessions->execute()) {
             return true;

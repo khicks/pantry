@@ -121,8 +121,9 @@ class PantryImage {
         $this->createReducedFiles();
 
         // save to database
-        $sql_add_image = Pantry::$db->prepare("INSERT INTO images (id, created, mime_type) VALUES (:id, NOW(), :mime_type)");
+        $sql_add_image = Pantry::$db->prepare("INSERT INTO images (id, created, mime_type) VALUES (:id, :created, :mime_type)");
         $sql_add_image->bindValue(':id', $this->id, PDO::PARAM_STR);
+        $sql_add_image->bindValue(':created', Pantry::getNow(), PDO::PARAM_STR);
         $sql_add_image->bindValue(':mime_type', $this->mime_type, PDO::PARAM_STR);
         $sql_add_image->execute();
 

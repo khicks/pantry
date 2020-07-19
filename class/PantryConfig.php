@@ -5,11 +5,13 @@ class PantryConfig {
         'app_name'         => "Pantry",
         'app_language'     => "en_us",
         'app_brand_format' => "logo",
+        'db_type'          => null,
         'db_host'          => null,
         'db_port'          => 3306,
         'db_username'      => null,
         'db_password'      => null,
         'db_database'      => null,
+        'db_path'          => "data/pantry.db",
         'image_dir'        => "data/images",
         'image_max_size'   => "5MB",
         'log_dir'          => "data/log",
@@ -74,10 +76,22 @@ class PantryConfig {
             $this->config['app_brand_format'] = self::DEFAULTS['app_brand_format'];
         }
 
-        // db port (default)
+        // db_port (default)
         $this->config['db_port'] = (int)$this->config['db_port'];
         if ($this->config['db_port'] < 1) {
             $this->config['db_port'] = self::DEFAULTS['db_port'];
+        }
+
+        // db_path (conditional, fail)
+        if ($this->config['db_type'] === "sqlite") {
+            $this->config['db_path'] = (substr($this->config['db_path'], 0, 1) === "/")
+                ? $this->config['db_path']
+                : Pantry::$php_root . "/" . $this->config['db_path'];
+            if (!is_writable($this->config['db_path']) && !touch($this->config['db_path'])) {
+                throw new PantryConfigurationException("db_path", $this->config['db_path'],
+                    "SQLite DB at path {$this->config['db_path']} cannot be written."
+                );
+            }
         }
 
         // log_dir (fail)
@@ -178,10 +192,10 @@ class PantryConfig {
     }
 
     public function loadFromDB() {
-        $sql_get_config = Pantry::$db->query("SELECT name, data FROM app_config", PDO::FETCH_ASSOC);
+        $sql_get_config = Pantry::$db->query("SELECT kv_key, kv_value FROM app_config", PDO::FETCH_ASSOC);
         foreach ($sql_get_config as $row) {
-            if (array_key_exists($row['name'], $this->config) && in_array($row['name'], self::ACCEPTABLE_DB_VARS, true)) {
-                $this->config[$row['name']] = $row['data'];
+            if (array_key_exists($row['kv_key'], $this->config) && in_array($row['kv_key'], self::ACCEPTABLE_DB_VARS, true)) {
+                $this->config[$row['kv_key']] = $row['kv_value'];
             }
         }
 
@@ -193,18 +207,18 @@ class PantryConfig {
     }
 
     /**
-     * @param string $name
-     * @param string $data
+     * @param string $key
+     * @param string $value
      * @throws PantryConfigurationException
      */
-    public function setDBConfig(string $name, string $data) {
-        if (!in_array($name, self::ACCEPTABLE_DB_VARS, true)) {
-            throw new PantryConfigurationException('name', $name);
+    public function setDBConfig(string $key, string $value) {
+        if (!in_array($key, self::ACCEPTABLE_DB_VARS, true)) {
+            throw new PantryConfigurationException('key', $key);
         }
 
-        $sql_set_metadata = Pantry::$db->prepare("REPLACE INTO app_config (name, data) VALUES (:name, :data)");
-        $sql_set_metadata->bindValue(':name', $name, PDO::PARAM_STR);
-        $sql_set_metadata->bindValue(':data', $data, PDO::PARAM_STR);
+        $sql_set_metadata = Pantry::$db->prepare("REPLACE INTO app_config (kv_key, kv_value) VALUES (:kv_key, :kv_value)");
+        $sql_set_metadata->bindValue(':kv_key', $key, PDO::PARAM_STR);
+        $sql_set_metadata->bindValue(':kv_value', $value, PDO::PARAM_STR);
         $sql_set_metadata->execute();
     }
 }

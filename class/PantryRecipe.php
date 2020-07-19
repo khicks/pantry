@@ -319,13 +319,9 @@ class PantryRecipe {
         $sql_check_slug = Pantry::$db->prepare("SELECT id FROM recipes WHERE slug=:slug");
         $sql_check_slug->bindValue(':slug', $slug, PDO::PARAM_STR);
         $sql_check_slug->execute();
-        if ($sql_check_slug->rowCount() > 0) {
-            if (!$this->id) {
-                throw new PantryRecipeSlugNotAvailableException($slug);
-            }
 
-            $row = $sql_check_slug->fetch(PDO::FETCH_ASSOC);
-            if ($row['id'] !== $this->id) {
+        if ($row = $sql_check_slug->fetch(PDO::FETCH_ASSOC)) {
+            if (!$this->id || $row['id'] !== $this->id) {
                 throw new PantryRecipeSlugNotAvailableException($slug);
             }
         }
@@ -502,15 +498,18 @@ class PantryRecipe {
      * @throws PantryRecipeNotSavedException
      */
     public function save() {
+        $now = Pantry::getNow();
         if ($this->id) {
-            $sql_save_recipe = Pantry::$db->prepare("UPDATE recipes SET updated=NOW(), title=:title, slug=:slug, blurb=:blurb, description=:description, servings=:servings, prep_time=:prep_time, cook_time=:cook_time, ingredients=:ingredients, directions=:directions, source=:source, visibility_level=:visibility_level, default_permission_level=:default_permission_level, featured=:featured, author_id=:author_id, course_id=:course_id, cuisine_id=:cuisine_id, image_id=:image_id WHERE id=:id");
+            $sql_save_recipe = Pantry::$db->prepare("UPDATE recipes SET updated=:updated, title=:title, slug=:slug, blurb=:blurb, description=:description, servings=:servings, prep_time=:prep_time, cook_time=:cook_time, ingredients=:ingredients, directions=:directions, source=:source, visibility_level=:visibility_level, default_permission_level=:default_permission_level, featured=:featured, author_id=:author_id, course_id=:course_id, cuisine_id=:cuisine_id, image_id=:image_id WHERE id=:id");
         }
         else {
             $this->id = Pantry::generateUUID();
-            $sql_save_recipe = Pantry::$db->prepare("INSERT INTO recipes (id, created, updated, title, slug, blurb, description, servings, prep_time, cook_time, ingredients, directions, source, visibility_level, default_permission_level, featured, author_id, course_id, cuisine_id, image_id) VALUES (:id, NOW(), NOW(), :title, :slug, :blurb, :description, :servings, :prep_time, :cook_time, :ingredients, :directions, :source, :visibility_level, :default_permission_level, :featured, :author_id, :course_id, :cuisine_id, :image_id)");
+            $sql_save_recipe = Pantry::$db->prepare("INSERT INTO recipes (id, created, updated, title, slug, blurb, description, servings, prep_time, cook_time, ingredients, directions, source, visibility_level, default_permission_level, featured, author_id, course_id, cuisine_id, image_id) VALUES (:id, :created, :updated, :title, :slug, :blurb, :description, :servings, :prep_time, :cook_time, :ingredients, :directions, :source, :visibility_level, :default_permission_level, :featured, :author_id, :course_id, :cuisine_id, :image_id)");
+            $sql_save_recipe->bindValue(':created', $now, PDO::PARAM_STR);
         }
 
         $sql_save_recipe->bindValue(':id', $this->id, PDO::PARAM_STR);
+        $sql_save_recipe->bindValue(':updated', $now, PDO::PARAM_STR);
         $sql_save_recipe->bindValue(':title', $this->title, PDO::PARAM_STR);
         $sql_save_recipe->bindValue(':slug', $this->slug, PDO::PARAM_STR);
         $sql_save_recipe->bindValue(':blurb', $this->blurb, PDO::PARAM_STR);

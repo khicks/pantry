@@ -30,7 +30,8 @@ class PantryTwoFactorSession {
 
     private static function purgeTwoFactorSessions() {
         try {
-            $sql_purge_sessions = Pantry::$db->prepare("DELETE FROM two_factor_sessions WHERE created <= NOW() - INTERVAL 30 DAY");
+            $sql_purge_sessions = Pantry::$db->prepare("DELETE FROM two_factor_sessions WHERE created <= :exp");
+            $sql_purge_sessions->bindValue(':exp', Pantry::getNow(-2592000));
             if (!$sql_purge_sessions->execute()) {
                 throw new PantryTwoFactorSessionsNotPurgedException("Two factor sessions could not be purged.");
             }
@@ -99,7 +100,7 @@ class PantryTwoFactorSession {
                 throw new PantryTwoFactorSessionsNotLimitedException("Two factor sessions could not be limited on count phase.");
             }
 
-            $count = $sql_limit_two_factor_sessions_count->rowCount();
+            $count = count($sql_limit_two_factor_sessions_count->fetchAll());
             if ($count > 10) {
                 $sql_limit_two_factor_sessions_delete = Pantry::$db->prepare("DELETE FROM two_factor_sessions ORDER BY created LIMIT :num_delete");
                 $sql_limit_two_factor_sessions_delete->bindValue(':num_delete', $count-10, PDO::PARAM_INT);

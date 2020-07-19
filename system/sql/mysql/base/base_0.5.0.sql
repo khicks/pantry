@@ -1,16 +1,15 @@
 START TRANSACTION;
-SET time_zone = "+00:00";
 
 CREATE TABLE IF NOT EXISTS `app_config` (
-    `name` varchar(32) NOT NULL,
-    `data` varchar(128) NOT NULL,
-    PRIMARY KEY (`name`)
+    `kv_key` varchar(32) NOT NULL,
+    `kv_value` varchar(128) NOT NULL,
+    PRIMARY KEY (`kv_value`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `app_metadata` (
-    `name` varchar(32) NOT NULL,
-    `data` varchar(128) NOT NULL,
-    PRIMARY KEY (`name`)
+    `kv_key` varchar(32) NOT NULL,
+    `kv_value` varchar(128) NOT NULL,
+    PRIMARY KEY (`kv_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS `courses` (
@@ -54,7 +53,7 @@ CREATE TABLE IF NOT EXISTS `recipes` (
     `source` varchar(2084) NOT NULL,
     `visibility_level` tinyint(1) NOT NULL,
     `default_permission_level` tinyint(1) NOT NULL,
-    `featured` bit(1) NOT NULL DEFAULT b'0',
+    `featured` bit(1) NOT NULL,
     `author_id` char(36) DEFAULT NULL,
     `course_id` char(36) DEFAULT NULL,
     `cuisine_id` char(36) DEFAULT NULL,
@@ -66,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `recipes` (
     KEY `author_id` (`author_id`),
     KEY `course_id` (`course_id`),
     KEY `cuisine_id` (`cuisine_id`),
-    KEY `featured` (`id`),
+    KEY `featured` (`featured`),
     KEY `title` (`title`) USING BTREE,
     KEY `visibility_level` (`visibility_level`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

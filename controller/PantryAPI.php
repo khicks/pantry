@@ -85,6 +85,16 @@ class PantryAPI extends PantryApp {
         $pantry->response->respond();
     }
 
+    public static function getSupportedDatabases() {
+        $pantry = new self(false, false);
+        $pantry->requireNotInstalled();
+
+        $pantry->response = new PantryAPISuccess("INSTALL_DATABASE_TYPES_SUCCESS", $pantry->language->get('INSTALL_DATABASE_TYPES_SUCCESS'),
+            Pantry::$installer->getSupportedDatabases()
+        );
+        $pantry->response->respond();
+    }
+
     public static function checkInstallKey() {
         $pantry = new self(true, false);
 

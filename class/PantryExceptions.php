@@ -8,9 +8,9 @@ class PantryException extends Exception {
 
 class PantryDBMetadataException extends PantryException {}
 
-class PantryDBMetadataNameEmptyException extends PantryDBMetadataException {}
+class PantryDBMetadataKeyEmptyException extends PantryDBMetadataException {}
 
-class PantryDBMetadataNameNotFoundException extends PantryDBMetadataException {}
+class PantryDBMetadataKeyNotFoundException extends PantryDBMetadataException {}
 
 class PantryConfigurationException extends PantryException {
     public function __construct($field, $bad_value, $message = null, $code = 0, Exception $previous = null) {

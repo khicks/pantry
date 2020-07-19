@@ -128,16 +128,28 @@ class Pantry {
     }
 
     private static function loadDB() {
-        $dsn = "mysql:"  .
-               "host="   . self::$config->get('db_host')     . ";" .
-               "port="   . self::$config->get('db_port')     . ";" .
-               "dbname=" . self::$config->get('db_database') . ";" .
-               "charset=utf8";
-        $user = self::$config->get('db_username');
-        $password = self::$config->get('db_password');
+        $type = self::$config->get('db_type');
+        if (!$type) {
+            die("Connection to database failed.");
+        }
+
+        $dsn = $username = $password = null;
+
+        if ($type === "mysql") {
+            $dsn = "mysql:"  .
+                "host="   . self::$config->get('db_host')     . ";" .
+                "port="   . self::$config->get('db_port')     . ";" .
+                "dbname=" . self::$config->get('db_database') . ";" .
+                "charset=utf8";
+            $username = self::$config->get('db_username');
+            $password = self::$config->get('db_password');
+        }
+        elseif ($type === "sqlite") {
+            $dsn = "sqlite:" . self::$config->get('db_path');
+        }
 
         try {
-            self::$db = new PDO($dsn, $user, $password);
+            self::$db = new PDO($dsn, $username, $password);
         } catch (PDOException $e) {
             if (self::$config->get('debug')) {
                 die("Connection to database failed: ".$e->getMessage());

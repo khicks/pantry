@@ -136,13 +136,9 @@ class PantryCuisine {
         $sql_check_slug = Pantry::$db->prepare("SELECT id FROM cuisines WHERE slug=:slug");
         $sql_check_slug->bindValue(':slug', $slug, PDO::PARAM_STR);
         $sql_check_slug->execute();
-        if ($sql_check_slug->rowCount() > 0) {
-            if (!$this->id) {
-                throw new PantryCuisineSlugNotAvailableException($slug);
-            }
 
-            $row = $sql_check_slug->fetch(PDO::FETCH_ASSOC);
-            if ($row['id'] !== $this->id) {
+        if ($row = $sql_check_slug->fetch(PDO::FETCH_ASSOC)) {
+            if (!$this->id || $row['id'] !== $this->id) {
                 throw new PantryCuisineSlugNotAvailableException($slug);
             }
         }
@@ -159,7 +155,8 @@ class PantryCuisine {
         }
         else {
             $this->id = Pantry::generateUUID();
-            $sql_save_cuisine = Pantry::$db->prepare("INSERT INTO cuisines (id, created, title, slug) VALUES (:id, NOW(), :title, :slug)");
+            $sql_save_cuisine = Pantry::$db->prepare("INSERT INTO cuisines (id, created, title, slug) VALUES (:id, :created, :title, :slug)");
+            $sql_save_cuisine->bindValue(':created', Pantry::getNow(), PDO::PARAM_STR);
         }
 
         $sql_save_cuisine->bindValue(':id', $this->id, PDO::PARAM_STR);

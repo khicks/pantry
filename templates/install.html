@@ -46,33 +46,64 @@
         <div class="row">
             <div id="db-column" class="col-12 col-lg-6 mb-4 pr-lg-4">
                 <h2>{{ lang.INSTALL_DATABASE_CONNECTION }}</h2>
-                <div class="form-row">
-                    <div class="col-9 mb-2">
-                        <label for="db-host">{{ lang.INSTALL_DATABASE_HOST }}</label>
-                        <input type="text" id="db-host" class="form-control" placeholder="localhost">
-                    </div>
-                    <div class="col-3 mb-2">
-                        <label for="db-port">{{ lang.INSTALL_DATABASE_PORT }}</label>
-                        <input type="text" id="db-port" class="form-control" placeholder="3306">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="col-12 col-lg-6 mb-2">
-                        <label for="db-username">{{ lang.USERNAME }}</label>
-                        <input type="text" id="db-username" class="form-control" placeholder="pantry">
-                    </div>
-                    <div class="col-12 col-lg-6 mb-2">
-                        <label for="db-password">{{ lang.PASSWORD }}</label>
-                        <input type="password" id="db-password" class="form-control">
-                    </div>
-                </div>
+
                 <div class="form-row">
                     <div class="col-12 mb-2">
-                        <label for="db-database">{{ lang.INSTALL_DATABASE_DATABASE }}</label>
-                        <input type="text" id="db-database" class="form-control" placeholder="pantry">
+                        <label for="db-type">{{ lang.INSTALL_DATABASE_TYPE }} <i id="db-type-icon" class="fas fa-sync fa-spin"></i></label>
+                        <select id="db-type" class="form-control" disabled></select>
                     </div>
                 </div>
+
+                <div id="db-section-none" class="db-section">
+                    <div class="form-row">
+                        <div class="col-12 mb-2">
+                            <div class="alert alert-danger">
+                                <b>{{ lang.INSTALL_ERROR_DB_NONE }}</b>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="db-section-mysql" class="db-section">
+                    <div class="form-row">
+                        <div class="col-9 mb-2">
+                            <label for="db-host">{{ lang.INSTALL_DATABASE_HOST }}</label>
+                            <input type="text" id="db-host" class="form-control" placeholder="localhost">
+                        </div>
+                        <div class="col-3 mb-2">
+                            <label for="db-port">{{ lang.INSTALL_DATABASE_PORT }}</label>
+                            <input type="text" id="db-port" class="form-control" placeholder="3306">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-12 col-lg-6 mb-2">
+                            <label for="db-username">{{ lang.USERNAME }}</label>
+                            <input type="text" id="db-username" class="form-control" placeholder="pantry">
+                        </div>
+                        <div class="col-12 col-lg-6 mb-2">
+                            <label for="db-password">{{ lang.PASSWORD }}</label>
+                            <input type="password" id="db-password" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-12 mb-2">
+                            <label for="db-database">{{ lang.INSTALL_DATABASE_DATABASE }}</label>
+                            <input type="text" id="db-database" class="form-control" placeholder="pantry">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="db-section-sqlite" class="db-section">
+                    <div class="form-row">
+                        <div class="col-12 mb-2">
+                            <p>{{ lang.INSTALL_DATABASE_PATH_DESC }}</p>
+                            <p><code>data/pantry.db</code></p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
+
             <div class="col-12 col-lg-6 mb-4 pl-lg-4">
                 <h2>{{ lang.INSTALL_FIRST_USER }}</h2>
                 <div class="form-row">

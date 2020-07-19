@@ -39,6 +39,7 @@ try {
 
     // API
     $router->map('POST', '/api/v1/install', 'PantryAPI::install');
+    $router->map('GET', '/api/v1/install/databases', 'PantryAPI::getSupportedDatabases');
     $router->map('POST', '/api/v1/install/check_key', 'PantryAPI::checkInstallKey');
     $router->map('POST', '/api/v1/install/language', 'PantryAPI::setInstallLanguage');
     $router->map('POST', '/api/v1/update', 'PantryAPI::update');

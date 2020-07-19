@@ -216,8 +216,9 @@ class PantryUser {
                 if (in_array(null, [$this->username, $this->password, $this->is_admin, $this->is_disabled], true)) {
                     throw new PantryUserNotSavedException("User could not be created because a required field was null.");
                 }
-                $sql_create_user = Pantry::$db->prepare("INSERT INTO users (id, created, username, password, is_admin, is_disabled, last_login, first_name, last_name) VALUES (:id, NOW(), :username, :password, :is_admin, :is_disabled, :last_login, :first_name, :last_name)");
+                $sql_create_user = Pantry::$db->prepare("INSERT INTO users (id, created, username, password, is_admin, is_disabled, last_login, first_name, last_name) VALUES (:id, :created, :username, :password, :is_admin, :is_disabled, :last_login, :first_name, :last_name)");
                 $sql_create_user->bindValue(':id', Pantry::generateUUID(), PDO::PARAM_STR);
+                $sql_create_user->bindValue(':created', Pantry::getNow(), PDO::PARAM_STR);
                 $sql_create_user->bindValue(':username', $this->username, PDO::PARAM_STR);
                 $sql_create_user->bindValue(':password', $this->password, PDO::PARAM_STR);
                 $sql_create_user->bindValue(':is_admin', $this->is_admin, PDO::PARAM_INT);
