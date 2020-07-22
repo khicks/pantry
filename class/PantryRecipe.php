@@ -522,7 +522,7 @@ class PantryRecipe {
         $sql_save_recipe->bindValue(':source', $this->source, PDO::PARAM_STR);
         $sql_save_recipe->bindValue(':visibility_level', $this->visibility_level, PDO::PARAM_INT);
         $sql_save_recipe->bindValue(':default_permission_level', $this->default_permission_level, PDO::PARAM_INT);
-        $sql_save_recipe->bindValue(':featured', $this->is_featured, PDO::PARAM_STR);
+        $sql_save_recipe->bindValue(':featured', $this->is_featured, PDO::PARAM_INT);
         $sql_save_recipe->bindValue(':author_id', $this->getAuthorID(), PDO::PARAM_STR); //TODO: in form
         $sql_save_recipe->bindValue(':course_id', $this->getCourseID(), PDO::PARAM_STR);
         $sql_save_recipe->bindValue(':cuisine_id', $this->getCuisineID(), PDO::PARAM_STR);
