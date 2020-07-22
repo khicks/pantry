@@ -548,9 +548,7 @@ class PantryAPI extends PantryApp {
         $recipe->setIsFeatured(in_array($_POST['featured'], ["true", "1"], true));
 
         //TODO: these fields
-        $recipe->setIsFeatured(false);
         $recipe->setAuthor($pantry->current_user);
-
 
         // set image
         $recipe->setImage(new PantryImage(null));
