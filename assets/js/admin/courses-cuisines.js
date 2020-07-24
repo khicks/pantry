@@ -207,6 +207,7 @@ $(function() {
         $.each(response.data.courses, function(idx, course) {
             elements.tables.courses.append(elements.templates.ccRow({
                 type: "course",
+                type_plural: "courses",
                 item: course
             }));
         });
@@ -214,6 +215,7 @@ $(function() {
         $.each(response.data.cuisines, function(idx, cuisine) {
             elements.tables.cuisines.append(elements.templates.ccRow({
                 type: "cuisine",
+                type_plural: "cuisines",
                 item: cuisine
             }));
         });
@@ -499,6 +501,16 @@ $(function() {
     });
     elements.modals.all.on('show.bs.modal', function() {
         elements.fields.all.prop('disabled', false);
+    });
+    elements.modals.all.on('shown.bs.modal', function(event) {
+        let type = $(event.relatedTarget).data('type');
+        let action = $(event.relatedTarget).data('action');
+        elements.forms[type][action].fields.title.field.focus();
+        $(document).on('keypress', function(e) {
+            if ($(event.delegateTarget).hasClass('show') && e.which === 13) {
+                elements.forms[type][action].button.button.click();
+            }
+        });
     });
 
     elements.modals.courses.edit.on('show.bs.modal', function(event) {

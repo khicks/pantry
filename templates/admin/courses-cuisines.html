@@ -8,8 +8,8 @@
         <th scope="row">{{ item.title }}</th>
         <td>{{ item.slug }}</td>
         <td class="fit action-buttons">
-            <button type="button" class="btn btn-primary mr-1 btn-edit" data-toggle="modal" data-target="#edit-{{ type }}-modal" data-id="{{ item.id }}" data-title="{{ item.title }}" data-slug="{{ item.slug }}"><i class="fas fa-pencil-alt"></i></button>
-            <button type="button" class="btn btn-danger btn-delete" data-toggle="modal" data-target="#delete-{{ type }}-modal" data-id="{{ item.id }}" data-title="{{ item.title }}"><i class="fas fa-trash-alt"></i></button>
+            <button type="button" class="btn btn-primary mr-1 btn-edit" data-toggle="modal" data-target="#edit-{{ type }}-modal" data-type="{{ type_plural }}" data-action="edit" data-id="{{ item.id }}" data-title="{{ item.title }}" data-slug="{{ item.slug }}"><i class="fas fa-pencil-alt"></i></button>
+            <button type="button" class="btn btn-danger btn-delete" data-toggle="modal" data-target="#delete-{{ type }}-modal" data-type="{{ type_plural }}" data-action="delete" data-id="{{ item.id }}" data-title="{{ item.title }}"><i class="fas fa-trash-alt"></i></button>
         </td>
     </tr>
 </script>
@@ -27,7 +27,7 @@
                     <h2>{{ lang.COURSES }}</h2>
                 </div>
                 <div class="col-12 col-sm-4 col-lg-6 col-xl-4 text-right">
-                    <button type="button" id="courses-new" class="btn btn-success btn-block" data-toggle="modal" data-target="#create-course-modal"><i class="fas fa-plus"></i> {{ lang.ADMIN_CC_COURSE_CREATE_BUTTON }}</button>
+                    <button type="button" id="courses-new" class="btn btn-success btn-block" data-toggle="modal" data-target="#create-course-modal" data-type="courses" data-action="create"><i class="fas fa-plus"></i> {{ lang.ADMIN_CC_COURSE_CREATE_BUTTON }}</button>
                 </div>
             </div>
             <div id="courses-table" class="table-responsive-lg">
@@ -51,7 +51,9 @@
                     <h2>{{ lang.CUISINES }}</h2>
                 </div>
                 <div class="col-12 col-sm-4 col-lg-6 col-xl-4 text-right">
-                    <button type="button" id="cuisines-new" class="btn btn-success btn-block" data-toggle="modal" data-target="#create-cuisine-modal"><i class="fas fa-plus"></i> {{ lang.ADMIN_CC_CUISINE_CREATE_BUTTON }}</button>
+                    <button type="button" id="cuisines-new" class="btn btn-success btn-block" data-toggle="modal" data-target="#create-cuisine-modal" data-type="cuisines" data-action="create">
+                        <i class="fas fa-plus"></i> {{ lang.ADMIN_CC_CUISINE_CREATE_BUTTON }}
+                    </button>
                 </div>
             </div>
             <div id="cuisines-table" class="table-responsive-lg">
