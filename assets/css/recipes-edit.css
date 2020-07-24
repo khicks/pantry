@@ -6,6 +6,11 @@
     display: none;
 }
 
+#recipe-edit-save-failed {
+    display: none;
+    font-weight: bold;
+}
+
 .field-feedback-icon,
 span.field-feedback-message {
     display: none;

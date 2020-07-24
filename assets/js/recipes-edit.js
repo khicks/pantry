@@ -7,7 +7,8 @@ $(function() {
         form: $("#recipe-form"),
         loading: $("#main-loading-wheel"),
         alerts: {
-            loadFailed: $("#recipe-edit-load-failed")
+            loadFailed: $("#recipe-edit-load-failed"),
+            saveFailed: $("#recipe-edit-save-failed")
         },
         buttons: {
             cancel: $("#cancel-button"),
@@ -349,43 +350,50 @@ $(function() {
         }
     };
 
-    const onSaveSuccess = function() {
-        elements.buttons.save.icon().removeClass('fa-sync fa-spin').addClass('fa-check');
-        setTimeout(function() {
-            window.location.replace(webRoot + "/recipe/" + elements.fields.slug.field.val());
-        }, 500);
-    }
-
-    const onSaveFail = function(response) {
-        if (!response.responseJSON) {
-            alert("Save failed. Unknown error.");
-            console.log(response);
-        }
-
-        let error = response.responseJSON;
-        if (error.data.issue && error.data.issue === "validation") {
-            elements.fields[error.data.field].field.addClass('is-invalid');
-            elements.fields[error.data.field].icon().addClass('fa-times field-feedback-red').show();
-            elements.fields[error.data.field].messages.api.text(error.description).show();
-
-            if (error.data.field === "image") {
-                elements.fields.image.messages.text.show();
-            }
-        }
-
-        $.each(elements.fieldGroups, function() {
-            this.prop('disabled', false);
-        });
-        elements.buttons.save.button.prop('disabled', false);
-        elements.buttons.save.icon().removeClass('fa-sync fa-spin').addClass('fa-save');
-    };
-
     const saveRecipe = function() {
+        const onSaveSuccess = function() {
+            elements.buttons.save.icon().removeClass('fa-sync fa-spin').addClass('fa-check');
+            setTimeout(function() {
+                window.location.replace(webRoot + "/recipe/" + elements.fields.slug.field.val());
+            }, 500);
+        }
+
+        const onSaveFail = function(response) {
+            $.each(elements.fieldGroups, function() {
+                this.prop('disabled', false);
+            });
+            elements.buttons.save.button.prop('disabled', false);
+            elements.buttons.save.icon().removeClass('fa-sync fa-spin').addClass('fa-save');
+
+            if (!response.responseJSON) {
+                elements.alerts.saveFailed.text("Save failed. Unknown error.").show();
+                console.log(response);
+                return;
+            }
+
+            let error = response.responseJSON;
+
+            if (error.data.issue && error.data.issue === "validation") {
+                elements.fields[error.data.field].field.addClass('is-invalid');
+                elements.fields[error.data.field].icon().addClass('fa-times field-feedback-red').show();
+                elements.fields[error.data.field].messages.api.text(error.description).show();
+
+                if (error.data.field === "image") {
+                    elements.fields.image.messages.text.show();
+                }
+
+                return;
+            }
+
+            elements.alerts.saveFailed.text(error.description).show();
+        };
+
         $.each(elements.fieldGroups, function() {
             this.prop('disabled', true);
         });
         $(this).prop('disabled', true);
         elements.buttons.save.icon().removeClass('fa-save').addClass('fa-sync fa-spin');
+        elements.alerts.saveFailed.hide();
 
         let data = {
             csrf_token: csrfToken,

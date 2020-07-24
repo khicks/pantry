@@ -63,3 +63,8 @@
 #recipe-fail {
     display: none;
 }
+
+#recipe-delete-failed {
+    display: none;
+    font-weight: bold;
+}

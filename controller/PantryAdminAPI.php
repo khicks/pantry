@@ -166,6 +166,11 @@ class PantryAdminAPI extends PantryAPI {
             die();
         }
 
+        if (Pantry::$config->get('demo_mode') && in_array($user->getUsername(), Pantry::$config->get('demo_protected_users'), true)) {
+            $pantry->response = new PantryAPIError(403, "DEMO_PROTECTED_USER", $pantry->language->get('DEMO_PROTECTED_USER'));
+            $pantry->response->respond();
+        }
+
         try {
             if (isset($_POST['username'])) {
                 $user->setUsername($_POST['username']);
@@ -234,6 +239,11 @@ class PantryAdminAPI extends PantryAPI {
             die();
         }
 
+        if (Pantry::$config->get('demo_mode') && in_array($user->getUsername(), Pantry::$config->get('demo_protected_users'), true)) {
+            $pantry->response = new PantryAPIError(403, "DEMO_PROTECTED_USER", $pantry->language->get('DEMO_PROTECTED_USER'));
+            $pantry->response->respond();
+        }
+
         if ($user->getID() === $pantry->current_user->getID()) {
             $pantry->response = new PantryAPIError(422, "DELETE_OWN_USER", $pantry->language->get('DELETE_OWN_USER'));
             $pantry->response->respond();
@@ -291,6 +301,12 @@ class PantryAdminAPI extends PantryAPI {
 
         try {
             $course = new PantryCourse($_POST['id']);
+
+            if (Pantry::$config->get('demo_mode') && in_array($course->getSlug(), Pantry::$config->get('demo_protected_courses'), true)) {
+                $pantry->response = new PantryAPIError(403, "DEMO_PROTECTED_COURSE", $pantry->language->get('DEMO_PROTECTED_COURSE'));
+                $pantry->response->respond();
+            }
+
             $course->setTitle($_POST['title']);
             $course->setSlug($_POST['slug']);
             $course->save();
@@ -321,6 +337,12 @@ class PantryAdminAPI extends PantryAPI {
 
         try {
             $course = new PantryCourse($_POST['id']);
+
+            if (Pantry::$config->get('demo_mode') && in_array($course->getSlug(), Pantry::$config->get('demo_protected_courses'), true)) {
+                $pantry->response = new PantryAPIError(403, "DEMO_PROTECTED_COURSE", $pantry->language->get('DEMO_PROTECTED_COURSE'));
+                $pantry->response->respond();
+            }
+
             $course->delete($_POST['replace_id']);
         }
         catch (PantryCourseNotFoundException $e) {
@@ -375,6 +397,12 @@ class PantryAdminAPI extends PantryAPI {
 
         try {
             $cuisine = new PantryCuisine($_POST['id']);
+
+            if (Pantry::$config->get('demo_mode') && in_array($cuisine->getSlug(), Pantry::$config->get('demo_protected_cuisines'), true)) {
+                $pantry->response = new PantryAPIError(403, "DEMO_PROTECTED_CUISINE", $pantry->language->get('DEMO_PROTECTED_CUISINE'));
+                $pantry->response->respond();
+            }
+
             $cuisine->setTitle($_POST['title']);
             $cuisine->setSlug($_POST['slug']);
             $cuisine->save();
@@ -405,6 +433,12 @@ class PantryAdminAPI extends PantryAPI {
 
         try {
             $cuisine = new PantryCuisine($_POST['id']);
+
+            if (Pantry::$config->get('demo_mode') && in_array($cuisine->getSlug(), Pantry::$config->get('demo_protected_cuisines'), true)) {
+                $pantry->response = new PantryAPIError(403, "DEMO_PROTECTED_CUISINE", $pantry->language->get('DEMO_PROTECTED_CUISINE'));
+                $pantry->response->respond();
+            }
+
             $cuisine->delete($_POST['replace_id']);
         }
         catch (PantryCuisineNotFoundException $e) {

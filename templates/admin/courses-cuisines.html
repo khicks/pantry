@@ -19,7 +19,6 @@
     <option value="">({{ lang.NONE }})</option>
 </script>
 
-
 <div id="cc-wrapper" class="row">
     <div class="col-12 col-lg-6 mb-3">
         <div class="courses-table-wrapper">
@@ -121,6 +120,7 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div id="edit-course-failed" class="alert alert-danger alert-failed"></div>
                 <input type="hidden" id="edit-course-id">
                 <div class="form-row">
                     <div class="col-12 mb-3">
@@ -159,6 +159,7 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div id="delete-course-failed" class="alert alert-danger alert-failed"></div>
                 {{ lang.ADMIN_CC_COURSE_DELETE_PROMPT }}
                 <input type="hidden" id="delete-course-id">
                 <div class="form-row">
@@ -229,6 +230,7 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div id="edit-cuisine-failed" class="alert alert-danger alert-failed"></div>
                 <input type="hidden" id="edit-cuisine-id">
                 <div class="form-row">
                     <div class="col-12 mb-3">
@@ -267,6 +269,7 @@
                 </button>
             </div>
             <div class="modal-body">
+                <div id="delete-cuisine-failed" class="alert alert-danger alert-failed"></div>
                 {{ lang.ADMIN_CC_CUISINE_DELETE_PROMPT }}
                 <input type="hidden" id="delete-cuisine-id">
                 <div class="form-row">

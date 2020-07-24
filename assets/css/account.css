@@ -8,6 +8,11 @@
     display: none;
 }
 
+#account-save-failed-alert {
+    display: none;
+    font-weight: bold;
+}
+
 #account-form {
     display: none;
 }
@@ -26,9 +31,5 @@ span.field-feedback-message {
 }
 
 #disable-twofactor-button {
-    display: none;
-}
-
-#save-button-icon {
     display: none;
 }

@@ -2,19 +2,27 @@ $(function() {
     const webRoot = $('meta[name=web_root]').attr("content");
     const csrfToken = $('meta[name=csrf_token]').attr("content");
 
-    const sortBySelect = $("#sort-by");
-    const searchField = $("#search");
-
-    const usersTableLoading = $("#users-table-loading");
-    const usersTable = $("#users-table");
-    const usersTableBody = $("#users-table-body");
-
-    const deleteUserModal = $("#delete-user-modal");
-    const deleteUserModalUserID = $("#delete-user-modal-userid");
-    const deleteUserModalUsername = $("#delete-user-modal-username");
-
-    const deleteUserButton = $("#delete-user-button");
-    const deleteUserButtonIcon = function() { return $("#delete-user-button-icon"); };
+    const elements = {
+        loading: $("#users-table-loading"),
+        fields: {
+            sort_by: $("#sort-by"),
+            search: $("#search")
+        },
+        table: {
+            table: $("#users-table"),
+            body: $("#users-table-body"),
+        },
+        delete: {
+            modal: $("#delete-user-modal"),
+            user_id: $("#delete-user-modal-userid"),
+            username: $("#delete-user-modal-username"),
+            alert: $("#delete-user-alert"),
+            button: {
+                button: $("#delete-user-button"),
+                icon: function() { return $("#delete-user-button-icon"); }
+            }
+        }
+    };
 
     let language;
 
@@ -78,7 +86,7 @@ $(function() {
 
 
     function buildUsersTable(search = null, sort_by = "username") {
-        usersTableBody.html(null);
+        elements.table.body.html(null);
 
         $.ajax({
             method: "GET",
@@ -121,29 +129,29 @@ $(function() {
                         "<button class=\"btn btn-danger btn-delete\" title=\""+language.ADMIN_USERS_DELETE_BUTTON+"\" data-toggle=\"modal\" data-target=\"#delete-user-modal\" data-userid=\""+elem.id+"\" data-username=\""+elem.username+"\" "+placeDisabledProperty(elem.is_self)+"><i class=\"fas fa-trash-alt\"></i></button>" +
                         "</td>" +
                         "</tr>";
-                    usersTableBody.append(row);
+                    elements.table.body.append(row);
                 });
-                usersTableLoading.hide();
-                usersTable.show();
+                elements.loading.hide();
+                elements.table.table.show();
             }
         });
     }
 
     function loadTable() {
-        usersTable.hide();
-        usersTableLoading.show();
+        elements.table.table.hide();
+        elements.loading.show();
 
         $.ajax({
             method: "GET",
             url: webRoot + "/api/v1/language",
             success: function(response) {
                 language = response.data;
-                buildUsersTable(searchField.val(), sortBySelect.val());
+                buildUsersTable(elements.fields.search.val(), elements.fields.sort_by.val());
             }
         });
     }
 
-    searchField
+    elements.fields.search
         .on('keypress', function(e) {
             if (e.keyCode === 13) {
                 e.preventDefault();
@@ -154,36 +162,45 @@ $(function() {
             $(this).select();
         });
 
-    sortBySelect.on('change', function() {
+    elements.fields.sort_by.on('change', function() {
         loadTable();
     });
 
-    deleteUserModal.on('show.bs.modal', function(event) {
+    elements.delete.modal.on('show.bs.modal', function(event) {
         let userID = $(event.relatedTarget).data('userid');
         let username = $(event.relatedTarget).data('username');
-        deleteUserModalUserID.val(userID);
-        deleteUserModalUsername.text(username);
+        elements.delete.user_id.val(userID);
+        elements.delete.username.text(username);
     });
 
-    deleteUserButton.on('click', function() {
-        deleteUserButton.prop('disabled', true);
-        deleteUserButtonIcon().removeClass('fa-trash-alt').addClass('fa-sync fa-spin');
-        let userID = deleteUserModalUserID.val();
+    elements.delete.modal.on('hidden.bs.modal', function() {
+        elements.delete.alert.hide();
+    });
+
+    elements.delete.button.button.on('click', function() {
+        const onDeleteUserSuccess = function() {
+            elements.delete.button.icon().removeClass('fa-sync fa-spin').addClass('fa-check');
+            window.location.replace(webRoot + '/admin/users');
+        }
+
+        const onDeleteUserError = function(response) {
+            elements.delete.alert.text(response.responseJSON.description).show();
+            elements.delete.button.button.prop('disabled', false);
+            elements.delete.button.icon().removeClass('fa-sync fa-spin').addClass('fa-trash-alt');
+        }
+
+        elements.delete.button.button.prop('disabled', true);
+        elements.delete.button.icon().removeClass('fa-trash-alt').addClass('fa-sync fa-spin');
 
         $.ajax({
             method: "POST",
             url: webRoot + '/api/v1/admin/users/delete',
             data: {
                 csrf_token: csrfToken,
-                user_id: userID
+                user_id: elements.delete.user_id.val()
             },
-            success: function() {
-                window.location.replace(webRoot + '/admin/users');
-            },
-            error: function(data) {
-                console.log(data);
-                alert("Delete failed.");
-            }
+            success: onDeleteUserSuccess,
+            error: onDeleteUserError
         });
     });
 

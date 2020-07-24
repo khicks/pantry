@@ -6,6 +6,7 @@ $(function() {
     const elements = {
         form: $("#edit-user-form"),
         loading: function() { return $("#edit-user-loading"); },
+        alert: $("#edit-user-alert"),
         select_fields: $(".select-field"),
         username: {
             field: $("#username"),
@@ -196,13 +197,33 @@ $(function() {
     }
 
     function saveUser() {
+        const onSaveUserSuccess = function() {
+            window.location.replace(webRoot + '/admin/users');
+        }
+
+        const onSaveUserError = function(response) {
+            console.log(response);
+            elements.save.icon().addClass('fa-save').removeClass('fa-sync fa-spin');
+            toggleFields(false);
+
+            if (response.responseJSON.data.issue && response.responseJSON.data.issue === "validation") {
+                elements[response.responseJSON.data.field].icon().addClass('fa-times field-feedback-red').show();
+                elements[response.responseJSON.data.field].messages.api.text(response.responseJSON.description).show();
+                elements[response.responseJSON.data.field].field.addClass('is-invalid');
+                return;
+            }
+
+            elements.alert.text(response.responseJSON.description).show();
+        }
+
         clearAllFieldErrors();
         if (!checkFields()) {
             return;
         }
 
         toggleFields(true);
-        elements.save.icon().show();
+        elements.alert.hide();
+        elements.save.icon().addClass('fa-sync fa-spin').removeClass('fa-save');
 
         $.ajax({
             method: "POST",
@@ -217,23 +238,8 @@ $(function() {
                 admin: elements.admin.field.is(':checked'),
                 disabled: elements.disabled.field.is(':checked')
             },
-            success: function() {
-                window.location.replace(webRoot + '/admin/users');
-            },
-            error: function(data) {
-                console.log(data);
-                elements.save.icon().hide();
-                toggleFields(false);
-
-                let errors = data.responseJSON.data;
-                $.each(errors, function(field, error) {
-                    elements[field].icon().addClass('fa-times field-feedback-red').show();
-                    elements[field].messages.api.text(error.message).show();
-                    elements[field].field.addClass('is-invalid');
-                    console.log(field);
-                    console.log(error);
-                });
-            }
+            success: onSaveUserSuccess,
+            error: onSaveUserError
         });
     }
 

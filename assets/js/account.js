@@ -6,7 +6,8 @@ $(function() {
         form: $("#account-form"),
         loading: function() { return $("#account-loading"); },
         alerts: {
-            saved: $("#account-saved-alert")
+            saved: $("#account-saved-alert"),
+            failed: $("#account-save-failed-alert"),
         },
         fields: {
             groups: {
@@ -169,12 +170,13 @@ $(function() {
     const save = function() {
         clearAllFieldErrors();
         elements.alerts.saved.hide();
+        elements.alerts.failed.hide();
         if (!checkFields()) {
             return;
         }
 
         toggleFields(true);
-        elements.buttons.save.icon().show();
+        elements.buttons.save.icon().removeClass('fa-save').addClass('fa-sync fa-spin');
 
         $.ajax({
             method: "POST",
@@ -187,7 +189,7 @@ $(function() {
                 password: elements.fields.password1.field.val()
             },
             success: function() {
-                elements.buttons.save.icon().hide();
+                elements.buttons.save.icon().removeClass('fa-sync fa-spin').addClass('fa-save');
                 toggleFields(false);
                 elements.alerts.saved.show();
 
@@ -197,14 +199,19 @@ $(function() {
             },
             error: function(response) {
                 console.log(response);
-                elements.buttons.save.icon().hide();
+                elements.buttons.save.icon().removeClass('fa-sync fa-spin').addClass('fa-save');
                 toggleFields(false);
 
                 let error = response.responseJSON;
-                elements.fields[error.data.field].icon().addClass('fa-times field-feedback-red').show();
-                elements.fields[error.data.field].messages.api.text(error.description).show();
-                elements.fields[error.data.field].field.addClass('is-invalid');
-                elements.fields[error.data.field].field.focus();
+                if (error.data.issue && error.data.issue === "validation") {
+                    elements.fields[error.data.field].icon().addClass('fa-times field-feedback-red').show();
+                    elements.fields[error.data.field].messages.api.text(error.description).show();
+                    elements.fields[error.data.field].field.addClass('is-invalid');
+                    elements.fields[error.data.field].field.focus();
+                    return;
+                }
+
+                elements.alerts.failed.text(error.description).show();
             }
         });
     };
@@ -212,11 +219,11 @@ $(function() {
     elements.fields.groups.select.on('focus', function() {
         $(this).select();
     });
-
-    elements.buttons.save.button.on('click', save);
     elements.fields.groups.all.on('keypress', function(e) {
         if (e.which === 13) elements.buttons.save.button.click();
     });
+
+    elements.buttons.save.button.on('click', save);
 
     loadForm();
 });

@@ -28,3 +28,8 @@ th.icon-col, td.icon-col {
 .disabled-icon {
     color: red;
 }
+
+#delete-user-alert {
+    display: none;
+    font-weight: bold;
+}

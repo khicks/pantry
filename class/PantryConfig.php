@@ -20,6 +20,14 @@ class PantryConfig {
         'log_max_files'    => 10,
         'session_timeout'  => "3d",
         'csrf_required'    => true,
+
+        'demo_mode'               => false,
+        'demo_username'           => "demo",
+        'demo_password'           => "demo",
+        'demo_protected_courses'  => [],
+        'demo_protected_cuisines' => [],
+        'demo_protected_recipes'  => [],
+        'demo_protected_users'    => []
     ];
 
     private const ACCEPTABLE_DB_VARS = [
@@ -151,6 +159,16 @@ class PantryConfig {
 
         // csrf_required (default)
         $this->config['csrf_required'] = (in_array($this->config['csrf_required'], [true, "true", 1, "1"], true));
+
+        // demo_mode (fix)
+        $this->config['demo_mode'] = (bool)$this->config['demo_mode'];
+
+        // demo_protected_* (default)
+        foreach (['courses', 'cuisines', 'recipes', 'users'] as $element) {
+            if (!is_array($this->config["demo_protected_{$element}"])) {
+                $this->config["demo_protected_{$element}"] = self::DEFAULTS["demo_protected_{$element}"];
+            }
+        }
     }
 
     private function toBytes($size) {

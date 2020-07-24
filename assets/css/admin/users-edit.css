@@ -24,6 +24,7 @@ span.field-feedback-message {
     display: none;
 }
 
-#save-user-button-icon {
+#edit-user-alert {
     display: none;
+    font-weight: bold;
 }

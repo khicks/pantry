@@ -63,6 +63,8 @@ $(function() {
         },
         modals: {
             delete: {
+                modal: $("#recipe-delete-modal"),
+                alert: $("#recipe-delete-failed"),
                 fields: {
                     id: $("#recipe-delete-modal-recipeid"),
                     name: $("#recipe-delete-modal-name")
@@ -218,6 +220,19 @@ $(function() {
     };
 
     const recipeDelete = function() {
+        const onRecipeDeleteSuccess = function() {
+            elements.modals.delete.buttons.confirm.icon().removeClass('fa-sync fa-spin').addClass('fa-check');
+            setTimeout(function() {
+                window.location.replace(webRoot + "/recipes");
+            }, 500);
+        };
+
+        const onRecipeDeleteError = function(response) {
+            elements.modals.delete.alert.text(response.responseJSON.description).show();
+            elements.modals.delete.buttons.confirm.button.prop('disabled', false);
+            elements.modals.delete.buttons.confirm.icon().removeClass('fa-sync fa-spin').addClass('fa-trash-alt');
+        } ;
+
         elements.modals.delete.buttons.confirm.button.prop('disabled', true);
         elements.modals.delete.buttons.confirm.icon().removeClass('fa-trash-alt').addClass('fa-sync fa-spin');
 
@@ -228,17 +243,17 @@ $(function() {
                 csrf_token: csrfToken,
                 id: elements.modals.delete.fields.id.val(),
             },
-            success: function() {
-                elements.modals.delete.buttons.confirm.icon().removeClass('fa-sync fa-spin').addClass('fa-check');
-                setTimeout(function() {
-                    window.location.replace(webRoot + "/recipes");
-                }, 500);
-            }
+            success: onRecipeDeleteSuccess,
+            error: onRecipeDeleteError
         });
     }
 
     elements.buttons.edit.attr("href", webRoot + "/recipe/" + recipeSlug + "/edit");
-    elements.modals.delete.buttons.confirm.button.on('click', recipeDelete)
+    elements.modals.delete.buttons.confirm.button.on('click', recipeDelete);
+
+    elements.modals.delete.modal.on('hidden.bs.modal', function() {
+        elements.modals.delete.alert.hide();
+    });
 
     $.ajax({
         method: "GET",

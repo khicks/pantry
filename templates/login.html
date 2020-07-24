@@ -41,6 +41,21 @@
 
         <button type="button" id="login-button" class="btn btn-lg btn-primary btn-block">{{ lang.LOGIN_BUTTON }}</button>
     </div>
+
+    {% if display.demo_mode %}
+    <div class="row">
+        <div class="col-12 mt-2">
+            <hr>
+            <h3>{{ lang.DEMO_LOGIN }}</h3>
+            <table>
+                <tr><td class="pr-2"><b>{{ lang.USERNAME }}:</b></td><td>{{ demo.username }}</td></tr>
+                <tr><td class="pr-2"><b>{{ lang.PASSWORD }}:</b></td><td>{{ demo.password }}</td></tr>
+            </table>
+        </div>
+    </div>
+    {% endif %}
 </form>
+
+
 
 {% endblock %}

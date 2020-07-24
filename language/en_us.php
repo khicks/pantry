@@ -77,6 +77,13 @@ return [
 
     'UPDATE_ERROR_NO_DETERMINE_DB_VERSION' => "Could not determine database versions.",
 
+    // demo
+    'DEMO_LOGIN' => "Demo login",
+    'DEMO_PROTECTED_COURSE' => "This course may not be modified in demo mode.",
+    'DEMO_PROTECTED_CUISINE' => "This cuisine may not be modified in demo mode.",
+    'DEMO_PROTECTED_RECIPE' => "This recipe may not be modified in demo mode.",
+    'DEMO_PROTECTED_USER' => "This user may not be modified in demo mode.",
+
     // login page
     'LOGIN_TITLE' => "Log in",
     'LOGIN_PAGE_USERNAME' => "Username",

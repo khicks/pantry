@@ -297,6 +297,11 @@ class PantryAPI extends PantryApp {
         $pantry = new self();
         $pantry->requireLogin();
 
+        if (Pantry::$config->get('demo_mode') && in_array($pantry->current_user->getUsername(), Pantry::$config->get('demo_protected_users'), true)) {
+            $pantry->response = new PantryAPIError(403, "DEMO_PROTECTED_USER", $pantry->language->get('DEMO_PROTECTED_USER'));
+            $pantry->response->respond();
+        }
+
         try {
             if (isset($_POST['first_name'])) {
                 $pantry->current_user->setFirstName($_POST['first_name']);
@@ -630,6 +635,11 @@ class PantryAPI extends PantryApp {
             $pantry->response->respond();
         }
 
+        if (Pantry::$config->get('demo_mode') && in_array($recipe->getSlug(), Pantry::$config->get('demo_protected_recipes'), true)) {
+            $pantry->response = new PantryAPIError(403, "DEMO_PROTECTED_RECIPE", $pantry->language->get('DEMO_PROTECTED_RECIPE'));
+            $pantry->response->respond();
+        }
+
         // Set "throwable" fields
         try {
             $recipe->setTitle($_POST['title']);
@@ -754,6 +764,7 @@ class PantryAPI extends PantryApp {
     public static function deleteRecipe() {
         $pantry = new self();
         $pantry->requireLogin();
+        $recipe = null;
 
         try {
             $recipe = new PantryRecipe($_POST['id']);
@@ -765,8 +776,6 @@ class PantryAPI extends PantryApp {
             if ($permission_level < PantryRecipePermission::$permission_level_map['ADMIN']) {
                 throw new PantryRecipePermissionDeniedException("No admin permission.");
             }
-
-            $recipe->delete();
         }
         catch (PantryRecipeNotFoundException $e) {
             $pantry->response = new PantryAPIError(404, "RECIPE_NOT_FOUND", $pantry->language->get('RECIPE_NOT_FOUND'));
@@ -776,7 +785,16 @@ class PantryAPI extends PantryApp {
             $pantry->response = new PantryAPIError(403, "ACCESS_DENIED", $pantry->language->get('ACCESS_DENIED'));
             $pantry->response->respond();
         }
-        catch (PantryRecipeNotDeletedException $e) {
+
+        if (Pantry::$config->get('demo_mode') && in_array($recipe->getSlug(), Pantry::$config->get('demo_protected_recipes'), true)) {
+            $pantry->response = new PantryAPIError(403, "DEMO_PROTECTED_RECIPE", $pantry->language->get('DEMO_PROTECTED_RECIPE'));
+            $pantry->response->respond();
+        }
+
+        try {
+            $recipe->delete();
+        }
+        catch (PantryRecipeNotFoundException | PantryRecipeNotDeletedException $e) {
             $pantry->response = new PantryAPIError(500, "RECIPE_NOT_DELETED", $pantry->language->get('RECIPE_NOT_DELETED'));
             $pantry->response->respond();
         }

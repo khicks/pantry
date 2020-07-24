@@ -8,6 +8,7 @@
 
 <form id="edit-user-form">
     <h2>{{ lang.ADMIN_EDIT_USER_TITLE }}</h2>
+    <div id="edit-user-alert" class="alert alert-danger"></div>
 
     <h3>{{ lang.ADMIN_USERS_ACCOUNT }}</h3>
     <div class="form-row mb-2">
@@ -25,14 +26,14 @@
     <div class="form-row mb-2">
         <div class="col-12 col-md-6 mb-2">
             <label for="first-name">{{ lang.FIRSTNAME }} <i id="firstname-feedback-icon" class="fas field-feedback-icon"></i></label>
-            <input type="text" id="first-name" class="form-control select-field">
+            <input type="text" id="first-name" class="form-control" maxlength="64">
             <div id="firstname-feedback-text" class="invalid-feedback">
                 <span id="firstname-feedback-message-api" class="field-feedback-message firstname-feedback-message"></span>
             </div>
         </div>
         <div class="col-12 col-md-6 mb-2">
             <label for="last-name">{{ lang.LASTNAME }} <i id="lastname-feedback-icon" class="fas field-feedback-icon"></i></label>
-            <input type="text" id="last-name" class="form-control select-field">
+            <input type="text" id="last-name" class="form-control" maxlength="64">
             <div id="lastname-feedback-text" class="invalid-feedback">
                 <span id="lastname-feedback-message-api" class="field-feedback-message lastname-feedback-message"></span>
             </div>
@@ -80,7 +81,7 @@
             <button type="button" id="disable-twofactor-button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#disable-twofactor-modal"><i class="fas fa-minus-circle"></i> {{ lang.ADMIN_EDIT_USER_DISABLE_2FA }}</button>
         </div>
         <div class="col-12 col-sm-6 col-md-auto mb-2">
-            <button type="button" id="save-user-button" class="btn btn-primary btn-block"><i id="save-user-button-icon" class="fas fa-sync fa-spin"></i><span id="save-user-button-text"> {{ lang.SAVE }}</span></button>
+            <button type="button" id="save-user-button" class="btn btn-primary btn-block"><i id="save-user-button-icon" class="fas fa-fw fa-save"></i><span id="save-user-button-text"> {{ lang.SAVE }}</span></button>
         </div>
         <div class="col-12 col-sm-6 col-md-auto mb-2">
             <a href="{{ meta.web_root }}/admin/users" id="cancel-button" class="btn btn-secondary btn-block">{{ lang.CANCEL }}</a>

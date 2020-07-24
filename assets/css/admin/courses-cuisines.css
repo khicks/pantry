@@ -35,3 +35,8 @@ span.field-feedback-message {
 .field-feedback-green {
     color: #28a745;
 }
+
+.alert-failed {
+    display: none;
+    font-weight: bold;
+}

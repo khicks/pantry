@@ -33,6 +33,17 @@ $(function() {
                 delete: $("#delete-cuisine-modal")
             }
         },
+        alerts: {
+            all: $(".alert-failed"),
+            courses: {
+                edit: $("#edit-course-failed"),
+                delete: $("#delete-course-failed")
+            },
+            cuisines: {
+                edit: $("#edit-cuisine-failed"),
+                delete: $("#delete-cuisine-failed")
+            },
+        },
         forms: {
             courses: {
                 create: {
@@ -299,7 +310,10 @@ $(function() {
                 elements.forms.courses.edit.fields[error.data.field].field.addClass('is-invalid');
                 elements.forms.courses.edit.fields[error.data.field].icon().addClass('fa-times field-feedback-red').show();
                 elements.forms.courses.edit.fields[error.data.field].messages.api.text(error.description).show();
+                return;
             }
+
+            elements.alerts.courses.edit.text(error.description).show();
         };
 
         $.ajax({
@@ -334,7 +348,10 @@ $(function() {
             if (!response.responseJSON) {
                 alert("Delete failed. Unknown error.");
                 console.log(response);
+                return;
             }
+
+            elements.alerts.courses.delete.text(response.responseJSON.description).show();
         };
 
         $.ajax({
@@ -418,7 +435,10 @@ $(function() {
                 elements.forms.cuisines.edit.fields[error.data.field].field.addClass('is-invalid');
                 elements.forms.cuisines.edit.fields[error.data.field].icon().addClass('fa-times field-feedback-red').show();
                 elements.forms.cuisines.edit.fields[error.data.field].messages.api.text(error.description).show();
+                return;
             }
+
+            elements.alerts.cuisines.edit.text(error.description).show();
         };
 
         $.ajax({
@@ -453,7 +473,10 @@ $(function() {
             if (!response.responseJSON) {
                 alert("Delete failed. Unknown error.");
                 console.log(response);
+                return;
             }
+
+            elements.alerts.cuisines.delete.text(response.responseJSON.description).show();
         };
 
         $.ajax({
@@ -472,6 +495,7 @@ $(function() {
     // Modal event handlers
     elements.modals.all.on('hidden.bs.modal', function() {
         elements.fields.all.val("").prop('disabled', true);
+        elements.alerts.all.hide();
     });
     elements.modals.all.on('show.bs.modal', function() {
         elements.fields.all.prop('disabled', false);

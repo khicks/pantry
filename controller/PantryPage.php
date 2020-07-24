@@ -83,6 +83,7 @@ class PantryPage extends PantryApp {
                 'footer' => true,
                 'user_menu' => true,
                 'logged_in' => false,
+                'demo_mode' => Pantry::$config->get('demo_mode')
             ],
             'brand' => [
                 'href' => Pantry::$web_root . "/",
@@ -361,6 +362,11 @@ class PantryPage extends PantryApp {
                 'title' => false
             ]
         ];
+
+        if (Pantry::$config->get('demo_mode')) {
+            $params['demo']['username'] = Pantry::$config->get('demo_username');
+            $params['demo']['password'] = Pantry::$config->get('demo_password');
+        }
 
         $pantry->displayTemplate("login.html", $params);
     }

@@ -10,6 +10,8 @@
     <b>{{ lang.ACCOUNT_SAVED }}</b>
 </div>
 
+<div id="account-save-failed-alert" class="alert alert-danger"></div>
+
 <form id="account-form">
     <h3>{{ lang.NAME }}</h3>
     <div class="form-row mb-2">
@@ -70,7 +72,7 @@
 
     <div class="form-row justify-content-md-end">
         <div class="col-12 col-sm-6 col-md-auto mb-2">
-            <button type="button" id="save-button" class="btn btn-primary btn-block"><i id="save-button-icon" class="fas fa-sync fa-spin"></i><span id="save-button-text"> {{ lang.SAVE }}</span></button>
+            <button type="button" id="save-button" class="btn btn-primary btn-block"><i id="save-button-icon" class="fas fa-fw fa-save"></i><span id="save-button-text"> {{ lang.SAVE }}</span></button>
         </div>
         <div class="col-12 col-sm-6 col-md-auto mb-2">
             <a href="{{ meta.web_root }}/" id="cancel-button" class="btn btn-secondary btn-block">{{ lang.CANCEL }}</a>
